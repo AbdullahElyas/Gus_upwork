@@ -27,11 +27,7 @@ from posture_assess import (
     create_radar_chart_foot_ankle,
     create_radar_chart_knee,
     create_radar_chart_hip,
-    create_radar_chart_shoulder,
-    TextGen_Posture,
-    TextGen_FootAnkle,
-    TextGen_Knee_Concise,
-    TextGen_Shoulder_Concise
+    create_radar_chart_shoulder
 )
 
 @dataclass
@@ -731,7 +727,7 @@ class BiomechanicalReportGenerator:
         return None
 
     # Rest of the methods remain the same (generate_radar_charts, get_assessment_texts, generate_report)
-    def generate_radar_charts(self, sheet_id: str, output_dir: str = "./charts/") -> Dict[str, str]:
+    def generate_radar_charts(self, sheet_id: str, output_dir: str = "./reports/charts/") -> Dict[str, str]:
         """Generate radar charts and return their file paths"""
         os.makedirs(output_dir, exist_ok=True)
         charts = {}
@@ -836,7 +832,8 @@ class BiomechanicalReportGenerator:
         print("Generating radar charts...")
         
         # Generate radar charts
-        charts = self.generate_radar_charts(sheet_id, charts_dir)
+        # charts = self.generate_radar_charts(sheet_id, charts_dir)
+        charts = self.generate_radar_charts(sheet_id)
         
         print("Getting assessment texts...")
         

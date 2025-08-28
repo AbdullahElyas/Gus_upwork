@@ -189,7 +189,8 @@ def generate_biomechanical_report_with_pdf(sheet_id, output_dir="./reports/", ch
     """
     # Generate HTML report
     html_filename = "biomechanical_assessment_report.html"
-    html_path = os.path.join(output_dir, html_filename)
+    # html_path = os.path.join(output_dir, html_filename)
+    html_path = html_filename
     
     try:
         report_path = generate_biomechanical_report(
