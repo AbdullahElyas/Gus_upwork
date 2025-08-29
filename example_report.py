@@ -136,14 +136,32 @@ def convert_html_to_pdf(html_path, pdf_path, method="weasyprint"):
                 print(f"Converting HTML to PDF using Playwright...")
                 
                 with sync_playwright() as p:
-                    browser = p.chromium.launch()
+                    browser = p.chromium.launch(headless=True)
                     page = browser.new_page()
+                    
+                    # Navigate to the HTML file
                     page.goto(f"file://{os.path.abspath(html_path)}")
+                    
+                    # Wait for the page to fully load
+                    page.wait_for_load_state('networkidle')
+                    
+                    # Wait a bit more to ensure all content is rendered
+                    page.wait_for_timeout(2000)  # 2 seconds
+                    
+                    # Optional: Wait for specific content to be visible
+                    try:
+                        page.wait_for_selector('table', timeout=5000)
+                    except:
+                        print("Warning: Tables not found, continuing with PDF generation...")
+                    
+                    # Generate PDF with better settings
                     page.pdf(
                         path=pdf_path,
                         format='A4',
                         margin={'top': '1cm', 'right': '1cm', 'bottom': '1cm', 'left': '1cm'},
-                        print_background=True
+                        print_background=True,
+                        prefer_css_page_size=True,
+                        display_header_footer=False
                     )
                     browser.close()
                 return True
@@ -156,14 +174,29 @@ def convert_html_to_pdf(html_path, pdf_path, method="weasyprint"):
                 from playwright.sync_api import sync_playwright
                 
                 with sync_playwright() as p:
-                    browser = p.chromium.launch()
+                    browser = p.chromium.launch(headless=True)
                     page = browser.new_page()
+                    
+                    # Navigate to the HTML file
                     page.goto(f"file://{os.path.abspath(html_path)}")
+                    
+                    # Wait for the page to fully load
+                    page.wait_for_load_state('networkidle')
+                    page.wait_for_timeout(2000)
+                    
+                    # Wait for tables to be visible
+                    try:
+                        page.wait_for_selector('table', timeout=5000)
+                    except:
+                        print("Warning: Tables not found, continuing with PDF generation...")
+                    
                     page.pdf(
                         path=pdf_path,
                         format='A4',
                         margin={'top': '1cm', 'right': '1cm', 'bottom': '1cm', 'left': '1cm'},
-                        print_background=True
+                        print_background=True,
+                        prefer_css_page_size=True,
+                        display_header_footer=False
                     )
                     browser.close()
                 return True
