@@ -23,7 +23,8 @@
         }
         
         h2 {
-            font-size: 1.4em; /* explicitly set reduced size */
+            font-size: 1.4em;
+            page-break-after: avoid; /* Prevent page break immediately after heading */
         }
         
         h3 {
@@ -32,7 +33,7 @@
         
         .assessment-section {
             margin-bottom: 33px; /* reduced from 50px */
-            page-break-inside: avoid;
+            page-break-inside: auto;
         }
         
         .data-tables {
@@ -175,7 +176,18 @@
             border-left: 3px solid #3498DB; /* reduced from 4px */
             font-size: 10px; /* explicitly set smaller text */
             line-height: 1.4;
+            page-break-inside: avoid;
         }
+        .core-section {
+    background: #e8f4f8;
+    padding: 13px; /* reduced from 20px */
+    border-radius: 5px; /* reduced from 8px */
+    margin-bottom: 20px; /* reduced from 30px */
+    border-left: 3px solid #3498DB; /* reduced from 4px */
+    font-size: 10px; /* explicitly set smaller text */
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
         
         .note {
             font-style: italic;
@@ -200,581 +212,652 @@
 </head>
 <body>
 
-<h1>Biomechanical Assessment Report</h1>
+<div style="background: #e8f4f8; padding: 18px 0; border-radius: 7px; text-align: center; margin-bottom: 20px;">
+    <h1 style="margin: 0; font-size: 1.5em; color: #2C3E50; letter-spacing: 2px; font-weight: bold;">
+        BRICK PERFORMANCE<br>
+        <span style="font-size: 1.2em; font-weight: normal;">BIOMECHANICAL ASSESSMENT</span>
+    </h1>
+</div>
 <!-- Data Tables Section -->
 <div class="assessment-section">
-    <h2>Assessment Data Overview</h2>
-    
     <!-- Range of Motion Section -->
-    <div class="section-title">Range of Motion Assessment</div>
-    
-    <div class="data-tables">
-        {% if ankle_data %}
-        <div class="table-container">
-            <h3>Ankle/Foot Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Dorsiflexion Range</td>
-                    <td class="{% if ankle_data.dorsiflexion_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.dorsiflexion_range_left }}°
-                    </td>
-                    <td class="{% if ankle_data.dorsiflexion_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.dorsiflexion_range_right }}°
-                    </td>
-                    <td class="gold-standard">30°</td>
-                    <td>{{ ankle_data.dorsiflexion_left_percent }}%</td>
-                    <td>{{ ankle_data.dorsiflexion_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ ankle_data.dorsiflexion_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Plantarflexion Range</td>
-                    <td class="{% if ankle_data.plantarflexion_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.plantarflexion_range_left }}°
-                    </td>
-                    <td class="{% if ankle_data.plantarflexion_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.plantarflexion_range_right }}°
-                    </td>
-                    <td class="gold-standard">165°</td>
-                    <td>{{ ankle_data.plantarflexion_left_percent }}%</td>
-                    <td>{{ ankle_data.plantarflexion_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ ankle_data.plantarflexion_asymmetry }}%</td>
-                </tr>
-            </table>
+    <div style="display: flex; align-items: center; margin: 27px 0 13px 0; gap: 20px;">
+        <div style="background: #e8f4f8; padding: 13px; border-radius: 5px; border-left: 3px solid #3498DB; min-width: 30px; max-width: 50px;">
+            <div style="text-align: center; font-size: 1.0em; color: #2C3E50; font-weight: bold;">
+            Range of Motion 
         </div>
-        {% endif %}
-        
-        {% if knee_data %}
-        <div class="table-container">
-            <h3>Knee Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="{% if knee_data.flexion_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.flexion_range_left }}°
-                    </td>
-                    <td class="{% if knee_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.flexion_range_right }}°
-                    </td>
-                    <td class="gold-standard">160°</td>
-                    <td>{{ knee_data.flexion_left_percent }}%</td>
-                    <td>{{ knee_data.flexion_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ knee_data.flexion_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="{% if knee_data.extension_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.extension_range_left }}°
-                    </td>
-                    <td class="{% if knee_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.extension_range_right }}°
-                    </td>
-                    <td class="gold-standard">170°</td>
-                    <td>{{ knee_data.extension_left_percent }}%</td>
-                    <td>{{ knee_data.extension_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ knee_data.extension_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if hip_data %}
-        <div class="table-container">
-            <h3>Hip Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="{% if hip_data.flexion_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.flexion_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.flexion_range_right }}°
-                    </td>
-                    <td class="gold-standard">90°</td>
-                    <td>{{ hip_data.flexion_left_percent }}%</td>
-                    <td>{{ hip_data.flexion_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.flexion_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="{% if hip_data.extension_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.extension_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.extension_range_right }}°
-                    </td>
-                    <td class="gold-standard">30°</td>
-                    <td>{{ hip_data.extension_left_percent }}%</td>
-                    <td>{{ hip_data.extension_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ hip_data.extension_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Abduction Range</td>
-                    <td class="{% if hip_data.abduction_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.abduction_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.abduction_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.abduction_range_right }}°
-                    </td>
-                    <td class="gold-standard">55°</td>
-                    <td>{{ hip_data.abduction_left_percent }}%</td>
-                    <td>{{ hip_data.abduction_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ hip_data.abduction_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Adduction Range</td>
-                    <td class="{% if hip_data.adduction_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.adduction_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.adduction_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.adduction_range_right }}°
-                    </td>
-                    <td class="gold-standard">35°</td>
-                    <td>{{ hip_data.adduction_left_percent }}%</td>
-                    <td>{{ hip_data.adduction_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.adduction_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Range</td>
-                    <td class="{% if hip_data.ext_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.ext_rotation_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.ext_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.ext_rotation_range_right }}°
-                    </td>
-                    <td class="gold-standard">45°</td>
-                    <td>{{ hip_data.ext_rotation_left_percent }}%</td>
-                    <td>{{ hip_data.ext_rotation_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ hip_data.ext_rotation_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Range</td>
-                    <td class="{% if hip_data.int_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.int_rotation_range_left }}°
-                    </td>
-                    <td class="{% if hip_data.int_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.int_rotation_range_right }}°
-                    </td>
-                    <td class="gold-standard">40°</td>
-                    <td>{{ hip_data.int_rotation_left_percent }}%</td>
-                    <td>{{ hip_data.int_rotation_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.int_rotation_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if shoulder_data %}
-        <div class="table-container">
-            <h3>Shoulder Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Range</td>
-                    <td class="{% if shoulder_data.ext_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.ext_rotation_range_left }}°
-                    </td>
-                    <td class="{% if shoulder_data.ext_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.ext_rotation_range_right }}°
-                    </td>
-                    <td class="gold-standard">90°</td>
-                    <td>{{ shoulder_data.ext_rotation_left_percent }}%</td>
-                    <td>{{ shoulder_data.ext_rotation_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ shoulder_data.ext_rotation_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Range</td>
-                    <td class="{% if shoulder_data.int_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.int_rotation_range_left }}°
-                    </td>
-                    <td class="{% if shoulder_data.int_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.int_rotation_range_right }}°
-                    </td>
-                    <td class="gold-standard">70°</td>
-                    <td>{{ shoulder_data.int_rotation_left_percent }}%</td>
-                    <td>{{ shoulder_data.int_rotation_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ shoulder_data.int_rotation_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="{% if shoulder_data.flexion_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.flexion_range_left }}°
-                    </td>
-                    <td class="{% if shoulder_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.flexion_range_right }}°
-                    </td>
-                    <td class="gold-standard">180°</td>
-                    <td>{{ shoulder_data.flexion_left_percent }}%</td>
-                    <td>{{ shoulder_data.flexion_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ shoulder_data.flexion_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="{% if shoulder_data.extension_range_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.extension_range_left }}°
-                    </td>
-                    <td class="{% if shoulder_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.extension_range_right }}°
-                    </td>
-                    <td class="gold-standard">60°</td>
-                    <td>{{ shoulder_data.extension_left_percent }}%</td>
-                    <td>{{ shoulder_data.extension_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ shoulder_data.extension_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
     </div>
-
-    <!-- Force Production Section -->
-    <div class="section-title">Force Production Assessment</div>
-    
-    <div class="data-tables">
-        {% if ankle_data %}
-        <div class="table-container">
-            <h3>Ankle/Foot Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Dorsiflexion Force</td>
-                    <td class="{% if ankle_data.dorsiflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.dorsiflexion_force_left }}
-                    </td>
-                    <td class="{% if ankle_data.dorsiflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.dorsiflexion_force_right }}
-                    </td>
-                    <td>{{ ankle_data.dorsiflexion_force_left_percent }}%</td>
-                    <td>{{ ankle_data.dorsiflexion_force_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ ankle_data.dorsiflexion_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Plantarflexion Force</td>
-                    <td class="{% if ankle_data.plantarflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.plantarflexion_force_left }}
-                    </td>
-                    <td class="{% if ankle_data.plantarflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ ankle_data.plantarflexion_force_right }}
-                    </td>
-                    <td>{{ ankle_data.plantarflexion_force_left_percent }}%</td>
-                    <td>{{ ankle_data.plantarflexion_force_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ ankle_data.plantarflexion_force_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if knee_data %}
-        <div class="table-container">
-            <h3>Knee Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="{% if knee_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.flexion_force_left }}
-                    </td>
-                    <td class="{% if knee_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.flexion_force_right }}
-                    </td>
-                    <td>{{ knee_data.flexion_force_left_percent }}%</td>
-                    <td>{{ knee_data.flexion_force_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ knee_data.flexion_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Extension Force</td>
-                    <td class="{% if knee_data.extension_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.extension_force_left }}
-                    </td>
-                    <td class="{% if knee_data.extension_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.extension_force_right }}
-                    </td>
-                    <td>{{ knee_data.extension_force_left_percent }}%</td>
-                    <td>{{ knee_data.extension_force_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ knee_data.extension_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Hamstring/Quad Ratio</td>
-                    <td class="{% if knee_data.hamstring_quad_ratio_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.hamstring_quad_ratio_left }}
-                    </td>
-                    <td class="{% if knee_data.hamstring_quad_ratio_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ knee_data.hamstring_quad_ratio_right }}
-                    </td>
-                    <td>{{ knee_data.hq_ratio_left_percent }}%</td>
-                    <td>{{ knee_data.hq_ratio_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ knee_data.hq_ratio_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if hip_data %}
-        <div class="table-container">
-            <h3>Hip Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="{% if hip_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.flexion_force_left }}
-                    </td>
-                    <td class="{% if hip_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.flexion_force_right }}
-                    </td>
-                    <td>{{ hip_data.flexion_force_left_percent }}%</td>
-                    <td>{{ hip_data.flexion_force_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.flexion_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Extension Force</td>
-                    <td class="{% if hip_data.extension_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.extension_force_left }}
-                    </td>
-                    <td class="{% if hip_data.extension_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.extension_force_right }}
-                    </td>
-                    <td>{{ hip_data.extension_force_left_percent }}%</td>
-                    <td>{{ hip_data.extension_force_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ hip_data.extension_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Abduction Force</td>
-                    <td class="{% if hip_data.abduction_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.abduction_force_left }}
-                    </td>
-                    <td class="{% if hip_data.abduction_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.abduction_force_right }}
-                    </td>
-                    <td>{{ hip_data.abduction_force_left_percent }}%</td>
-                    <td>{{ hip_data.abduction_force_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ hip_data.abduction_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Adduction Force</td>
-                    <td class="{% if hip_data.adduction_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.adduction_force_left }}
-                    </td>
-                    <td class="{% if hip_data.adduction_force_right == 'unavailable data' %}unavailable{% endif %}"></td>
-                        {{ hip_data.adduction_force_right }}
-                    </td>
-                    <td>{{ hip_data.adduction_force_left_percent }}%</td>
-                    <td>{{ hip_data.adduction_force_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.adduction_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Force</td>
-                    <td class="{% if hip_data.ext_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.ext_rotation_force_left }}
-                    </td>
-                    <td class="{% if hip_data.ext_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.ext_rotation_force_right }}
-                    </td>
-                    <td>{{ hip_data.ext_rotation_force_left_percent }}%</td>
-                    <td>{{ hip_data.ext_rotation_force_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ hip_data.ext_rotation_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Force</td>
-                    <td class="{% if hip_data.int_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.int_rotation_force_left }}
-                    </td>
-                    <td class="{% if hip_data.int_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ hip_data.int_rotation_force_right }}
-                    </td>
-                    <td>{{ hip_data.int_rotation_force_left_percent }}%</td>
-                    <td>{{ hip_data.int_rotation_force_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ hip_data.int_rotation_force_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if shoulder_data %}
-        <div class="table-container">
-            <h3>Shoulder Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Force</td>
-                    <td class="{% if shoulder_data.ext_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.ext_rotation_force_left }}
-                    </td>
-                    <td class="{% if shoulder_data.ext_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.ext_rotation_force_right }}
-                    </td>
-                    <td>{{ shoulder_data.ext_rotation_force_left_percent }}%</td>
-                    <td>{{ shoulder_data.ext_rotation_force_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ shoulder_data.ext_rotation_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Force</td>
-                    <td class="{% if shoulder_data.int_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.int_rotation_force_left }}
-                    </td>
-                    <td class="{% if shoulder_data.int_rotation_force_right == 'unavailable data' %}unavailable{% endif %}"></td>
-                        {{ shoulder_data.int_rotation_force_right }}
-                    </td>
-                    <td>{{ shoulder_data.int_rotation_force_left_percent }}%</td>
-                    <td>{{ shoulder_data.int_rotation_force_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ shoulder_data.int_rotation_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="{% if shoulder_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.flexion_force_left }}
-                    </td>
-                    <td class="{% if shoulder_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.flexion_force_right }}
-                    </td>
-                    <td>{{ shoulder_data.flexion_force_left_percent }}%</td>
-                    <td>{{ shoulder_data.flexion_force_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ shoulder_data.flexion_force_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>I ISO</td>
-                    <td class="{% if shoulder_data.i_iso_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.i_iso_left }}
-                    </td>
-                    <td class="{% if shoulder_data.i_iso_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.i_iso_right }}
-                    </td>
-                    <td>{{ shoulder_data.i_iso_left_percent }}%</td>
-                    <td>{{ shoulder_data.i_iso_right_percent }}%</td>
-                    <td class="asymmetry-moderate">{{ shoulder_data.i_iso_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>Y ISO</td>
-                    <td class="{% if shoulder_data.y_iso_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.y_iso_left }}
-                    </td>
-                    <td class="{% if shoulder_data.y_iso_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.y_iso_right }}
-                    </td>
-                    <td>{{ shoulder_data.y_iso_left_percent }}%</td>
-                    <td>{{ shoulder_data.y_iso_right_percent }}%</td>
-                    <td class="asymmetry-high">{{ shoulder_data.y_iso_asymmetry }}%</td>
-                </tr>
-                <tr>
-                    <td>T ISO</td>
-                    <td class="{% if shoulder_data.t_iso_left == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.t_iso_left }}
-                    </td>
-                    <td class="{% if shoulder_data.t_iso_right == 'unavailable data' %}unavailable{% endif %}">
-                        {{ shoulder_data.t_iso_right }}
-                    </td>
-                    <td>{{ shoulder_data.t_iso_left_percent }}%</td>
-                    <td>{{ shoulder_data.t_iso_right_percent }}%</td>
-                    <td class="asymmetry-low">{{ shoulder_data.t_iso_asymmetry }}%</td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
-        
-        {% if thoracic_data %}
-        <div class="table-container">
-            <h3>Ribcage/Thoracic Assessment</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Measurement</th>
-                    <th>Value</th>
-                    <th>Gold Standard</th>
-                    <th>Percentage</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Thoracic Curvature</td>
-                    <td>{{ thoracic_data.thoracic_curvature }}°</td>
-                    <td class="gold-standard">30-35°</td>
-                    <td>{{ thoracic_data.thoracic_percentage }}%</td>
-                    <td class="{% if thoracic_data.thoracic_curvature > 35 %}value-poor{% elif thoracic_data.thoracic_curvature < 30 %}value-poor{% else %}value-good{% endif %}"></td>
-                        {% if thoracic_data.thoracic_curvature > 35 %}Increased{% elif thoracic_data.thoracic_curvature < 30 %}Reduced{% else %}Normal{% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lumbar Curvature</td>
-                    <td>{{ thoracic_data.lumbar_curvature }}°</td>
-                    <td class="gold-standard">30-35°</td>
-                    <td>{{ thoracic_data.lumbar_percentage }}%</td>
-                    <td class="{% if thoracic_data.lumbar_curvature < 30 %}value-poor{% elif thoracic_data.lumbar_curvature > 35 %}value-poor{% else %}value-good{% endif %}"></td>
-                        {% if thoracic_data.lumbar_curvature < 30 %}Reduced{% elif thoracic_data.lumbar_curvature > 35 %}Increased{% else %}Normal{% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Forward Head Posture</td>
-                    <td>{{ thoracic_data.forward_head_posture }} cm</td>
-                    <td class="gold-standard">0-3 cm</td>
-                    <td>{{ thoracic_data.fhp_percentage }}%</td>
-                    <td class="{% if thoracic_data.forward_head_posture > 3 %}value-poor{% else %}value-good{% endif %}">
-                        {% if thoracic_data.forward_head_posture > 3 %}Excessive{% else %}Normal{% endif %}
-                    </td>
-                </tr>
-            </table>
-        </div>
-        {% endif %}
+    <div style="flex: 1; font-size: 9px; line-height: 1.4; color: #555; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #2C3E50;">
+        When we consider range of motion, we are looking at asymmetries and deficiencies, but also how the length tension relationship affects the bone in the joint. Our gold standards are taken from various papers and research. We expect some variation from gold standard (up to 15%) but the data suggests that the closer you are to the gold standards, the less stress on the joint.
     </div>
 </div>
+
+    <div class="data-tables">
+{% if ankle_data and (ankle_data.dorsiflexion_left_percent|float > 0 or ankle_data.plantarflexion_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if ankle_data.dorsiflexion_left_percent|float > 0 and ankle_data.dorsiflexion_right_percent|float > 0 %}
+        <tr>
+            <td>Dorsiflexion Range</td>
+            <td class="{% if ankle_data.dorsiflexion_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_range_left }}°
+            </td>
+            <td class="{% if ankle_data.dorsiflexion_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_range_right }}°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="{% if ankle_data.dorsiflexion_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_left_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_right_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.dorsiflexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.dorsiflexion_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if ankle_data.plantarflexion_left_percent|float > 0 and ankle_data.plantarflexion_right_percent|float > 0 %}
+        <tr>
+            <td>Plantarflexion Range</td>
+            <td class="{% if ankle_data.plantarflexion_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_range_left }}°
+            </td>
+            <td class="{% if ankle_data.plantarflexion_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_range_right }}°
+            </td>
+            <td class="gold-standard">165°</td>
+            <td class="{% if ankle_data.plantarflexion_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_left_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_right_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.plantarflexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.plantarflexion_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+{% if knee_data and (knee_data.flexion_left_percent|float > 0 or knee_data.extension_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Knee 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if knee_data.flexion_left_percent|float > 0 and knee_data.flexion_right_percent|float > 0 %}
+        <tr>
+            <td>Flexion Range</td>
+            <td class="{% if knee_data.flexion_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.flexion_range_left }}°
+            </td>
+            <td class="{% if knee_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.flexion_range_right }}°
+            </td>
+            <td class="gold-standard">160°</td>
+            <td class="{% if knee_data.flexion_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_left_percent }}%</td>
+            <td class="{% if knee_data.flexion_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_right_percent }}%</td>
+            <td class="{% if knee_data.flexion_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.flexion_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if knee_data.extension_left_percent|float > 0 and knee_data.extension_right_percent|float > 0 %}
+        <tr>
+            <td>Extension Range</td>
+            <td class="{% if knee_data.extension_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.extension_range_left }}°
+            </td>
+            <td class="{% if knee_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.extension_range_right }}°
+            </td>
+            <td class="gold-standard">170°</td>
+            <td class="{% if knee_data.extension_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_left_percent }}%</td>
+            <td class="{% if knee_data.extension_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_right_percent }}%</td>
+            <td class="{% if knee_data.extension_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.extension_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.extension_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if thoracic_data and (thoracic_data.ribcage_rotation_left_percent|float > 0 or thoracic_data.ribcage_flexion_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ribcage 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if thoracic_data.ribcage_rotation_left_percent|float > 0 and thoracic_data.ribcage_rotation_right_percent|float > 0 %}
+        <tr>
+            <td>Ribcage Rotation</td>
+            <td class="{% if thoracic_data.ribcage_rotation_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_rotation_left }}°
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_rotation_right }}°
+            </td>
+            <td class="gold-standard">45°</td>
+            <td class="{% if thoracic_data.ribcage_rotation_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_rotation_left_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_rotation_right_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
+                {{ thoracic_data.ribcage_rotation_asymmetry }}%
+            </td>
+        </tr>
+        {% endif %}
+        {% if thoracic_data.ribcage_flexion_left_percent|float > 0 and thoracic_data.ribcage_flexion_right_percent|float > 0 %}
+        <tr>
+            <td>Ribcage Flexion</td>
+            <td class="{% if thoracic_data.ribcage_flexion_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_flexion_left }}°
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_flexion_right }}°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="{% if thoracic_data.ribcage_flexion_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_flexion_left_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_flexion_right_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
+                {{ thoracic_data.ribcage_flexion_asymmetry }}%
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if hip_data and (hip_data.flexion_left_percent|float > 0 or hip_data.extension_left_percent|float > 0 or hip_data.abduction_left_percent|float > 0 or hip_data.adduction_left_percent|float > 0 or hip_data.ext_rotation_left_percent|float > 0 or hip_data.int_rotation_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Hip 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if hip_data.flexion_left_percent|float > 0 and hip_data.flexion_right_percent|float > 0 %}
+        <tr>
+            <td>Flexion Range</td>
+            <td class="{% if hip_data.flexion_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.flexion_range_left }}°
+            </td>
+            <td class="{% if hip_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.flexion_range_right }}°
+            </td>
+            <td class="gold-standard">90°</td>
+            <td class="{% if hip_data.flexion_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.flexion_left_percent }}%</td>
+            <td class="{% if hip_data.flexion_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.flexion_right_percent }}%</td>
+            <td class="{% if hip_data.flexion_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.flexion_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.extension_left_percent|float > 0 and hip_data.extension_right_percent|float > 0 %}
+        <tr>
+            <td>Extension Range</td>
+            <td class="{% if hip_data.extension_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.extension_range_left }}°
+            </td>
+            <td class="{% if hip_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.extension_range_right }}°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="{% if hip_data.extension_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.extension_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.extension_left_percent }}%</td>
+            <td class="{% if hip_data.extension_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.extension_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.extension_right_percent }}%</td>
+            <td class="{% if hip_data.extension_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.extension_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.extension_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.abduction_left_percent|float > 0 and hip_data.abduction_right_percent|float > 0 %}
+        <tr>
+            <td>Abduction Range</td>
+            <td class="{% if hip_data.abduction_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.abduction_range_left }}°
+            </td>
+            <td class="{% if hip_data.abduction_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.abduction_range_right }}°
+            </td>
+            <td class="gold-standard">55°</td>
+            <td class="{% if hip_data.abduction_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.abduction_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.abduction_left_percent }}%</td>
+            <td class="{% if hip_data.abduction_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.abduction_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.abduction_right_percent }}%</td>
+            <td class="{% if hip_data.abduction_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.abduction_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.abduction_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.adduction_left_percent|float > 0 and hip_data.adduction_right_percent|float > 0 %}
+        <tr>
+            <td>Adduction Range</td>
+            <td class="{% if hip_data.adduction_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.adduction_range_left }}°
+            </td>
+            <td class="{% if hip_data.adduction_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.adduction_range_right }}°
+            </td>
+            <td class="gold-standard">35°</td>
+            <td class="{% if hip_data.adduction_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.adduction_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.adduction_left_percent }}%</td>
+            <td class="{% if hip_data.adduction_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.adduction_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.adduction_right_percent }}%</td>
+            <td class="{% if hip_data.adduction_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.adduction_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.adduction_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.ext_rotation_left_percent|float > 0 and hip_data.ext_rotation_right_percent|float > 0 %}
+        <tr>
+            <td>Ext Rotation Range</td>
+            <td class="{% if hip_data.ext_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.ext_rotation_range_left }}°
+            </td>
+            <td class="{% if hip_data.ext_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.ext_rotation_range_right }}°
+            </td>
+            <td class="gold-standard">45°</td>
+            <td class="{% if hip_data.ext_rotation_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.ext_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.ext_rotation_left_percent }}%</td>
+            <td class="{% if hip_data.ext_rotation_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.ext_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.ext_rotation_right_percent }}%</td>
+            <td class="{% if hip_data.ext_rotation_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.ext_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.ext_rotation_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.int_rotation_left_percent|float > 0 and hip_data.int_rotation_right_percent|float > 0 %}
+        <tr>
+            <td>Int Rotation Range</td>
+            <td class="{% if hip_data.int_rotation_range_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.int_rotation_range_left }}°
+            </td>
+            <td class="{% if hip_data.int_rotation_range_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.int_rotation_range_right }}°
+            </td>
+            <td class="gold-standard">40°</td>
+            <td class="{% if hip_data.int_rotation_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_left_percent }}%</td>
+            <td class="{% if hip_data.int_rotation_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_right_percent }}%</td>
+            <td class="{% if hip_data.int_rotation_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.int_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.int_rotation_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if ankle_data and (ankle_data.dorsiflexion_force_left_percent|float > 0 or ankle_data.plantarflexion_force_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if ankle_data.dorsiflexion_force_left_percent|float > 0 and ankle_data.dorsiflexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Dorsiflexion Force</td>
+            <td class="{% if ankle_data.dorsiflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_force_left }}
+            </td>
+            <td class="{% if ankle_data.dorsiflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_force_right }}
+            </td>
+            <td class="{% if ankle_data.dorsiflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_left_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_right_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.dorsiflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.dorsiflexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if ankle_data.plantarflexion_force_left_percent|float > 0 and ankle_data.plantarflexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Plantarflexion Force</td>
+            <td class="{% if ankle_data.plantarflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_force_left }}
+            </td>
+            <td class="{% if ankle_data.plantarflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_force_right }}
+            </td>
+            <td class="{% if ankle_data.plantarflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_left_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_right_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.plantarflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.plantarflexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+        </div>
+
+        <!-- Force Production Section -->
+  <div class="assessment-section">
+    <!-- Range of Motion Section -->
+    <div style="display: flex; align-items: center; margin: 27px 0 13px 0; gap: 20px;">
+        <div style="background: #e8f4f8; padding: 13px; border-radius: 5px; border-left: 3px solid #3498DB; min-width: 30px; max-width: 50px;">
+            <div style="text-align: center; font-size: 1.0em; color: #2C3E50; font-weight: bold;">
+            Force
+        </div>
+    </div>
+    <div style="flex: 1; font-size: 9px; line-height: 1.4; color: #555; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #2C3E50;">
+        When we consider force, we are looking at asymmetries and deficiencies, but also how the length tension relationship affects the bone in the joint. Your percentiles are from your population group which factors in your age, gender and weight. 
+    </div>
+</div>
+
+        <div class="data-tables">
+{% if ankle_data and (ankle_data.dorsiflexion_force_left_percent|float > 0 or ankle_data.plantarflexion_force_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if ankle_data.dorsiflexion_force_left_percent|float > 0 and ankle_data.dorsiflexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Dorsiflexion Force</td>
+            <td class="{% if ankle_data.dorsiflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_force_left }}
+            </td>
+            <td class="{% if ankle_data.dorsiflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.dorsiflexion_force_right }}
+            </td>
+            <td class="{% if ankle_data.dorsiflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_left_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_right_percent }}%</td>
+            <td class="{% if ankle_data.dorsiflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.dorsiflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.dorsiflexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if ankle_data.plantarflexion_force_left_percent|float > 0 and ankle_data.plantarflexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Plantarflexion Force</td>
+            <td class="{% if ankle_data.plantarflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_force_left }}
+            </td>
+            <td class="{% if ankle_data.plantarflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ ankle_data.plantarflexion_force_right }}
+            </td>
+            <td class="{% if ankle_data.plantarflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_left_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_right_percent }}%</td>
+            <td class="{% if ankle_data.plantarflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.plantarflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.plantarflexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if knee_data and (knee_data.flexion_force_left_percent|float > 0 or knee_data.extension_force_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Knee
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if knee_data.flexion_force_left_percent|float > 0 and knee_data.flexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Flexion Force</td>
+            <td class="{% if knee_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.flexion_force_left }}
+            </td>
+            <td class="{% if knee_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.flexion_force_right }}
+            </td>
+            <td class="{% if knee_data.flexion_force_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_force_left_percent }}%</td>
+            <td class="{% if knee_data.flexion_force_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_force_right_percent }}%</td>
+            <td class="{% if knee_data.flexion_force_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.flexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.flexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if knee_data.extension_force_left_percent|float > 0 and knee_data.extension_force_right_percent|float > 0 %}
+        <tr>
+            <td>Extension Force</td>
+            <td class="{% if knee_data.extension_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.extension_force_left }}
+            </td>
+            <td class="{% if knee_data.extension_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ knee_data.extension_force_right }}
+            </td>
+            <td class="{% if knee_data.extension_force_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_force_left_percent }}%</td>
+            <td class="{% if knee_data.extension_force_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_force_right_percent }}%</td>
+            <td class="{% if knee_data.extension_force_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.extension_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.extension_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        <!-- Hamstring/Quad Ratio row removed  -->
+    </table>
+</div>
+{% endif %}
+
+{% if hip_data and (hip_data.flexion_force_left_percent|float > 0 or hip_data.extension_force_left_percent|float > 0 or hip_data.abduction_force_left_percent|float > 0 or hip_data.adduction_force_left_percent|float > 0 or hip_data.ext_rotation_force_left_percent|float > 0 or hip_data.int_rotation_force_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Hip
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if hip_data.flexion_force_left_percent|float > 0 and hip_data.flexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Flexion Force</td>
+            <td class="{% if hip_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.flexion_force_left }}
+            </td>
+            <td class="{% if hip_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.flexion_force_right }}
+            </td>
+            <td class="{% if hip_data.flexion_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.flexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.flexion_force_left_percent }}%</td>
+            <td class="{% if hip_data.flexion_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.flexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.flexion_force_right_percent }}%</td>
+            <td class="{% if hip_data.flexion_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.flexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.flexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.extension_force_left_percent|float > 0 and hip_data.extension_force_right_percent|float > 0 %}
+        <tr>
+            <td>Extension Force</td>
+            <td class="{% if hip_data.extension_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.extension_force_left }}
+            </td>
+            <td class="{% if hip_data.extension_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.extension_force_right }}
+            </td>
+            <td class="{% if hip_data.extension_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.extension_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.extension_force_left_percent }}%</td>
+            <td class="{% if hip_data.extension_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.extension_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.extension_force_right_percent }}%</td>
+            <td class="{% if hip_data.extension_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.extension_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.extension_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.abduction_force_left_percent|float > 0 and hip_data.abduction_force_right_percent|float > 0 %}
+        <tr>
+            <td>Abduction Force</td>
+            <td class="{% if hip_data.abduction_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.abduction_force_left }}
+            </td>
+            <td class="{% if hip_data.abduction_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.abduction_force_right }}
+            </td>
+            <td class="{% if hip_data.abduction_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.abduction_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.abduction_force_left_percent }}%</td>
+            <td class="{% if hip_data.abduction_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.abduction_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.abduction_force_right_percent }}%</td>
+            <td class="{% if hip_data.abduction_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.abduction_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.abduction_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.adduction_force_left_percent|float > 0 and hip_data.adduction_force_right_percent|float > 0 %}
+        <tr>
+            <td>Adduction Force</td>
+            <td class="{% if hip_data.adduction_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.adduction_force_left }}
+            </td>
+            <td class="{% if hip_data.adduction_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.adduction_force_right }}
+            </td>
+            <td class="{% if hip_data.adduction_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.adduction_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.adduction_force_left_percent }}%</td>
+            <td class="{% if hip_data.adduction_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.adduction_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.adduction_force_right_percent }}%</td>
+            <td class="{% if hip_data.adduction_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.adduction_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.adduction_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.ext_rotation_force_left_percent|float > 0 and hip_data.ext_rotation_force_right_percent|float > 0 %}
+        <tr>
+            <td>Ext Rotation Force</td>
+            <td class="{% if hip_data.ext_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.ext_rotation_force_left }}
+            </td>
+            <td class="{% if hip_data.ext_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.ext_rotation_force_right }}
+            </td>
+            <td class="{% if hip_data.ext_rotation_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.ext_rotation_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.ext_rotation_force_left_percent }}%</td>
+            <td class="{% if hip_data.ext_rotation_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.ext_rotation_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.ext_rotation_force_right_percent }}%</td>
+            <td class="{% if hip_data.ext_rotation_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.ext_rotation_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.ext_rotation_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if hip_data.int_rotation_force_left_percent|float > 0 and hip_data.int_rotation_force_right_percent|float > 0 %}
+        <tr>
+            <td>Int Rotation Force</td>
+            <td class="{% if hip_data.int_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.int_rotation_force_left }}
+            </td>
+            <td class="{% if hip_data.int_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ hip_data.int_rotation_force_right }}
+            </td>
+            <td class="{% if hip_data.int_rotation_force_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_force_left_percent }}%</td>
+            <td class="{% if hip_data.int_rotation_force_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_force_right_percent }}%</td>
+            <td class="{% if hip_data.int_rotation_force_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.int_rotation_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.int_rotation_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if shoulder_data and (shoulder_data.ext_rotation_force_left_percent|float > 0 or shoulder_data.int_rotation_force_left_percent|float > 0 or shoulder_data.flexion_force_left_percent|float > 0 or shoulder_data.i_iso_left_percent|float > 0 or shoulder_data.y_iso_left_percent|float > 0 or shoulder_data.t_iso_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Shoulder
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if shoulder_data.ext_rotation_force_left_percent|float > 0 and shoulder_data.ext_rotation_force_right_percent|float > 0 %}
+        <tr>
+            <td>Ext Rotation Force</td>
+            <td class="{% if shoulder_data.ext_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.ext_rotation_force_left }}
+            </td>
+            <td class="{% if shoulder_data.ext_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.ext_rotation_force_right }}
+            </td>
+            <td class="{% if shoulder_data.ext_rotation_force_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.ext_rotation_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.ext_rotation_force_left_percent }}%</td>
+            <td class="{% if shoulder_data.ext_rotation_force_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.ext_rotation_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.ext_rotation_force_right_percent }}%</td>
+            <td class="{% if shoulder_data.ext_rotation_force_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.ext_rotation_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.ext_rotation_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if shoulder_data.int_rotation_force_left_percent|float > 0 and shoulder_data.int_rotation_force_right_percent|float > 0 %}
+        <tr>
+            <td>Int Rotation Force</td>
+            <td class="{% if shoulder_data.int_rotation_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.int_rotation_force_left }}
+            </td>
+            <td class="{% if shoulder_data.int_rotation_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.int_rotation_force_right }}
+            </td>
+            <td class="{% if shoulder_data.int_rotation_force_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.int_rotation_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.int_rotation_force_left_percent }}%</td>
+            <td class="{% if shoulder_data.int_rotation_force_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.int_rotation_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.int_rotation_force_right_percent }}%</td>
+            <td class="{% if shoulder_data.int_rotation_force_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.int_rotation_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.int_rotation_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if shoulder_data.flexion_force_left_percent|float > 0 and shoulder_data.flexion_force_right_percent|float > 0 %}
+        <tr>
+            <td>Flexion Force</td>
+            <td class="{% if shoulder_data.flexion_force_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.flexion_force_left }}
+            </td>
+            <td class="{% if shoulder_data.flexion_force_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.flexion_force_right }}
+            </td>
+            <td class="{% if shoulder_data.flexion_force_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.flexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.flexion_force_left_percent }}%</td>
+            <td class="{% if shoulder_data.flexion_force_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.flexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.flexion_force_right_percent }}%</td>
+            <td class="{% if shoulder_data.flexion_force_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.flexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.flexion_force_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if shoulder_data.i_iso_left_percent|float > 0 and shoulder_data.i_iso_right_percent|float > 0 %}
+        <tr>
+            <td>I ISO</td>
+            <td class="{% if shoulder_data.i_iso_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.i_iso_left }}
+            </td>
+            <td class="{% if shoulder_data.i_iso_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.i_iso_right }}
+            </td>
+            <td class="{% if shoulder_data.i_iso_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.i_iso_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.i_iso_left_percent }}%</td>
+            <td class="{% if shoulder_data.i_iso_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.i_iso_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.i_iso_right_percent }}%</td>
+            <td class="{% if shoulder_data.i_iso_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.i_iso_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.i_iso_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if shoulder_data.y_iso_left_percent|float > 0 and shoulder_data.y_iso_right_percent|float > 0 %}
+        <tr>
+            <td>Y ISO</td>
+            <td class="{% if shoulder_data.y_iso_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.y_iso_left }}
+            </td>
+            <td class="{% if shoulder_data.y_iso_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.y_iso_right }}
+            </td>
+            <td class="{% if shoulder_data.y_iso_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.y_iso_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.y_iso_left_percent }}%</td>
+            <td class="{% if shoulder_data.y_iso_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.y_iso_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.y_iso_right_percent }}%</td>
+            <td class="{% if shoulder_data.y_iso_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.y_iso_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.y_iso_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+        {% if shoulder_data.t_iso_left_percent|float > 0 and shoulder_data.t_iso_right_percent|float > 0 %}
+        <tr>
+            <td>T ISO</td>
+            <td class="{% if shoulder_data.t_iso_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.t_iso_left }}
+            </td>
+            <td class="{% if shoulder_data.t_iso_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ shoulder_data.t_iso_right }}
+            </td>
+            <td class="{% if shoulder_data.t_iso_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.t_iso_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.t_iso_left_percent }}%</td>
+            <td class="{% if shoulder_data.t_iso_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.t_iso_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.t_iso_right_percent }}%</td>
+            <td class="{% if shoulder_data.t_iso_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.t_iso_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.t_iso_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
 
 <div class="section-divider"></div>
 
@@ -784,6 +867,17 @@
     <h2>Posture Assessment</h2>
     <div class="posture-section">
         {{ posture_assessment|safe }}
+    </div>
+</div>
+<div class="section-divider"></div>
+{% endif %}
+
+<!-- Additional Assessment Sections -->
+{% if core_assessment %}
+<div class="assessment-section">
+    <h2>Core Assessment</h2>
+    <div class="core-section">
+        {{ core_assessment|safe }}
     </div>
 </div>
 <div class="section-divider"></div>
@@ -889,6 +983,35 @@
     <span class="asymmetry-moderate">Yellow (11-20%)</span>, 
     <span class="asymmetry-high">Red (>20%)</span>
 </p>
+
+
+
+
+<div style="background: #f8f9fa; margin: 20px -27px 0 -27px; padding: 18px 27px; border-top: 2px solid #34495E; font-family: Arial, sans-serif;">
+  <div style="text-align: center; max-width: 500px; margin: auto;">
+    <p style="font-size: 11px; color: #2C3E50; margin: 0 0 10px 0; line-height: 1.4; font-weight: 600;">
+      Please book in a call so we can talk through your findings and get you back to pain free performance.
+    </p>
+    <div style="font-size: 10px; color: #34495E; line-height: 1.5;">
+      <div style="margin-bottom: 4px;">
+        <strong>Email:</strong> 
+        <a href="mailto:info@brickperformance.co.uk" style="color: #3498DB; text-decoration: none;">
+          info@brickperformance.co.uk
+        </a>
+      </div>
+      <div>
+        <strong>Website:</strong> 
+        <a href="https://www.brickperformance.co.uk" style="color: #3498DB; text-decoration: none;" target="_blank">
+          www.brickperformance.co.uk
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 </body>
 </html>

@@ -139,16 +139,41 @@ def convert_html_to_pdf(html_path, pdf_path, method="weasyprint"):
                     browser = p.chromium.launch(headless=True)
                     page = browser.new_page()
                     
+                    # Add CSS for better page break handling
+                    page.add_style_tag(content="""
+                        @page {
+                            size: A4;
+                            margin: 1cm;
+                        }
+                        
+                        /* Keep tables together */
+                        .data-tables, .table-container {
+                            page-break-inside: avoid;
+                        }
+                        
+                        /* Allow breaks in text content */
+                        .text-content, .posture-section, .core-section {
+                            page-break-inside: auto;
+                        }
+                        
+                        /* Optional: Force page break before certain sections */
+                        .assessment-section h2 {
+                            page-break-before: auto;
+                        }
+                        
+                        /* Avoid orphaned headings */
+                        h1, h2, h3 {
+                            page-break-after: avoid;
+                        }
+                    """)
+                    
                     # Navigate to the HTML file
                     page.goto(f"file://{os.path.abspath(html_path)}")
                     
                     # Wait for the page to fully load
                     page.wait_for_load_state('networkidle')
+                    page.wait_for_timeout(2000)
                     
-                    # Wait a bit more to ensure all content is rendered
-                    page.wait_for_timeout(2000)  # 2 seconds
-                    
-                    # Optional: Wait for specific content to be visible
                     try:
                         page.wait_for_selector('table', timeout=5000)
                     except:
@@ -271,7 +296,7 @@ def generate_biomechanical_report_with_pdf(sheet_id, output_dir="./reports/", ch
 
 def main():
     # Your Google Sheets ID
-    sheet_id = "1wu2ZWK_Em_2Hsj7unMD3s0gB2QqZz6GHYb00oDhtGjw"
+    sheet_id = "1J0pTtAg7u_ZCGN6ESgOqGrwdRpmsyC4bd26Fynp4q7s"
     
     # Create output directories
     os.makedirs("./charts", exist_ok=True)

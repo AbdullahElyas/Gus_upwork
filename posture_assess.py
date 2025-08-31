@@ -232,7 +232,7 @@ Your forward head posture was measured at {FHP}cm (normal is deemed 0-3cm). Your
     template3 = f"""The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were {Pelvis_Left} (left) and {Pelvis_Right} (right), normal is {'4-7 degrees for males' if Gender == 'Male' else '7-10 degrees for females'}{text_pelvis} """
 
     return template1, template2, template3,Input_string
-def extract_sheet_metrics_corefunction(sheet_id, worksheet):
+def extract_sheet_metrics_corefunction(sheet_id, worksheet,worksheet_first,worksheet_third):
     # Call the main extraction function
     scopes = [
     'https://www.googleapis.com/auth/spreadsheets',
@@ -402,31 +402,31 @@ def extract_sheet_metrics_corefunction(sheet_id, worksheet):
                     print(f"JUAST Note: {JUAST_note}")
             break
 
-    # now search the worksheet with the name 'Report' or 'New Datavis' 
-    report_worksheet = None
-    try:
-        report_worksheet = sheet.worksheet('Report')
-    except gspread.WorksheetNotFound:
-        try:
-            report_worksheet = sheet.worksheet('NEW Datavis')
-        except gspread.WorksheetNotFound:
-            print("Neither 'Report' nor 'New Datavis' worksheet found.")
-    if report_worksheet:
-        # search each row 2nd column of report_worksheet whose first word is 'LENGTH TENSION' and then store the whole cell string
-        # If no such row is found, print a message and return None
-        length_tension_row = None
-        for row in report_worksheet.get_all_values():
+    # # now search the worksheet with the name 'Report' or 'New Datavis' 
+    # report_worksheet = None
+    # try:
+    #     report_worksheet = sheet.worksheet('Report')
+    # except gspread.WorksheetNotFound:
+    #     try:
+    #         report_worksheet = sheet.worksheet('NEW Datavis')
+    #     except gspread.WorksheetNotFound:
+    #         print("Neither 'Report' nor 'New Datavis' worksheet found.")
+    # if report_worksheet:
+    #     # search each row 2nd column of report_worksheet whose first word is 'LENGTH TENSION' and then store the whole cell string
+    #     # If no such row is found, print a message and return None
+    #     length_tension_row = None
+    #     for row in report_worksheet.get_all_values():
             
-            if row[1].startswith('LENGTH TENSION'):
-                length_tension_row = row
-                # Now search for string 'ASSESSMENT OF THE CORE FUNCTION:'  if found then store text coming after it
-                if len(row) > 2 and 'ASSESSMENT OF THE CORE FUNCTION:' in row[1]:
-                    core_function_assessment = row[1].split('ASSESSMENT OF THE CORE FUNCTION:')[1].strip()
-                    # print(f"Core Function Assessment: {core_function_assessment}")
+    #         if row[1].startswith('LENGTH TENSION'):
+    #             length_tension_row = row
+    #             # Now search for string 'ASSESSMENT OF THE CORE FUNCTION:'  if found then store text coming after it
+    #             if len(row) > 2 and 'ASSESSMENT OF THE CORE FUNCTION:' in row[1]:
+    #                 core_function_assessment = row[1].split('ASSESSMENT OF THE CORE FUNCTION:')[1].strip()
+    #                 # print(f"Core Function Assessment: {core_function_assessment}")
 
-                break
-        if length_tension_row is None:
-            print(f"No 'LENGTH TENSION' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
+    #             break
+    #     if length_tension_row is None:
+    #         print(f"No 'LENGTH TENSION' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
     # Lower Abdominal Strength Test string possible options "Please select", "0-100%"
     if LAST_Strength == "Please select":
         LAST_Strength_result = ""
@@ -466,7 +466,7 @@ def extract_sheet_metrics_corefunction(sheet_id, worksheet):
         lact_result = ""
 
     # Get only LC using function extract_sheet_metrics_posture
-    _, _, _, LC, _, _, _, _, _, _, _, _, _, _, _, _ = extract_sheet_metrics_posture(sheet_id)
+    _, _, _, LC, _, _, _, _, _, _, _, _, _, _, _, _ = extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_third)
 
     # categorize the lumbar curvature based on the values
     LC_Category = ""
@@ -486,11 +486,12 @@ def extract_sheet_metrics_corefunction(sheet_id, worksheet):
         LC_Category = "Significantly Increased lumber curvature  which is likely contributing to the reduced lower abdominal strength"
 
 
-    # append the LC_Category , lact_result, JUAST_Strength_result, LAST_Strength_result in string_core_function
-    if lact_status != "Pass" and LAST_Strength_result != "Lower Core could brace well" and JUAST_Strength_result != "Upper Core could brace well":
-        string_core_function = f"{LC_Category}, {lact_result} ({lact_note}), {JUAST_Strength_result} ({JUAST_note}), {LAST_Strength_result} ({LAST_note}) "
-    else:
-        string_core_function = ""
+    # # append the LC_Category , lact_result, JUAST_Strength_result, LAST_Strength_result in string_core_function
+    # if lact_status != "Pass" and LAST_Strength_result != "Lower Core could brace well" and JUAST_Strength_result != "Upper Core could brace well":
+    #     string_core_function = f"{LC_Category}, {lact_result} ({lact_note}), {JUAST_Strength_result} ({JUAST_note}), {LAST_Strength_result} ({LAST_note}) "
+    # else:
+    #     string_core_function = ""
+    string_core_function = f"{LC_Category}, {lact_result} ({lact_note}), {JUAST_Strength_result} ({JUAST_note}), {LAST_Strength_result} ({LAST_note}) "
     
 
 

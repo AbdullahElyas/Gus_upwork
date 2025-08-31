@@ -23,7 +23,8 @@
         }
         
         h2 {
-            font-size: 1.4em; /* explicitly set reduced size */
+            font-size: 1.4em;
+            page-break-after: avoid; /* Prevent page break immediately after heading */
         }
         
         h3 {
@@ -32,7 +33,7 @@
         
         .assessment-section {
             margin-bottom: 33px; /* reduced from 50px */
-            page-break-inside: avoid;
+            page-break-inside: auto;
         }
         
         .data-tables {
@@ -175,7 +176,18 @@
             border-left: 3px solid #3498DB; /* reduced from 4px */
             font-size: 10px; /* explicitly set smaller text */
             line-height: 1.4;
+            page-break-inside: avoid;
         }
+        .core-section {
+    background: #e8f4f8;
+    padding: 13px; /* reduced from 20px */
+    border-radius: 5px; /* reduced from 8px */
+    margin-bottom: 20px; /* reduced from 30px */
+    border-left: 3px solid #3498DB; /* reduced from 4px */
+    font-size: 10px; /* explicitly set smaller text */
+    line-height: 1.4;
+    page-break-inside: avoid;
+}
         
         .note {
             font-style: italic;
@@ -200,614 +212,613 @@
 </head>
 <body>
 
-<h1>Biomechanical Assessment Report</h1>
-
-
-<div class="assessment-section">
-    <h2>Ankle Data (Plain Text)</h2>
-    <pre style="font-size:10px; background:#f8f9fa; padding:10px; border-radius:5px;">
-Dorsiflexion Range Left: 17.1°
-Dorsiflexion Range Right: 24.0°
-Plantarflexion Range Left: 128.7°
-Plantarflexion Range Right: 135.3°
-
-Dorsiflexion Left %: 57%
-Dorsiflexion Right %: 80%
-Dorsiflexion Asymmetry: 28.7%
-Plantarflexion Left %: 78%
-Plantarflexion Right %: 82%
-Plantarflexion Asymmetry: 4.9%
-
-Dorsiflexion Force Left: 0.2
-Dorsiflexion Force Right: 0.2
-Plantarflexion Force Left: 1.0
-Plantarflexion Force Right: 1.0
-
-Dorsiflexion Force Left %: 63%
-Dorsiflexion Force Right %: 59%
-Dorsiflexion Force Asymmetry: 0.0%
-Plantarflexion Force Left %: 69%
-Plantarflexion Force Right %: 68%
-Plantarflexion Force Asymmetry: 0.0%
-    </pre>
+<div style="background: #e8f4f8; padding: 18px 0; border-radius: 7px; text-align: center; margin-bottom: 20px;">
+    <h1 style="margin: 0; font-size: 1.5em; color: #2C3E50; letter-spacing: 2px; font-weight: bold;">
+        BRICK PERFORMANCE<br>
+        <span style="font-size: 1.2em; font-weight: normal;">BIOMECHANICAL ASSESSMENT</span>
+    </h1>
 </div>
-
-
 <!-- Data Tables Section -->
 <div class="assessment-section">
-    <h2>Assessment Data Overview</h2>
-    
     <!-- Range of Motion Section -->
-    <div class="section-title">Range of Motion Assessment</div>
-    
-    <div class="data-tables">
-        
-
-        <div class="table-container">
-            <h3>Ankle/Foot Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Dorsiflexion Range</td>
-                    <td class="">
-                        17.1°
-                    </td>
-                    <td class="">
-                        24.0°
-                    </td>
-                    <td class="gold-standard">30°</td>
-                    <td>57%</td>
-                    <td>80%</td>
-                    <td class="asymmetry-moderate">28.7%</td>
-                </tr>
-                <tr>
-                    <td>Plantarflexion Range</td>
-                    <td class="">
-                        128.7°
-                    </td>
-                    <td class="">
-                        135.3°
-                    </td>
-                    <td class="gold-standard">165°</td>
-                    <td>78%</td>
-                    <td>82%</td>
-                    <td class="asymmetry-low">4.9%</td>
-                </tr>
-            </table>
+    <div style="display: flex; align-items: center; margin: 27px 0 13px 0; gap: 20px;">
+        <div style="background: #e8f4f8; padding: 13px; border-radius: 5px; border-left: 3px solid #3498DB; min-width: 30px; max-width: 50px;">
+            <div style="text-align: center; font-size: 1.0em; color: #2C3E50; font-weight: bold;">
+            Range of Motion 
         </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Knee Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="">
-                        137.6°
-                    </td>
-                    <td class="">
-                        137.6°
-                    </td>
-                    <td class="gold-standard">160°</td>
-                    <td>86%</td>
-                    <td>86%</td>
-                    <td class="asymmetry-low">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="">
-                        163.2°
-                    </td>
-                    <td class="">
-                        166.6°
-                    </td>
-                    <td class="gold-standard">170°</td>
-                    <td>96%</td>
-                    <td>98%</td>
-                    <td class="asymmetry-moderate">2.0%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Hip Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="">
-                        83.7°
-                    </td>
-                    <td class="">
-                        84.6°
-                    </td>
-                    <td class="gold-standard">90°</td>
-                    <td>93%</td>
-                    <td>94%</td>
-                    <td class="asymmetry-low">1.1%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="">
-                        18.0°
-                    </td>
-                    <td class="">
-                        12.9°
-                    </td>
-                    <td class="gold-standard">30°</td>
-                    <td>60%</td>
-                    <td>43%</td>
-                    <td class="asymmetry-moderate">28.3%</td>
-                </tr>
-                <tr>
-                    <td>Abduction Range</td>
-                    <td class="">
-                        56.1°
-                    </td>
-                    <td class="">
-                        47.9°
-                    </td>
-                    <td class="gold-standard">55°</td>
-                    <td>102%</td>
-                    <td>87%</td>
-                    <td class="asymmetry-high">14.6%</td>
-                </tr>
-                <tr>
-                    <td>Adduction Range</td>
-                    <td class="">
-                        21.0°
-                    </td>
-                    <td class="">
-                        18.9°
-                    </td>
-                    <td class="gold-standard">35°</td>
-                    <td>60%</td>
-                    <td>54%</td>
-                    <td class="asymmetry-low">10.0%</td>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Range</td>
-                    <td class="">
-                        45.0°
-                    </td>
-                    <td class="">
-                        41.0°
-                    </td>
-                    <td class="gold-standard">45°</td>
-                    <td>100%</td>
-                    <td>91%</td>
-                    <td class="asymmetry-moderate">8.9%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Range</td>
-                    <td class="">
-                        35.2°
-                    </td>
-                    <td class="">
-                        31.2°
-                    </td>
-                    <td class="gold-standard">40°</td>
-                    <td>88%</td>
-                    <td>78%</td>
-                    <td class="asymmetry-low">11.4%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Shoulder Range of Motion</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Gold Standard</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Range</td>
-                    <td class="">
-                        88.2°
-                    </td>
-                    <td class="">
-                        88.2°
-                    </td>
-                    <td class="gold-standard">90°</td>
-                    <td>98%</td>
-                    <td>98%</td>
-                    <td class="asymmetry-moderate">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Range</td>
-                    <td class="">
-                        65.8°
-                    </td>
-                    <td class="">
-                        63.7°
-                    </td>
-                    <td class="gold-standard">70°</td>
-                    <td>94%</td>
-                    <td>91%</td>
-                    <td class="asymmetry-high">3.2%</td>
-                </tr>
-                <tr>
-                    <td>Flexion Range</td>
-                    <td class="">
-                        171.0°
-                    </td>
-                    <td class="">
-                        174.6°
-                    </td>
-                    <td class="gold-standard">180°</td>
-                    <td>95%</td>
-                    <td>97%</td>
-                    <td class="asymmetry-low">2.1%</td>
-                </tr>
-                <tr>
-                    <td>Extension Range</td>
-                    <td class="">
-                        0°
-                    </td>
-                    <td class="">
-                        0°
-                    </td>
-                    <td class="gold-standard">60°</td>
-                    <td>%</td>
-                    <td>%</td>
-                    <td class="asymmetry-moderate">0%</td>
-                </tr>
-            </table>
-        </div>
-        
     </div>
-
-    <!-- Force Production Section -->
-    <div class="section-title">Force Production Assessment</div>
-    
-    <div class="data-tables">
-        
-        <div class="table-container">
-            <h3>Ankle/Foot Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Dorsiflexion Force</td>
-                    <td class="">
-                        0.2
-                    </td>
-                    <td class="">
-                        0.2
-                    </td>
-                    <td>63%</td>
-                    <td>59%</td>
-                    <td class="asymmetry-low">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Plantarflexion Force</td>
-                    <td class="">
-                        1.0
-                    </td>
-                    <td class="">
-                        1.0
-                    </td>
-                    <td>69%</td>
-                    <td>68%</td>
-                    <td class="asymmetry-moderate">0.0%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Knee Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="">
-                        1.2
-                    </td>
-                    <td class="">
-                        1.2
-                    </td>
-                    <td>69%</td>
-                    <td>69%</td>
-                    <td class="asymmetry-moderate">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Extension Force</td>
-                    <td class="">
-                        1.8
-                    </td>
-                    <td class="">
-                        1.7
-                    </td>
-                    <td>61%</td>
-                    <td>57%</td>
-                    <td class="asymmetry-high">6.6%</td>
-                </tr>
-                <tr>
-                    <td>Hamstring/Quad Ratio</td>
-                    <td class="">
-                        0.0
-                    </td>
-                    <td class="">
-                        0.0
-                    </td>
-                    <td>0.6612903225806451%</td>
-                    <td>0.6890756302521008%</td>
-                    <td class="asymmetry-low">4.0%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Hip Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td>9%</td>
-                    <td>9%</td>
-                    <td class="asymmetry-low">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Extension Force</td>
-                    <td class="">
-                        1.2
-                    </td>
-                    <td class="">
-                        1.2
-                    </td>
-                    <td>49%</td>
-                    <td>47%</td>
-                    <td class="asymmetry-moderate">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Abduction Force</td>
-                    <td class="">
-                        0.6
-                    </td>
-                    <td class="">
-                        0.3
-                    </td>
-                    <td>53%</td>
-                    <td>27%</td>
-                    <td class="asymmetry-high">50.0%</td>
-                </tr>
-                <tr>
-                    <td>Adduction Force</td>
-                    <td class="">
-                        0.3
-                    </td>
-                    <td class=""></td>
-                        0.3
-                    </td>
-                    <td>40%</td>
-                    <td>32%</td>
-                    <td class="asymmetry-low">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Force</td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td class="">
-                        0.0
-                    </td>
-                    <td>11%</td>
-                    <td>8%</td>
-                    <td class="asymmetry-moderate">100.0%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Force</td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td>22%</td>
-                    <td>21%</td>
-                    <td class="asymmetry-low">0.0%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Shoulder Force Production</h3>
-            <table>
-                <tr class="force-header">
-                    <th>Movement</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                    <th>Left %</th>
-                    <th>Right %</th>
-                    <th>Asymmetry %</th>
-                </tr>
-                <tr>
-                    <td>Ext Rotation Force</td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td class="">
-                        0.1
-                    </td>
-                    <td>16%</td>
-                    <td>20%</td>
-                    <td class="asymmetry-moderate">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Int Rotation Force</td>
-                    <td class="">
-                        0.2
-                    </td>
-                    <td class=""></td>
-                        0.2
-                    </td>
-                    <td>38%</td>
-                    <td>53%</td>
-                    <td class="asymmetry-high">0.0%</td>
-                </tr>
-                <tr>
-                    <td>Flexion Force</td>
-                    <td class="">
-                        0.3
-                    </td>
-                    <td class="">
-                        0.2
-                    </td>
-                    <td>46%</td>
-                    <td>37%</td>
-                    <td class="asymmetry-low">33.3%</td>
-                </tr>
-                <tr>
-                    <td>I ISO</td>
-                    <td class="">
-                        0
-                    </td>
-                    <td class="">
-                        0
-                    </td>
-                    <td>unavailable data%</td>
-                    <td>unavailable data%</td>
-                    <td class="asymmetry-moderate">0%</td>
-                </tr>
-                <tr>
-                    <td>Y ISO</td>
-                    <td class="">
-                        0
-                    </td>
-                    <td class="">
-                        0
-                    </td>
-                    <td>unavailable data%</td>
-                    <td>unavailable data%</td>
-                    <td class="asymmetry-high">0%</td>
-                </tr>
-                <tr>
-                    <td>T ISO</td>
-                    <td class="">
-                        0
-                    </td>
-                    <td class="">
-                        0
-                    </td>
-                    <td>unavailable data%</td>
-                    <td>unavailable data%</td>
-                    <td class="asymmetry-low">0%</td>
-                </tr>
-            </table>
-        </div>
-        
-        
-        
-        <div class="table-container">
-            <h3>Ribcage/Thoracic Assessment</h3>
-            <table>
-                <tr class="range-header">
-                    <th>Measurement</th>
-                    <th>Value</th>
-                    <th>Gold Standard</th>
-                    <th>Percentage</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Thoracic Curvature</td>
-                    <td>53.0°</td>
-                    <td class="gold-standard">30-35°</td>
-                    <td>163.1%</td>
-                    <td class="value-poor"></td>
-                        Increased
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lumbar Curvature</td>
-                    <td>27.0°</td>
-                    <td class="gold-standard">30-35°</td>
-                    <td>83.1%</td>
-                    <td class="value-poor"></td>
-                        Reduced
-                    </td>
-                </tr>
-                <tr>
-                    <td>Forward Head Posture</td>
-                    <td>4.0 cm</td>
-                    <td class="gold-standard">0-3 cm</td>
-                    <td>75.0%</td>
-                    <td class="value-poor">
-                        Excessive
-                    </td>
-                </tr>
-            </table>
-        </div>
-        
+    <div style="flex: 1; font-size: 9px; line-height: 1.4; color: #555; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #2C3E50;">
+        When we consider range of motion, we are looking at asymmetries and deficiencies, but also how the length tension relationship affects the bone in the joint. Our gold standards are taken from various papers and research. We expect some variation from gold standard (up to 15%) but the data suggests that the closer you are to the gold standards, the less stress on the joint.
     </div>
 </div>
+
+    <div class="data-tables">
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Dorsiflexion Range</td>
+            <td class="">
+                11°
+            </td>
+            <td class="">
+                14°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="asymmetry-high">37%</td>
+            <td class="asymmetry-high">47%</td>
+            <td class="asymmetry-high">21.3%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Plantarflexion Range</td>
+            <td class="">
+                140°
+            </td>
+            <td class="">
+                139°
+            </td>
+            <td class="gold-standard">165°</td>
+            <td class="asymmetry-low">85%</td>
+            <td class="asymmetry-moderate">84%</td>
+            <td class="asymmetry-low">1.1%</td>
+        </tr>
+        
+    </table>
+</div>
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Knee 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Flexion Range</td>
+            <td class="">
+                115°
+            </td>
+            <td class="">
+                118°
+            </td>
+            <td class="gold-standard">160°</td>
+            <td class="asymmetry-high">72%</td>
+            <td class="asymmetry-high">74%</td>
+            <td class="asymmetry-low">2.7%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Extension Range</td>
+            <td class="">
+                160°
+            </td>
+            <td class="">
+                156°
+            </td>
+            <td class="gold-standard">170°</td>
+            <td class="asymmetry-low">94%</td>
+            <td class="asymmetry-low">92%</td>
+            <td class="asymmetry-low">2.1%</td>
+        </tr>
+        
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ribcage 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Ribcage Rotation</td>
+            <td class="">
+                70°
+            </td>
+            <td class="">
+                69°
+            </td>
+            <td class="gold-standard">45°</td>
+            <td class="asymmetry-low">
+                93%
+            </td>
+            <td class="asymmetry-low">
+                92%
+            </td>
+            <td class="asymmetry-low">
+                1.4%
+            </td>
+        </tr>
+        
+        
+        <tr>
+            <td>Ribcage Flexion</td>
+            <td class="">
+                60°
+            </td>
+            <td class="">
+                55°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="asymmetry-low">
+                109%
+            </td>
+            <td class="asymmetry-low">
+                100%
+            </td>
+            <td class="asymmetry-low">
+                8.3%
+            </td>
+        </tr>
+        
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Hip 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Flexion Range</td>
+            <td class="">
+                88°
+            </td>
+            <td class="">
+                81°
+            </td>
+            <td class="gold-standard">90°</td>
+            <td class="asymmetry-low">98%</td>
+            <td class="asymmetry-low">90%</td>
+            <td class="asymmetry-low">8.2%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Extension Range</td>
+            <td class="">
+                21°
+            </td>
+            <td class="">
+                27°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="asymmetry-high">70%</td>
+            <td class="asymmetry-low">90%</td>
+            <td class="asymmetry-high">22.2%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Abduction Range</td>
+            <td class="">
+                45°
+            </td>
+            <td class="">
+                52°
+            </td>
+            <td class="gold-standard">55°</td>
+            <td class="asymmetry-moderate">82%</td>
+            <td class="asymmetry-low">95%</td>
+            <td class="asymmetry-moderate">13.6%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Adduction Range</td>
+            <td class="">
+                31°
+            </td>
+            <td class="">
+                33°
+            </td>
+            <td class="gold-standard">35°</td>
+            <td class="asymmetry-low">89%</td>
+            <td class="asymmetry-low">94%</td>
+            <td class="asymmetry-low">5.2%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Ext Rotation Range</td>
+            <td class="">
+                40°
+            </td>
+            <td class="">
+                48°
+            </td>
+            <td class="gold-standard">45°</td>
+            <td class="asymmetry-low">89%</td>
+            <td class="asymmetry-low">107%</td>
+            <td class="asymmetry-moderate">17.0%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Int Rotation Range</td>
+            <td class="">
+                22°
+            </td>
+            <td class="">
+                20°
+            </td>
+            <td class="gold-standard">40°</td>
+            <td class="asymmetry-high">55%</td>
+            <td class="asymmetry-high">50%</td>
+            <td class="asymmetry-low">9.1%</td>
+        </tr>
+        
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Dorsiflexion Force</td>
+            <td class="">
+                140
+            </td>
+            <td class="">
+                155
+            </td>
+            <td class="asymmetry-high">32%</td>
+            <td class="asymmetry-high">37%</td>
+            <td class="asymmetry-low">9.5%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Plantarflexion Force</td>
+            <td class="">
+                2364
+            </td>
+            <td class="">
+                2457
+            </td>
+            <td class="asymmetry-high">73%</td>
+            <td class="asymmetry-moderate">78%</td>
+            <td class="asymmetry-low">3.8%</td>
+        </tr>
+        
+    </table>
+</div>
+
+        </div>
+
+        <!-- Force Production Section -->
+  <div class="assessment-section">
+    <!-- Range of Motion Section -->
+    <div style="display: flex; align-items: center; margin: 27px 0 13px 0; gap: 20px;">
+        <div style="background: #e8f4f8; padding: 13px; border-radius: 5px; border-left: 3px solid #3498DB; min-width: 30px; max-width: 50px;">
+            <div style="text-align: center; font-size: 1.0em; color: #2C3E50; font-weight: bold;">
+            Force
+        </div>
+    </div>
+    <div style="flex: 1; font-size: 9px; line-height: 1.4; color: #555; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #2C3E50;">
+        When we consider force, we are looking at asymmetries and deficiencies, but also how the length tension relationship affects the bone in the joint. Your percentiles are from your population group which factors in your age, gender and weight. 
+    </div>
+</div>
+
+        <div class="data-tables">
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ankle
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Dorsiflexion Force</td>
+            <td class="">
+                140
+            </td>
+            <td class="">
+                155
+            </td>
+            <td class="asymmetry-high">32%</td>
+            <td class="asymmetry-high">37%</td>
+            <td class="asymmetry-low">9.5%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Plantarflexion Force</td>
+            <td class="">
+                2364
+            </td>
+            <td class="">
+                2457
+            </td>
+            <td class="asymmetry-high">73%</td>
+            <td class="asymmetry-moderate">78%</td>
+            <td class="asymmetry-low">3.8%</td>
+        </tr>
+        
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Knee
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Flexion Force</td>
+            <td class="">
+                241
+            </td>
+            <td class="">
+                298
+            </td>
+            <td class="asymmetry-high">68%</td>
+            <td class="asymmetry-moderate">84%</td>
+            <td class="asymmetry-moderate">19.1%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Extension Force</td>
+            <td class="">
+                345
+            </td>
+            <td class="">
+                341
+            </td>
+            <td class="asymmetry-high">59%</td>
+            <td class="asymmetry-high">58%</td>
+            <td class="asymmetry-low">1.1%</td>
+        </tr>
+        
+        <!-- Hamstring/Quad Ratio row removed  -->
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Hip
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Flexion Force</td>
+            <td class="">
+                209
+            </td>
+            <td class="">
+                270
+            </td>
+            <td class="asymmetry-high">40%</td>
+            <td class="asymmetry-high">66%</td>
+            <td class="asymmetry-high">22.5%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Extension Force</td>
+            <td class="">
+                0
+            </td>
+            <td class="">
+                0
+            </td>
+            <td class="asymmetry-high">53%</td>
+            <td class="asymmetry-high">45%</td>
+            <td class="asymmetry-low">0%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Abduction Force</td>
+            <td class="">
+                274
+            </td>
+            <td class="">
+                233
+            </td>
+            <td class="asymmetry-moderate">84%</td>
+            <td class="asymmetry-high">73%</td>
+            <td class="asymmetry-moderate">14.7%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Adduction Force</td>
+            <td class="">
+                245
+            </td>
+            <td class="">
+                213
+            </td>
+            <td class="asymmetry-moderate">81%</td>
+            <td class="asymmetry-high">68%</td>
+            <td class="asymmetry-moderate">13.2%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Ext Rotation Force</td>
+            <td class="">
+                98
+            </td>
+            <td class="">
+                129
+            </td>
+            <td class="asymmetry-high">15%</td>
+            <td class="asymmetry-high">34%</td>
+            <td class="asymmetry-high">23.7%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Int Rotation Force</td>
+            <td class="">
+                78
+            </td>
+            <td class="">
+                47
+            </td>
+            <td class="asymmetry-high">8%</td>
+            <td class="asymmetry-high">2%</td>
+            <td class="asymmetry-high">40.0%</td>
+        </tr>
+        
+    </table>
+</div>
+
+
+
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Shoulder
+    </h3>
+    <table>
+        <tr class="force-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        
+        <tr>
+            <td>Ext Rotation Force</td>
+            <td class="">
+                2
+            </td>
+            <td class="">
+                2
+            </td>
+            <td class="asymmetry-high">73%</td>
+            <td class="asymmetry-high">67%</td>
+            <td class="asymmetry-low">8.3%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Int Rotation Force</td>
+            <td class="">
+                1
+            </td>
+            <td class="">
+                1
+            </td>
+            <td class="asymmetry-high">27%</td>
+            <td class="asymmetry-high">41%</td>
+            <td class="asymmetry-high">34.1%</td>
+        </tr>
+        
+        
+        <tr>
+            <td>Flexion Force</td>
+            <td class="">
+                2
+            </td>
+            <td class="">
+                3
+            </td>
+            <td class="asymmetry-high">41%</td>
+            <td class="asymmetry-high">47%</td>
+            <td class="asymmetry-moderate">13.0%</td>
+        </tr>
+        
+        
+        
+        
+    </table>
+</div>
+
 
 <div class="section-divider"></div>
 
@@ -816,7 +827,18 @@ Plantarflexion Force Asymmetry: 0.0%
 <div class="assessment-section">
     <h2>Posture Assessment</h2>
     <div class="posture-section">
-        From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement.<br>Your forward head posture was measured at 4.0cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was above our gold standard range, you measured 53.0 degrees, normal is considered 30-35. We saw a reduced curvature in your lumbar spine, you measured 27.0 degrees with normal being considered 30-35.<br><br> These readings indicate you have both a forward head posture and kyphosis. So where your forward head posture is slightly increased we could expect increased levels of force and tension being applied to the discs and muscles of your cervical and thoracic spine (neck and upper back). A reduced curve in your lumbar spine (lower back) this can be associated with worse force absorption and transference and therefore increased loading through the joints of the spine.<br><br>You were able to rotate your spine 65.0 degrees to the left and 62.0 degrees to the right, and could laterally flex (side bend) 0 degrees to the left and 0 degrees to the right.<br><br>The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were 8.0 (left) and 7.0 (right), normal is 4-7 degrees for males. 
+        From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement.<br>Your forward head posture was measured at 4.0cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was above our gold standard range, you measured 34.0 degrees, normal is considered 30-35. We saw a reduced curvature in your lumbar spine, you measured 14.0 degrees with normal being considered 30-35.<br><br> These readings indicate you have a flat back posture. A reduced curve in your lumbar spine (lower back) this can be associated with worse force absorption and transference and therefore increased loading through the joints of the spine, particularly when combined with a slightly increased forward head posture. This significant decrease in lumber curvature may lead to an excessive amount of stress being placed on the lower back muscles and discs, potentially increasing the risk of injury or discomfort over time.<br><br>You were able to rotate your spine 70.0 degrees to the left and 69.0 degrees to the right, and could laterally flex (side bend) 60.0 degrees to the left and 55.0 degrees to the right.<br><br>The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were 4.5 (left) and 4.8 (right), normal is 4-7 degrees for males. 
+    </div>
+</div>
+<div class="section-divider"></div>
+
+
+<!-- Additional Assessment Sections -->
+
+<div class="assessment-section">
+    <h2>Core Assessment</h2>
+    <div class="core-section">
+         Core function assessments mainly evaluate Transverse Abdominis (TVA) strength, coordination, and multifidus activation. The assessment results indicate a dominance of your Quadratus Lumborum (QL) muscles and remaining lower back musculature taking over during the lower abdominal tests, which may be due to the significantly decreased lumber curvature. This reduced curvature is likely contributing to the reduced lower abdominal strength. The Lower Abdominal Coordination Test was a fail, with no specific side noted. Your upper core bracing capabilities were not mentioned in the provided data. However, your lower core strength assessments showed reduced ability. We would like to teach you to use your deep lying core muscles, build their strength and work on their co-ordination with a large emphasis on your lower abdominals.
     </div>
 </div>
 <div class="section-divider"></div>
@@ -829,7 +851,7 @@ Plantarflexion Force Asymmetry: 0.0%
     <div class="graph-text text-right">
         <div class="text-content">
             
-                 1. The Left foot: Your left rear foot had a centre of mass over the 2nd metatarsal which demonstrates you naturally stand in a neutral position. With your ankle in a state of dorsiflexion (knees over toes) you couldn’t evert and dorsiflex further than your resting position and as such had poor pronation. You were not able to supinate very effectively as there was little translation of this through your medial arch. Your left ankle had very poor range and strength in dorsiflexion. You also need to start building some more control and awareness.<br>2. The Right foot: Your right foot had the same resting position but had similar deficiencies in dorsiflexion force, as well as range. However, your dexterity and motor control on the right was much better.<br>3. Foot and Ankle summary: Asymmetry is there with poor range and strength at the left ankle. What was most notable was your inability to effectively articulate the bones of the mid-foot and dorsiflex the ankle, both of which go hand in hand in the gait cycle. There is a lack of movement and control through the fascia on the sole of the foot. Subconscious movement (not controlled gym based movement but more dynamic gait cycle movements) should be introduced along with motion to promote lengthening of the tissues in your foot. In order to generate force or contract, we must first lengthen the tissue through articulation.
+                 1. The Left foot: Your left rear foot had a centre of mass over the 2nd metatarsal which demonstrates you naturally stand in a neutral position. With your ankle in a state of dorsiflexion (knees over toes) you couldn’t evert and dorsiflex further than your resting position and as such had poor pronation. You were not able to supinate very effectively as there was little translation of this through your medial arch. Your left ankle had very poor range and strength in dorsiflexion, with plantarflexion being the only strong point. You also need to start building some more control and awareness.<br>2. The Right foot: Your right foot had the same resting position but could access more pronation. While you were stronger on the right, there is still a need to increase your dorsiflexion force, as well as range. Your dexterity and motor control on the right was much better.<br>3. Foot and Ankle summary: Asymmetry is present in your foot and ankle function. What was most notable was your inability to effectively articulate the bones of the mid-foot and dorsiflex the ankle, both of which go hand in hand in the gait cycle. There is a lack of movement and control through the fascia on the sole of the foot. Subconscious movement (not controlled gym based movement but more dynamic gait cycle movements) should be introduced along with motion to promote lengthening of the tissues in your foot. In order to generate force or contract, we must first lengthen the tissue through articulation. We recommend loading the forefoot through "floating heel" movements to build mid-foot control and increasing dorsiflexion strength through overcoming isometrics.
             
         </div>
         
@@ -846,7 +868,7 @@ Plantarflexion Force Asymmetry: 0.0%
     <div class="graph-text text-left">
         <div class="text-content">
             
-                The Left knee achieved sufficient range, 14% below our gold standard in flexion (distal hamstring), and was 4% below our gold standard in extension (distal quadriceps). Your left knee was surprisingly weak, both in flexion and extension. The left knee force is notably weaker than the right knee.<br><br>The Right knee also achieved sufficient range, 14% below our gold standard in flexion and was 2% below our gold standard in extension. The main difference to the left knee comes when we profiled your force as your right knee was 8% stronger in both flexion and extension. While your hamstring to quad ratio is good at the knee, the total force needs to be brought inline with the left knee.<br><br>Knee summary: There is some good range available at the knee but would like to improve your peak force (especially the left knee). It is likely the left knee extension is weaker due to the meniscus injury history. Overcoming isometrics should be incorporated to increase your knee extension force on the left.
+                The Left knee achieved poor range, 28% below our gold standard in flexion (distal hamstring), and was 6% below our gold standard in extension (distal quadriceps). Your left knee was weak with a good hamstring to quad ratio.<br><br>The Right knee also achieved poor range, 26% below our gold standard in flexion and was 8% below our gold standard in extension. The main difference to the left knee comes when we profiled your force as your right knee was 17% stronger in both flexion and extension but notably higher hamstring to quad ratio.<br><br>Knee summary: There is a large range deficit at the knee, particularly on the right side. We would like to improve the range of motion at the knee through dynamic stretching and mobility work. Additionally, we would like to increase your left knee flexion force through high stability movements.
             
         </div>
         
@@ -863,7 +885,7 @@ Plantarflexion Force Asymmetry: 0.0%
     <div class="graph-text text-right">
         <div class="text-content">
             
-                The Left hip showed sufficient but below gold standard range of motion for flexion and extension movements, with large deficits in force production affecting hip joint integrity and movement patterns.<br><br>The Right hip showed similar range compared to the left side. The right hip was notably 33% weaker than left in extension, creating bilateral strength imbalances affecting pelvic alignment during functional activities.<br><br>Hip summary: Significant reduction in hip extension range of motion compromises pelvic stability. Hip extension helps stabilise the pelvis and when range of motion and strength are poor this influences proper alignment of the lower limb. Hip extension strength is essential for propulsion and preventing excessive back extension, leading to inefficient movement patterns and increased injury risk.<br><br>Large deficits in external rotation and flexion strength affect functional capacity. External rotation in closed & open-chain movements plays important roles in squatting and deadlifting activities. Having range and strength here is vital for maintaining hip joint integrity and stability. The flexor mechanism also plays a role in force transmission from hip muscles to the lower limb and ultimately to the ground. Optimising external rotation mechanics will allow for more efficient energy transfer during both closed and open-chain movements. It's necessary to reduce the current asymmetry present at the hip.
+                The Left hip showed sufficient but below gold standard range of motion in flexion and extension, with large strength deficits in all movements except internal rotation. This creates an imbalance between the left and right sides affecting pelvic alignment and movement patterns.<br><br>The Right hip showed similar range compared to the left side in all movements except internal rotation. The right hip was 72.6% stronger than the left in external rotation, creating a large asymmetry that affects hip joint integrity and stability during functional activities. Force production was lower on average across all movements except external rotation.<br><br>Hip summary: Significant reduction in hip extension range of motion compromises pelvic stability. Hip extension helps stabilise the pelvis and when range of motion and strength are poor this influences proper alignment of the lower limb. Hip extension strength is essential for propulsion and preventing excessive back extension, leading to inefficient movement patterns and increased injury risk.<br><br>Large deficits in internal rotation range and strength affect functional capacity. Internal rotation in closed & open-chain movements plays important roles in squatting and deadlifting activities. Having range and strength here is vital for maintaining hip joint integrity and stability. The flexor mechanism also plays a role in force transmission from hip muscles to the lower limb and ultimately to the ground. Optimising internal rotation mechanics will allow for more efficient energy transfer during both closed and open-chain movements. It's necessary to reduce the current asymmetry present at the hip.
             
         </div>
         
@@ -880,7 +902,7 @@ Plantarflexion Force Asymmetry: 0.0%
     <div class="graph-text text-left">
         <div class="text-content">
             
-                 The Left Shoulder had good range in all movements but demonstrated a notable reduction in force production across external rotation, internal rotation, and flexion when compared to the gold standard. However, it was stronger than the right shoulder in internal rotation.<br><br>The Right Shoulder had good range but notably reduced force production in all movements when compared to the left. It also showed a greater reduction in force production during internal rotation compared to external rotation.<br><br>Shoulder Summary: Your transverse plane range is within acceptable limits, but your force production across all planes and directions is significantly reduced on both sides. This suggests a need for progressive overcoming isometrics and heavy eccentric loading to improve your strength deficits. Additionally, unilateral movements can help target the asymmetries observed in this assessment. It would also be beneficial to address any potential underlying issues that may be limiting your force production, such as muscle imbalances or joint restrictions.
+                 The Left Shoulder had a notable reduction in force across all movements when compared to the gold standard. However, it demonstrated greater range of motion for internal rotation and slightly higher external rotation range.<br><br>The Right Shoulder had greater range of motion for both external and internal rotation but experienced more significant reductions in force across all movements when compared to the left. The right shoulder was notably stronger in external rotation but weaker in internal rotation when compared to the left.<br><br>Shoulder Summary: Your transverse plane range is biased towards external rotation, while your sagittal plane mechanics are reduced across all movements on both sides. This demonstrates a dominance in the latissimus dorsi and deltoids on the right, with a greater reliance on the internal rotators on the left. Your programming should bias unilateral movements to target these asymmetries while progressively overloading the areas of weakness, which are different on each side. Additionally, it's important to focus on improving your sagittal plane mechanics through soft tissue work and scapula mobility exercises.
             
         </div>
         
@@ -898,6 +920,35 @@ Plantarflexion Force Asymmetry: 0.0%
     <span class="asymmetry-moderate">Yellow (11-20%)</span>, 
     <span class="asymmetry-high">Red (>20%)</span>
 </p>
+
+
+
+
+<div style="background: #f8f9fa; margin: 20px -27px 0 -27px; padding: 18px 27px; border-top: 2px solid #34495E; font-family: Arial, sans-serif;">
+  <div style="text-align: center; max-width: 500px; margin: auto;">
+    <p style="font-size: 11px; color: #2C3E50; margin: 0 0 10px 0; line-height: 1.4; font-weight: 600;">
+      Please book in a call so we can talk through your findings and get you back to pain free performance.
+    </p>
+    <div style="font-size: 10px; color: #34495E; line-height: 1.5;">
+      <div style="margin-bottom: 4px;">
+        <strong>Email:</strong> 
+        <a href="mailto:info@brickperformance.co.uk" style="color: #3498DB; text-decoration: none;">
+          info@brickperformance.co.uk
+        </a>
+      </div>
+      <div>
+        <strong>Website:</strong> 
+        <a href="https://www.brickperformance.co.uk" style="color: #3498DB; text-decoration: none;" target="_blank">
+          www.brickperformance.co.uk
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 </body>
 </html>

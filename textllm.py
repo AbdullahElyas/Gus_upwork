@@ -29,7 +29,7 @@ def test_biomech_posture(sheet_id,worksheet,first_worksheet,third_worksheet):
     final_text = f"{text1}\n\n{results[0]}\n\n{text2}\n\n{text3}"
     return final_text
 
-def test_biomech_core_function(sheet_id, worksheet):
+def test_biomech_core_function(sheet_id,worksheet,first_worksheet,third_worksheet):
     """
     Test the core function model with data from a specific sheet
     Takes sheet_id and extracts core function data to generate assessment
@@ -38,7 +38,7 @@ def test_biomech_core_function(sheet_id, worksheet):
     
     try:
         # Extract core function metrics from the sheet
-        ffat_status, stva_status, ptva_status, lact_status, LAST_Strength, JUAST_Strength, ffat_note, stva_note, ptva_note, lact_note, LAST_note, JUAST_note, string_core_function = extract_sheet_metrics_corefunction(sheet_id, worksheet)
+        ffat_status, stva_status, ptva_status, lact_status, LAST_Strength, JUAST_Strength, ffat_note, stva_note, ptva_note, lact_note, LAST_note, JUAST_note, string_core_function = extract_sheet_metrics_corefunction(sheet_id,worksheet,first_worksheet,third_worksheet)
 
         # Clean up the input string to remove empty tests and notes
         input_parts = []

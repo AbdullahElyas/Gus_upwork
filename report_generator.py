@@ -228,12 +228,17 @@ class ShoulderData:
 
 @dataclass
 class ThoracicData:
-    thoracic_curvature: float
-    lumbar_curvature: float
-    forward_head_posture: float
-    thoracic_percentage: str
-    lumbar_percentage: str
-    fhp_percentage: str
+    ribcage_rotation_left : float
+    ribcage_rotation_right : float
+    ribcage_flexion_left : float
+    ribcage_flexion_right : float
+    ribcage_rotation_asymmetry : float
+    ribcage_flexion_asymmetry : float
+    ribcage_rotation_left_percent : float
+    ribcage_rotation_right_percent : float
+    ribcage_flexion_left_percent : float
+    ribcage_flexion_right_percent : float
+
 
 class BiomechanicalReportGenerator:
     def __init__(self, template_dir: str = "./", sheet_id: str = ""):
@@ -263,20 +268,21 @@ class BiomechanicalReportGenerator:
         self.data_overview_sheet = data_overview_sheet
         self.first_worksheet = first_worksheet
         self.third_worksheet = third_worksheet
+        self.mass = 1
 
         # Define gold standards
         self.gold_standards = {
             'ankle': {
                 'dorsiflexion_range': 30,
                 'plantarflexion_range': 165,
-                'dorsiflexion_force': 0.30,
-                'plantarflexion_force': 1.50
+                'dorsiflexion_force': 0.92,
+                'plantarflexion_force': 2.52
             },
             'knee': {
                 'flexion_range': 160,
                 'extension_range': 170,
-                'flexion_force': 1.80,
-                'extension_force': 3.00,
+                'flexion_force': 0.31,
+                'extension_force': 0.71,
                 'hq_ratio': 0.60
             },
             'hip': {
@@ -286,31 +292,29 @@ class BiomechanicalReportGenerator:
                 'adduction_range': 35,
                 'ext_rotation_range': 45,
                 'int_rotation_range': 40,
-                'flexion_force': 1.50,
-                'extension_force': 2.50,
-                'abduction_force': 1.20,
-                'adduction_force': 0.80,
-                'ext_rotation_force': 0.60,
-                'int_rotation_force': 0.50
+                'flexion_force': 0.43,
+                'extension_force': 0.3,
+                'abduction_force': 0.23,
+                'adduction_force': 0.35,
+                'ext_rotation_force': 0.21,
+                'int_rotation_force': 0.30
             },
             'shoulder': {
                 'ext_rotation_range': 90,
                 'int_rotation_range': 70,
                 'flexion_range': 180,
                 'extension_range': 60,
-                'ext_rotation_force': 0.35,
-                'int_rotation_force': 0.45,
+                'ext_rotation_force': 0.27,
+                'int_rotation_force': 0.22,
                 'flexion_force': 0.55,
                 'i_iso': 0.25,
                 'y_iso': 0.30,
                 't_iso': 0.28
             },
             'thoracic': {
-                'thoracic_curvature_min': 30,
-                'thoracic_curvature_max': 35,
-                'lumbar_curvature_min': 30,
-                'lumbar_curvature_max': 35,
-                'forward_head_posture_max': 3
+                'ribcage_rotation': 75,
+                'ribcage_flexion': 55
+
             }
         }
     
@@ -335,21 +339,15 @@ class BiomechanicalReportGenerator:
         except:
             return "0"
 
-    def calculate_percentage(self, value, gold_standard, is_force=False):
-        """Calculate percentage of gold standard"""
+    def calculate_force_from_percentage(self, percentage, gold_standard):
+        """Calculate force from percentage of gold standard using value * gs * 9.81 / 100"""
         try:
-            val = self.safe_float_convert(value)
-            if val == 0 or gold_standard == 0:
+            perc = self.safe_float_convert(percentage)
+            gs = self.safe_float_convert(gold_standard)
+            if perc == 0 or gs == 0:
                 return "0"
-            
-            if is_force:
-                # For force measurements, calculate as percentage of gold standard
-                percentage = (val / gold_standard) * 100
-            else:
-                # For range measurements, calculate as percentage of gold standard
-                percentage = (val / gold_standard) * 100
-            
-            return f"{percentage:.1f}"
+            force_value = perc * gs * self.mass * 9.81 / 100
+            return f"{force_value:.2f}"
         except:
             return "0"
     
@@ -381,7 +379,7 @@ class BiomechanicalReportGenerator:
             metrics = extract_sheet_metrics_footankle(sheet_id, self.data_overview_sheet, self.second_worksheet)
             metrics_raw = range_force_metrics.extract_range_force_footankle(sheet_id, self.data_overview_sheet, self.second_worksheet)
             if metrics and len(metrics) >= 8:
-                # Raw data
+                # Raw data percentage
                 dorsi_range_left = str(metrics[0]) if metrics[0] is not None else "unavailable data"
                 dorsi_range_right = str(metrics[1]) if metrics[1] is not None else "unavailable data"
                 plant_range_left = str(metrics[2]) if metrics[2] is not None else "unavailable data"
@@ -390,49 +388,69 @@ class BiomechanicalReportGenerator:
                 dorsi_force_right = str(metrics[5]) if metrics[5] is not None else "unavailable data"
                 plant_force_left = str(metrics[6]) if metrics[6] is not None else "unavailable data"
                 plant_force_right = str(metrics[7]) if metrics[7] is not None else "unavailable data"
-                
-                # Calculate percentages and asymmetry
+
+                # Gold standards
                 gs = self.gold_standards['ankle']
-                
+
+                # Prepare force values for asymmetry calculation
+                dorsiflexion_force_left_val = metrics_raw[4]
+                dorsiflexion_force_right_val = metrics_raw[5]
+                plantarflexion_force_left_val = metrics_raw[6]
+                plantarflexion_force_right_val = metrics_raw[7]
+
+                # Convert to float if not "unavailable data"
+                def safe_force(val):
+                    try:
+                        if val is not None and str(val) != "unavailable data":
+                            return float(val)
+                    except Exception:
+                        pass
+                    return 0.0
+
+                dorsiflexion_force_left_float = safe_force(dorsiflexion_force_left_val)*9.81
+                dorsiflexion_force_right_float = safe_force(dorsiflexion_force_right_val)*9.81
+                plantarflexion_force_left_float = safe_force(plantarflexion_force_left_val)*9.81
+                plantarflexion_force_right_float = safe_force(plantarflexion_force_right_val)*9.81
+
                 return AnkleData(
-                    # Range data (calculated from percentage)
-                    dorsiflexion_range_left=self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range']),
-                    dorsiflexion_range_right=self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range']),
-                    plantarflexion_range_left=self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range']),
-                    plantarflexion_range_right=self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range']),
+                    # Range data (calculated from percentage, rounded to whole number)
+                    dorsiflexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range'])))),
+                    dorsiflexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range'])))),
+                    plantarflexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range'])))),
+                    plantarflexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range'])))),
                     
                     # Range percentages and asymmetry
-                    dorsiflexion_left_percent=str(metrics[0]),
-                    dorsiflexion_right_percent=str(metrics[1]),
+                    dorsiflexion_left_percent=str(round(float(metrics[0]))),
+                    dorsiflexion_right_percent=str(round(float(metrics[1]))),
                     dorsiflexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range']),
                         self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range'])
                     ),
-                    plantarflexion_left_percent=str(metrics[2]),
-                    plantarflexion_right_percent=str(metrics[3]),
+                    plantarflexion_left_percent=str(round(float(metrics[2]))),
+                    plantarflexion_right_percent=str(round(float(metrics[3]))),
                     plantarflexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range']),
                         self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range'])
                     ),
                     
-                    # Force data (calculated from percentage)
-                    dorsiflexion_force_left=self.calculate_range_from_percentage(metrics[4], gs['dorsiflexion_force']),
-                    dorsiflexion_force_right=self.calculate_range_from_percentage(metrics[5], gs['dorsiflexion_force']),
-                    plantarflexion_force_left=self.calculate_range_from_percentage(metrics[6], gs['plantarflexion_force']),
-                    plantarflexion_force_right=self.calculate_range_from_percentage(metrics[7], gs['plantarflexion_force']),
-                    
+                    # Force data (raw float values, rounded to whole number)
+                    dorsiflexion_force_left=str(round(dorsiflexion_force_left_float)),
+                    dorsiflexion_force_right=str(round(dorsiflexion_force_right_float)),
+                    plantarflexion_force_left=str(round(plantarflexion_force_left_float)),
+                    plantarflexion_force_right=str(round(plantarflexion_force_right_float)),
+
                     # Force percentages and asymmetry
-                    dorsiflexion_force_left_percent=str(metrics[4]),
-                    dorsiflexion_force_right_percent=str(metrics[5]),
+                    dorsiflexion_force_left_percent=str(round(float(metrics[4]))),
+                    dorsiflexion_force_right_percent=str(round(float(metrics[5]))),
                     dorsiflexion_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(metrics[4], gs['dorsiflexion_force']),
-                        self.calculate_range_from_percentage(metrics[5], gs['dorsiflexion_force'])
+                        dorsiflexion_force_left_float,
+                        dorsiflexion_force_right_float
                     ),
-                    plantarflexion_force_left_percent=str(metrics[6]),
-                    plantarflexion_force_right_percent=str(metrics[7]),
+                    plantarflexion_force_left_percent=str(round(float(metrics[6]))),
+                    plantarflexion_force_right_percent=str(round(float(metrics[7]))),
                     plantarflexion_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(metrics[6], gs['plantarflexion_force']),
-                        self.calculate_range_from_percentage(metrics[7], gs['plantarflexion_force'])
+                        plantarflexion_force_left_float,
+                        plantarflexion_force_right_float
                     )
                 )
         except Exception as e:
@@ -443,7 +461,7 @@ class BiomechanicalReportGenerator:
         """Extract knee data from the sheet with calculations"""
         try:
             metrics = extract_sheet_metrics_knee(sheet_id, self.data_overview_sheet)
-            range_force_metrics.extract_range_force_knee(sheet_id, self.data_overview_sheet, self.second_worksheet)
+            metrics_raw = range_force_metrics.extract_range_force_knee(sheet_id, self.data_overview_sheet, self.second_worksheet)
             if metrics and len(metrics) >= 14:
                 # Raw data
                 flex_range_left = str(metrics[0])
@@ -460,39 +478,73 @@ class BiomechanicalReportGenerator:
                 # Calculate percentages and asymmetry
                 gs = self.gold_standards['knee']
                 
+                # Prepare force values for asymmetry calculation (raw values)
+                flexion_force_left_val = metrics_raw[4]
+                flexion_force_right_val = metrics_raw[5]
+                extension_force_left_val = metrics_raw[6]
+                extension_force_right_val = metrics_raw[7]
+
+                def safe_force(val):
+                    try:
+                        if val is not None and str(val) != "unavailable data":
+                            return float(val)
+                    except Exception:
+                        pass
+                    return 0.0
+
+                flexion_force_left_float = safe_force(flexion_force_left_val)*9.81
+                flexion_force_right_float = safe_force(flexion_force_right_val)*9.81
+                extension_force_left_float = safe_force(extension_force_left_val)*9.81
+                extension_force_right_float = safe_force(extension_force_right_val)*9.81
+
                 return KneeData(
-                    # Range data (calculated from percentage)
-                    flexion_range_left=self.calculate_range_from_percentage(metrics[0], gs['flexion_range']),
-                    flexion_range_right=self.calculate_range_from_percentage(metrics[1], gs['flexion_range']),
-                    extension_range_left=self.calculate_range_from_percentage(metrics[2], gs['extension_range']),
-                    extension_range_right=self.calculate_range_from_percentage(metrics[3], gs['extension_range']),
+                    # Range data (calculated from percentage, rounded to whole number)
+                    flexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[0], gs['flexion_range'])))),
+                    flexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[1], gs['flexion_range'])))),
+                    extension_range_left=str(round(float(self.calculate_range_from_percentage(metrics[2], gs['extension_range'])))),
+                    extension_range_right=str(round(float(self.calculate_range_from_percentage(metrics[3], gs['extension_range'])))),
                     
                     # Range percentages and asymmetry
-                    flexion_left_percent=str(metrics[0]),
-                    flexion_right_percent=str(metrics[1]),
-                    flexion_asymmetry=self.calculate_asymmetry(metrics[0], metrics[1]),
-                    extension_left_percent=str(metrics[2]),
-                    extension_right_percent=str(metrics[3]),
-                    extension_asymmetry=self.calculate_asymmetry(metrics[2], metrics[3]),
+                    flexion_left_percent=str(round(float(metrics[0]))),
+                    flexion_right_percent=str(round(float(metrics[1]))),
+                    flexion_asymmetry=self.calculate_asymmetry(
+                        self.calculate_range_from_percentage(metrics[0], gs['flexion_range']),
+                        self.calculate_range_from_percentage(metrics[1], gs['flexion_range'])
+                    ),
+                    extension_left_percent=str(round(float(metrics[2]))),
+                    extension_right_percent=str(round(float(metrics[3]))),
+                    extension_asymmetry=self.calculate_asymmetry(
+                        self.calculate_range_from_percentage(metrics[2], gs['extension_range']),
+                        self.calculate_range_from_percentage(metrics[3], gs['extension_range'])
+                    ),
                     
-                    # Force data (calculated from percentage)
-                    flexion_force_left=self.calculate_range_from_percentage(metrics[4], gs['flexion_force']),
-                    flexion_force_right=self.calculate_range_from_percentage(metrics[5], gs['flexion_force']),
-                    extension_force_left=self.calculate_range_from_percentage(metrics[6], gs['extension_force']),
-                    extension_force_right=self.calculate_range_from_percentage(metrics[7], gs['extension_force']),
-                    hamstring_quad_ratio_left=self.calculate_range_from_percentage(metrics[12], gs['hq_ratio']),
-                    hamstring_quad_ratio_right=self.calculate_range_from_percentage(metrics[13], gs['hq_ratio']),
+                    # Force data (raw values, rounded to whole number)
+                    flexion_force_left=str(round(flexion_force_left_float)),
+                    flexion_force_right=str(round(flexion_force_right_float)),
+                    extension_force_left=str(round(extension_force_left_float)),
+                    extension_force_right=str(round(extension_force_right_float)),
+                    hamstring_quad_ratio_left=str(round(self.safe_float_convert(metrics[12]))),
+                    hamstring_quad_ratio_right=str(round(self.safe_float_convert(metrics[13]))),
                     
                     # Force percentages and asymmetry
-                    flexion_force_left_percent=str(metrics[4]),
-                    flexion_force_right_percent=str(metrics[5]),
-                    flexion_force_asymmetry=self.calculate_asymmetry(metrics[4], metrics[5]),
-                    extension_force_left_percent=str(metrics[6]),
-                    extension_force_right_percent=str(metrics[7]),
-                    extension_force_asymmetry=self.calculate_asymmetry(metrics[6], metrics[7]),
-                    hq_ratio_left_percent=str(metrics[12]),
-                    hq_ratio_right_percent=str(metrics[13]),
-                    hq_ratio_asymmetry=self.calculate_asymmetry(metrics[12], metrics[13])
+                    flexion_force_left_percent=str(round(float(metrics[4]))),
+                    flexion_force_right_percent=str(round(float(metrics[5]))),
+                    flexion_force_asymmetry=self.calculate_asymmetry(
+                        flexion_force_left_float,
+                        flexion_force_right_float
+                    ),
+                    extension_force_left_percent=str(round(float(metrics[6]))),
+                    extension_force_right_percent=str(round(float(metrics[7]))),
+                    extension_force_asymmetry=self.calculate_asymmetry(
+                        extension_force_left_float,
+                        extension_force_right_float
+                    ),
+                    hq_ratio_left_percent=str(round(float(metrics[12]))),
+                    hq_ratio_right_percent=str(round(float(metrics[13]))),
+                    hq_ratio_asymmetry=self.calculate_asymmetry(
+                        self.calculate_range_from_percentage(metrics[12], gs['hq_ratio']),
+                        self.calculate_range_from_percentage(metrics[13], gs['hq_ratio'])
+                    )
                 )
         except Exception as e:
             print(f"Error extracting knee data: {e}")
@@ -534,109 +586,144 @@ class BiomechanicalReportGenerator:
                 
                 gs = self.gold_standards['hip']
                 
+                # Prepare force values for asymmetry calculation (raw values)
+                flexion_force_left_val = metrics_raw[12]
+                flexion_force_right_val = metrics_raw[13]
+                extension_force_left_val = metrics_raw[14]
+                extension_force_right_val = metrics_raw[15]
+                abduction_force_left_val = metrics_raw[16]
+                abduction_force_right_val = metrics_raw[17]
+                adduction_force_left_val = metrics_raw[18]
+                adduction_force_right_val = metrics_raw[19]
+                ext_rotation_force_left_val = metrics_raw[20]
+                ext_rotation_force_right_val = metrics_raw[21]
+                int_rotation_force_left_val = metrics_raw[22]
+                int_rotation_force_right_val = metrics_raw[23]
+
+                def safe_force(val):
+                    try:
+                        if val is not None and str(val) != "unavailable data":
+                            return float(val)
+                    except Exception:
+                        pass
+                    return 0.0
+
+                flexion_force_left_float = safe_force(flexion_force_left_val)*9.81
+                flexion_force_right_float = safe_force(flexion_force_right_val)*9.81
+                extension_force_left_float = safe_force(extension_force_left_val)*9.81
+                extension_force_right_float = safe_force(extension_force_right_val)*9.81
+                abduction_force_left_float = safe_force(abduction_force_left_val)*9.81
+                abduction_force_right_float = safe_force(abduction_force_right_val)*9.81
+                adduction_force_left_float = safe_force(adduction_force_left_val)*9.81
+                adduction_force_right_float = safe_force(adduction_force_right_val)*9.81
+                ext_rotation_force_left_float = safe_force(ext_rotation_force_left_val)*9.81
+                ext_rotation_force_right_float = safe_force(ext_rotation_force_right_val)*9.81
+                int_rotation_force_left_float = safe_force(int_rotation_force_left_val)*9.81
+                int_rotation_force_right_float = safe_force(int_rotation_force_right_val)*9.81
+
                 return HipData(
                     # Range data (calculated from percentage)
-                    flexion_range_left=self.calculate_range_from_percentage(raw_data['flexion_range_left'], gs['flexion_range']),
-                    flexion_range_right=self.calculate_range_from_percentage(raw_data['flexion_range_right'], gs['flexion_range']),
-                    extension_range_left=self.calculate_range_from_percentage(raw_data['extension_range_left'], gs['extension_range']),
-                    extension_range_right=self.calculate_range_from_percentage(raw_data['extension_range_right'], gs['extension_range']),
-                    abduction_range_left=self.calculate_range_from_percentage(raw_data['abduction_range_left'], gs['abduction_range']),
-                    abduction_range_right=self.calculate_range_from_percentage(raw_data['abduction_range_right'], gs['abduction_range']),
-                    adduction_range_left=self.calculate_range_from_percentage(raw_data['adduction_range_left'], gs['adduction_range']),
-                    adduction_range_right=self.calculate_range_from_percentage(raw_data['adduction_range_right'], gs['adduction_range']),
-                    ext_rotation_range_left=self.calculate_range_from_percentage(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
-                    ext_rotation_range_right=self.calculate_range_from_percentage(raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
-                    int_rotation_range_left=self.calculate_range_from_percentage(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
-                    int_rotation_range_right=self.calculate_range_from_percentage(raw_data['int_rotation_range_right'], gs['int_rotation_range']),
+                    flexion_range_left=round(float(self.calculate_range_from_percentage(raw_data['flexion_range_left'], gs['flexion_range']))),
+                    flexion_range_right=round(float(self.calculate_range_from_percentage(raw_data['flexion_range_right'], gs['flexion_range']))),
+                    extension_range_left=round(float(self.calculate_range_from_percentage(raw_data['extension_range_left'], gs['extension_range']))),
+                    extension_range_right=round(float(self.calculate_range_from_percentage(raw_data['extension_range_right'], gs['extension_range']))),
+                    abduction_range_left=round(float(self.calculate_range_from_percentage(raw_data['abduction_range_left'], gs['abduction_range']))),
+                    abduction_range_right=round(float(self.calculate_range_from_percentage(raw_data['abduction_range_right'], gs['abduction_range']))),
+                    adduction_range_left=round(float(self.calculate_range_from_percentage(raw_data['adduction_range_left'], gs['adduction_range']))),
+                    adduction_range_right=round(float(self.calculate_range_from_percentage(raw_data['adduction_range_right'], gs['adduction_range']))),
+                    ext_rotation_range_left=round(float(self.calculate_range_from_percentage(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']))),
+                    ext_rotation_range_right=round(float(self.calculate_range_from_percentage(raw_data['ext_rotation_range_right'], gs['ext_rotation_range']))),
+                    int_rotation_range_left=round(float(self.calculate_range_from_percentage(raw_data['int_rotation_range_left'], gs['int_rotation_range']))),
+                    int_rotation_range_right=round(float(self.calculate_range_from_percentage(raw_data['int_rotation_range_right'], gs['int_rotation_range']))),
                     
                     # Range percentages and asymmetry
-                    flexion_left_percent=raw_data['flexion_range_left'],
-                    flexion_right_percent=raw_data['flexion_range_right'],
+                    flexion_left_percent=str(round(float(raw_data['flexion_range_left']))),
+                    flexion_right_percent=str(round(float(raw_data['flexion_range_right']))),
                     flexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['flexion_range_left'], gs['flexion_range']),
                         self.calculate_range_from_percentage(raw_data['flexion_range_right'], gs['flexion_range'])
                     ),
-                    extension_left_percent=raw_data['extension_range_left'],
-                    extension_right_percent=raw_data['extension_range_right'],
+                    extension_left_percent=str(round(float(raw_data['extension_range_left']))),
+                    extension_right_percent=str(round(float(raw_data['extension_range_right']))),
                     extension_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['extension_range_left'], gs['extension_range']),
                         self.calculate_range_from_percentage(raw_data['extension_range_right'], gs['extension_range'])
                     ),
-                    abduction_left_percent=raw_data['abduction_range_left'],
-                    abduction_right_percent=raw_data['abduction_range_right'],
+                    abduction_left_percent=str(round(float(raw_data['abduction_range_left']))),
+                    abduction_right_percent=str(round(float(raw_data['abduction_range_right']))),
                     abduction_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['abduction_range_left'], gs['abduction_range']),
                         self.calculate_range_from_percentage(raw_data['abduction_range_right'], gs['abduction_range'])
                     ),
-                    adduction_left_percent=raw_data['adduction_range_left'],
-                    adduction_right_percent=raw_data['adduction_range_right'],
+                    adduction_left_percent=str(round(float(raw_data['adduction_range_left']))),
+                    adduction_right_percent=str(round(float(raw_data['adduction_range_right']))),
                     adduction_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['adduction_range_left'], gs['adduction_range']),
                         self.calculate_range_from_percentage(raw_data['adduction_range_right'], gs['adduction_range'])
                     ),
-                    ext_rotation_left_percent=raw_data['ext_rotation_range_left'],
-                    ext_rotation_right_percent=raw_data['ext_rotation_range_right'],
+                    ext_rotation_left_percent=str(round(float(raw_data['ext_rotation_range_left']))),
+                    ext_rotation_right_percent=str(round(float(raw_data['ext_rotation_range_right']))),
                     ext_rotation_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
                         self.calculate_range_from_percentage(raw_data['ext_rotation_range_right'], gs['ext_rotation_range'])
                     ),
-                    int_rotation_left_percent=raw_data['int_rotation_range_left'],
-                    int_rotation_right_percent=raw_data['int_rotation_range_right'],
+                    int_rotation_left_percent=str(round(float(raw_data['int_rotation_range_left']))),
+                    int_rotation_right_percent=str(round(float(raw_data['int_rotation_range_right']))),
                     int_rotation_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
                         self.calculate_range_from_percentage(raw_data['int_rotation_range_right'], gs['int_rotation_range'])
                     ),
                     
-                    # Force data (calculated from percentage)
-                    flexion_force_left=self.calculate_range_from_percentage(raw_data['flexion_force_left'], gs['flexion_force']),
-                    flexion_force_right=self.calculate_range_from_percentage(raw_data['flexion_force_right'], gs['flexion_force']),
-                    extension_force_left=self.calculate_range_from_percentage(raw_data['extension_force_left'], gs['extension_force']),
-                    extension_force_right=self.calculate_range_from_percentage(raw_data['extension_force_right'], gs['extension_force']),
-                    abduction_force_left=self.calculate_range_from_percentage(raw_data['abduction_force_left'], gs['abduction_force']),
-                    abduction_force_right=self.calculate_range_from_percentage(raw_data['abduction_force_right'], gs['abduction_force']),
-                    adduction_force_left=self.calculate_range_from_percentage(raw_data['adduction_force_left'], gs['adduction_force']),
-                    adduction_force_right=self.calculate_range_from_percentage(raw_data['adduction_force_right'], gs['adduction_force']),
-                    ext_rotation_force_left=self.calculate_range_from_percentage(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
-                    ext_rotation_force_right=self.calculate_range_from_percentage(raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
-                    int_rotation_force_left=self.calculate_range_from_percentage(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
-                    int_rotation_force_right=self.calculate_range_from_percentage(raw_data['int_rotation_force_right'], gs['int_rotation_force']),
-                    
+                    # Force data (raw float values)
+                    flexion_force_left=round(flexion_force_left_float),
+                    flexion_force_right=round(flexion_force_right_float),
+                    extension_force_left=round(extension_force_left_float),
+                    extension_force_right=round(extension_force_right_float),
+                    abduction_force_left=round(abduction_force_left_float),
+                    abduction_force_right=round(abduction_force_right_float),
+                    adduction_force_left=round(adduction_force_left_float),
+                    adduction_force_right=round(adduction_force_right_float),
+                    ext_rotation_force_left=round(ext_rotation_force_left_float),
+                    ext_rotation_force_right=round(ext_rotation_force_right_float),
+                    int_rotation_force_left=round(int_rotation_force_left_float),
+                    int_rotation_force_right=round(int_rotation_force_right_float),
+
                     # Force percentages and asymmetry
-                    flexion_force_left_percent=raw_data['flexion_force_left'],
-                    flexion_force_right_percent=raw_data['flexion_force_right'],
+                    flexion_force_left_percent=str(round(float(raw_data['flexion_force_left']))),
+                    flexion_force_right_percent=str(round(float(raw_data['flexion_force_right']))),
                     flexion_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['flexion_force_left'], gs['flexion_force']),
-                        self.calculate_range_from_percentage(raw_data['flexion_force_right'], gs['flexion_force'])
+                        flexion_force_left_float,
+                        flexion_force_right_float
                     ),
-                    extension_force_left_percent=raw_data['extension_force_left'],
-                    extension_force_right_percent=raw_data['extension_force_right'],
+                    extension_force_left_percent=str(round(float(raw_data['extension_force_left']))),
+                    extension_force_right_percent=str(round(float(raw_data['extension_force_right']))),
                     extension_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['extension_force_left'], gs['extension_force']),
-                        self.calculate_range_from_percentage(raw_data['extension_force_right'], gs['extension_force'])
+                        extension_force_left_float,
+                        extension_force_right_float
                     ),
-                    abduction_force_left_percent=raw_data['abduction_force_left'],
-                    abduction_force_right_percent=raw_data['abduction_force_right'],
+                    abduction_force_left_percent=str(round(float(raw_data['abduction_force_left']))),
+                    abduction_force_right_percent=str(round(float(raw_data['abduction_force_right']))),
                     abduction_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['abduction_force_left'], gs['abduction_force']),
-                        self.calculate_range_from_percentage(raw_data['abduction_force_right'], gs['abduction_force'])
+                        abduction_force_left_float,
+                        abduction_force_right_float
                     ),
-                    adduction_force_left_percent=raw_data['adduction_force_left'],
-                    adduction_force_right_percent=raw_data['adduction_force_right'],
+                    adduction_force_left_percent=str(round(float(raw_data['adduction_force_left']))),
+                    adduction_force_right_percent=str(round(float(raw_data['adduction_force_right']))),
                     adduction_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['adduction_force_left'], gs['adduction_force']),
-                        self.calculate_range_from_percentage(raw_data['adduction_force_right'], gs['adduction_force'])
+                        adduction_force_left_float,
+                        adduction_force_right_float
                     ),
-                    ext_rotation_force_left_percent=raw_data['ext_rotation_force_left'],
-                    ext_rotation_force_right_percent=raw_data['ext_rotation_force_right'],
+                    ext_rotation_force_left_percent=str(round(float(raw_data['ext_rotation_force_left']))),
+                    ext_rotation_force_right_percent=str(round(float(raw_data['ext_rotation_force_right']))),
                     ext_rotation_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_force_right'], gs['ext_rotation_force'])
+                        ext_rotation_force_left_float,
+                        ext_rotation_force_right_float
                     ),
-                    int_rotation_force_left_percent=raw_data['int_rotation_force_left'],
-                    int_rotation_force_right_percent=raw_data['int_rotation_force_right'],
+                    int_rotation_force_left_percent=str(round(float(raw_data['int_rotation_force_left']))),
+                    int_rotation_force_right_percent=str(round(float(raw_data['int_rotation_force_right']))),
                     int_rotation_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
-                        self.calculate_range_from_percentage(raw_data['int_rotation_force_right'], gs['int_rotation_force'])
+                        int_rotation_force_left_float,
+                        int_rotation_force_right_float
                     )
                 )
         except Exception as e:
@@ -674,123 +761,154 @@ class BiomechanicalReportGenerator:
                 
                 gs = self.gold_standards['shoulder']
                 
+                def safe_float(val):
+                    try:
+                        if val is not None and str(val) != "unavailable data" and str(val) != "":
+                            return float(str(val).strip())
+                    except Exception:
+                        pass
+                    return 0.0
+
+                def safe_str_round(val):
+                    try:
+                        return str(round(safe_float(val)))
+                    except Exception:
+                        return "0"
+
+                def safe_calc_range(val, gs_val):
+                    try:
+                        return str(round(float(self.calculate_range_from_percentage(val, gs_val))))
+                    except Exception:
+                        return "0"
+
+                def safe_calc_force(val, gs_val):
+                    try:
+                        return str(round(float(self.calculate_force_from_percentage(val, gs_val))))
+                    except Exception:
+                        return "0"
+
+                def safe_asym(left, right, gs_val):
+                    try:
+                        return self.calculate_asymmetry(
+                            self.calculate_range_from_percentage(left, gs_val),
+                            self.calculate_range_from_percentage(right, gs_val)
+                        )
+                    except Exception:
+                        return "0"
+
+                def safe_force_asym(left, right, gs_val):
+                    try:
+                        return self.calculate_asymmetry(
+                            self.calculate_force_from_percentage(left, gs_val),
+                            self.calculate_force_from_percentage(right, gs_val)
+                        )
+                    except Exception:
+                        return "0"
+
                 return ShoulderData(
-                    # Range data (calculated from percentage)
-                    ext_rotation_range_left=self.calculate_range_from_percentage(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
-                    ext_rotation_range_right=self.calculate_range_from_percentage(raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
-                    int_rotation_range_left=self.calculate_range_from_percentage(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
-                    int_rotation_range_right=self.calculate_range_from_percentage(raw_data['int_rotation_range_right'], gs['int_rotation_range']),
-                    flexion_range_left=self.calculate_range_from_percentage(raw_data['flexion_range_left'], gs['flexion_range']),
-                    flexion_range_right=self.calculate_range_from_percentage(raw_data['flexion_range_right'], gs['flexion_range']),
-                    extension_range_left=self.calculate_range_from_percentage(raw_data['extension_range_left'], gs['extension_range']),
-                    extension_range_right=self.calculate_range_from_percentage(raw_data['extension_range_right'], gs['extension_range']),
+                    # Range data (calculated from percentage, rounded to whole number)
+                    ext_rotation_range_left=safe_calc_range(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
+                    ext_rotation_range_right=safe_calc_range(raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
+                    int_rotation_range_left=safe_calc_range(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
+                    int_rotation_range_right=safe_calc_range(raw_data['int_rotation_range_right'], gs['int_rotation_range']),
+                    flexion_range_left=safe_calc_range(raw_data['flexion_range_left'], gs['flexion_range']),
+                    flexion_range_right=safe_calc_range(raw_data['flexion_range_right'], gs['flexion_range']),
+                    extension_range_left=safe_calc_range(raw_data['extension_range_left'], gs['extension_range']),
+                    extension_range_right=safe_calc_range(raw_data['extension_range_right'], gs['extension_range']),
                     
                     # Range percentages and asymmetry
-                    ext_rotation_left_percent=raw_data['ext_rotation_range_left'],
-                    ext_rotation_right_percent=raw_data['ext_rotation_range_right'],
-                    ext_rotation_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_range_right'], gs['ext_rotation_range'])
-                    ),
-                    int_rotation_left_percent=raw_data['int_rotation_range_left'],
-                    int_rotation_right_percent=raw_data['int_rotation_range_right'],
-                    int_rotation_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
-                        self.calculate_range_from_percentage(raw_data['int_rotation_range_right'], gs['int_rotation_range'])
-                    ),
-                    flexion_left_percent=raw_data['flexion_range_left'],
-                    flexion_right_percent=raw_data['flexion_range_right'],
-                    flexion_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['flexion_range_left'], gs['flexion_range']),
-                        self.calculate_range_from_percentage(raw_data['flexion_range_right'], gs['flexion_range'])
-                    ),
-                    extension_left_percent=raw_data['extension_range_left'],
-                    extension_right_percent=raw_data['extension_range_right'],
-                    extension_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['extension_range_left'], gs['extension_range']),
-                        self.calculate_range_from_percentage(raw_data['extension_range_right'], gs['extension_range'])
-                    ),
+                    ext_rotation_left_percent=safe_str_round(raw_data['ext_rotation_range_left']),
+                    ext_rotation_right_percent=safe_str_round(raw_data['ext_rotation_range_right']),
+                    ext_rotation_asymmetry=safe_asym(raw_data['ext_rotation_range_left'], raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
+                    int_rotation_left_percent=safe_str_round(raw_data['int_rotation_range_left']),
+                    int_rotation_right_percent=safe_str_round(raw_data['int_rotation_range_right']),
+                    int_rotation_asymmetry=safe_asym(raw_data['int_rotation_range_left'], raw_data['int_rotation_range_right'], gs['int_rotation_range']),
+                    flexion_left_percent=safe_str_round(raw_data['flexion_range_left']),
+                    flexion_right_percent=safe_str_round(raw_data['flexion_range_right']),
+                    flexion_asymmetry=safe_asym(raw_data['flexion_range_left'], raw_data['flexion_range_right'], gs['flexion_range']),
+                    extension_left_percent=safe_str_round(raw_data['extension_range_left']),
+                    extension_right_percent=safe_str_round(raw_data['extension_range_right']),
+                    extension_asymmetry=safe_asym(raw_data['extension_range_left'], raw_data['extension_range_right'], gs['extension_range']),
                     
-                    # Force data (calculated from percentage)
-                    ext_rotation_force_left=self.calculate_range_from_percentage(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
-                    ext_rotation_force_right=self.calculate_range_from_percentage(raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
-                    int_rotation_force_left=self.calculate_range_from_percentage(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
-                    int_rotation_force_right=self.calculate_range_from_percentage(raw_data['int_rotation_force_right'], gs['int_rotation_force']),
-                    flexion_force_left=self.calculate_range_from_percentage(raw_data['flexion_force_left'], gs['flexion_force']),
-                    flexion_force_right=self.calculate_range_from_percentage(raw_data['flexion_force_right'], gs['flexion_force']),
-                    i_iso_left=self.calculate_range_from_percentage(raw_data['i_iso_left'], gs['i_iso']),
-                    i_iso_right=self.calculate_range_from_percentage(raw_data['i_iso_right'], gs['i_iso']),
-                    y_iso_left=self.calculate_range_from_percentage(raw_data['y_iso_left'], gs['y_iso']),
-                    y_iso_right=self.calculate_range_from_percentage(raw_data['y_iso_right'], gs['y_iso']),
-                    t_iso_left=self.calculate_range_from_percentage(raw_data['t_iso_left'], gs['t_iso']),
-                    t_iso_right=self.calculate_range_from_percentage(raw_data['t_iso_right'], gs['t_iso']),
+                    # Force data (calculated from percentage, rounded to whole number)
+                    ext_rotation_force_left=safe_calc_force(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
+                    ext_rotation_force_right=safe_calc_force(raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
+                    int_rotation_force_left=safe_calc_force(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
+                    int_rotation_force_right=safe_calc_force(raw_data['int_rotation_force_right'], gs['int_rotation_force']),
+                    flexion_force_left=safe_calc_force(raw_data['flexion_force_left'], gs['flexion_force']),
+                    flexion_force_right=safe_calc_force(raw_data['flexion_force_right'], gs['flexion_force']),
+                    i_iso_left=safe_calc_force(raw_data['i_iso_left'], gs['i_iso']),
+                    i_iso_right=safe_calc_force(raw_data['i_iso_right'], gs['i_iso']),
+                    y_iso_left=safe_calc_force(raw_data['y_iso_left'], gs['y_iso']),
+                    y_iso_right=safe_calc_force(raw_data['y_iso_right'], gs['y_iso']),
+                    t_iso_left=safe_calc_force(raw_data['t_iso_left'], gs['t_iso']),
+                    t_iso_right=safe_calc_force(raw_data['t_iso_right'], gs['t_iso']),
                     
                     # Force percentages and asymmetry
-                    ext_rotation_force_left_percent=raw_data['ext_rotation_force_left'],
-                    ext_rotation_force_right_percent=raw_data['ext_rotation_force_right'],
-                    ext_rotation_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
-                        self.calculate_range_from_percentage(raw_data['ext_rotation_force_right'], gs['ext_rotation_force'])
-                    ),
-                    int_rotation_force_left_percent=raw_data['int_rotation_force_left'],
-                    int_rotation_force_right_percent=raw_data['int_rotation_force_right'],
-                    int_rotation_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
-                        self.calculate_range_from_percentage(raw_data['int_rotation_force_right'], gs['int_rotation_force'])
-                    ),
-                    flexion_force_left_percent=raw_data['flexion_force_left'],
-                    flexion_force_right_percent=raw_data['flexion_force_right'],
-                    flexion_force_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['flexion_force_left'], gs['flexion_force']),
-                        self.calculate_range_from_percentage(raw_data['flexion_force_right'], gs['flexion_force'])
-                    ),
-                    i_iso_left_percent=raw_data['i_iso_left'],
-                    i_iso_right_percent=raw_data['i_iso_right'],
-                    i_iso_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['i_iso_left'], gs['i_iso']),
-                        self.calculate_range_from_percentage(raw_data['i_iso_right'], gs['i_iso'])
-                    ),
-                    y_iso_left_percent=raw_data['y_iso_left'],
-                    y_iso_right_percent=raw_data['y_iso_right'],
-                    y_iso_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['y_iso_left'], gs['y_iso']),
-                        self.calculate_range_from_percentage(raw_data['y_iso_right'], gs['y_iso'])
-                    ),
-                    t_iso_left_percent=raw_data['t_iso_left'],
-                    t_iso_right_percent=raw_data['t_iso_right'],
-                    t_iso_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(raw_data['t_iso_left'], gs['t_iso']),
-                        self.calculate_range_from_percentage(raw_data['t_iso_right'], gs['t_iso'])
-                    )
+                    ext_rotation_force_left_percent=safe_str_round(raw_data['ext_rotation_force_left']),
+                    ext_rotation_force_right_percent=safe_str_round(raw_data['ext_rotation_force_right']),
+                    ext_rotation_force_asymmetry=safe_force_asym(raw_data['ext_rotation_force_left'], raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
+                    int_rotation_force_left_percent=safe_str_round(raw_data['int_rotation_force_left']),
+                    int_rotation_force_right_percent=safe_str_round(raw_data['int_rotation_force_right']),
+                    int_rotation_force_asymmetry=safe_force_asym(raw_data['int_rotation_force_left'], raw_data['int_rotation_force_right'], gs['int_rotation_force']),
+                    flexion_force_left_percent=safe_str_round(raw_data['flexion_force_left']),
+                    flexion_force_right_percent=safe_str_round(raw_data['flexion_force_right']),
+                    flexion_force_asymmetry=safe_force_asym(raw_data['flexion_force_left'], raw_data['flexion_force_right'], gs['flexion_force']),
+                    i_iso_left_percent=safe_str_round(raw_data['i_iso_left']),
+                    i_iso_right_percent=safe_str_round(raw_data['i_iso_right']),
+                    i_iso_asymmetry=safe_force_asym(raw_data['i_iso_left'], raw_data['i_iso_right'], gs['i_iso']),
+                    y_iso_left_percent=safe_str_round(raw_data['y_iso_left']),
+                    y_iso_right_percent=safe_str_round(raw_data['y_iso_right']),
+                    y_iso_asymmetry=safe_force_asym(raw_data['y_iso_left'], raw_data['y_iso_right'], gs['y_iso']),
+                    t_iso_left_percent=safe_str_round(raw_data['t_iso_left']),
+                    t_iso_right_percent=safe_str_round(raw_data['t_iso_right']),
+                    t_iso_asymmetry=safe_force_asym(raw_data['t_iso_left'], raw_data['t_iso_right'], gs['t_iso'])
                 )
         except Exception as e:
             print(f"Error extracting shoulder data: {e}")
         return None
 
     def extract_thoracic_data(self, sheet_id: str) -> Optional[ThoracicData]:
-        worksheet = self.worksheet
-        """Extract thoracic/posture data from the sheet with calculations"""
+        """Extract thoracic/ribcage data from the sheet with calculations"""
         try:
-            metrics = extract_sheet_metrics_posture(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet)
-            if metrics and len(metrics) >= 3:
-                tc = float(metrics[2]) if metrics[1] is not None else 0.0
-                lc = float(metrics[3]) if metrics[2] is not None else 0.0
-                fhp = float(metrics[1]) if metrics[0] is not None else 0.0
-                
+            metrics = extract_sheet_metrics_posture(sheet_id, self.worksheet, self.first_worksheet, self.third_worksheet)
+            if metrics and len(metrics) >= 15:
+                ribcage_rotation_left = round(self.safe_float_convert(metrics[11]))
+                ribcage_rotation_right = round(self.safe_float_convert(metrics[12]))
+                ribcage_flexion_left = round(self.safe_float_convert(metrics[13]))
+                ribcage_flexion_right = round(self.safe_float_convert(metrics[14]))
+
                 gs = self.gold_standards['thoracic']
-                
-                # Calculate percentages for thoracic data
-                tc_percent = "100" if gs['thoracic_curvature_min'] <= tc <= gs['thoracic_curvature_max'] else f"{(tc / 32.5) * 100:.1f}"
-                lc_percent = "100" if gs['lumbar_curvature_min'] <= lc <= gs['lumbar_curvature_max'] else f"{(lc / 32.5) * 100:.1f}"
-                fhp_percent = "100" if fhp <= gs['forward_head_posture_max'] else f"{(gs['forward_head_posture_max'] / fhp) * 100:.1f}"
-                
+
+                # Calculate asymmetry (keep as float with 1 decimal)
+                ribcage_rotation_asymmetry = float(self.calculate_asymmetry(ribcage_rotation_left, ribcage_rotation_right))
+                ribcage_flexion_asymmetry = float(self.calculate_asymmetry(ribcage_flexion_left, ribcage_flexion_right))
+
+                # Calculate percentages using gold standards, rounded to whole number
+                ribcage_rotation_left_percent = (
+                    round((ribcage_rotation_left / gs['ribcage_rotation']) * 100) if gs['ribcage_rotation'] else 0
+                )
+                ribcage_rotation_right_percent = (
+                    round((ribcage_rotation_right / gs['ribcage_rotation']) * 100) if gs['ribcage_rotation'] else 0
+                )
+                ribcage_flexion_left_percent = (
+                    round((ribcage_flexion_left / gs['ribcage_flexion']) * 100) if gs['ribcage_flexion'] else 0
+                )
+                ribcage_flexion_right_percent = (
+                    round((ribcage_flexion_right / gs['ribcage_flexion']) * 100) if gs['ribcage_flexion'] else 0
+                )
+
                 return ThoracicData(
-                    thoracic_curvature=tc,
-                    lumbar_curvature=lc,
-                    forward_head_posture=fhp,
-                    thoracic_percentage=tc_percent,
-                    lumbar_percentage=lc_percent,
-                    fhp_percentage=fhp_percent
+                    ribcage_rotation_left=ribcage_rotation_left,
+                    ribcage_rotation_right=ribcage_rotation_right,
+                    ribcage_flexion_left=ribcage_flexion_left,
+                    ribcage_flexion_right=ribcage_flexion_right,
+                    ribcage_rotation_asymmetry=ribcage_rotation_asymmetry,
+                    ribcage_flexion_asymmetry=ribcage_flexion_asymmetry,
+                    ribcage_rotation_left_percent=ribcage_rotation_left_percent,
+                    ribcage_rotation_right_percent=ribcage_rotation_right_percent,
+                    ribcage_flexion_left_percent=ribcage_flexion_left_percent,
+                    ribcage_flexion_right_percent=ribcage_flexion_right_percent
                 )
         except Exception as e:
             print(f"Error extracting thoracic data: {e}")
@@ -851,7 +969,14 @@ class BiomechanicalReportGenerator:
                 assessments['posture'] = posture_result.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting posture assessment: {e}")
-            
+
+        try:
+            #Get Core Function Assessment
+            core_result = test_biomech_core_function(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet)
+            if core_result and len(core_result) >= 4:
+                assessments['core'] = core_result.replace('\n', '<br>')
+        except Exception as e:
+            print(f"Error getting core assessment: {e}")
         try:
             # Get ankle assessment
             ankle_result = test_biomech_foot(sheet_id,self.data_overview_sheet,self.second_worksheet)
@@ -920,6 +1045,7 @@ class BiomechanicalReportGenerator:
             'shoulder_data': shoulder_data,
             'thoracic_data': thoracic_data,
             'posture_assessment': assessments.get('posture'),
+            'core_assessment': assessments.get('core'),
             'ankle_assessment': assessments.get('ankle'),
             'knee_assessment': assessments.get('knee'),
             'hip_assessment': assessments.get('hip'),
