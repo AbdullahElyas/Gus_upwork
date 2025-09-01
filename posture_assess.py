@@ -1366,171 +1366,7 @@ def extract_sheet_metrics_knee(sheet_id, data_overview_sheet):
         knee_hamstring_quad_ratio_left,
         knee_hamstring_quad_ratio_right
     )
-def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
-    """
-    Generate concise knee assessment input prompt
-    """
-    (
-    knee_flexion_range_left,
-    knee_flexion_range_right,
-    knee_extension_range_left,
-    knee_extension_range_right,
-    knee_flexion_force_left,
-    knee_flexion_force_right,
-    knee_extension_force_left,
-    knee_extension_force_right,
-    knee_flexion_force_left_original,
-    knee_flexion_force_right_original,
-    knee_extension_force_left_original,
-    knee_extension_force_right_original,
-    knee_hamstring_quad_ratio_left,
-    knee_hamstring_quad_ratio_right
-    ) = extract_sheet_metrics_knee(sheet_id,data_overview_sheet)
 
-    # Categorize all measurements with specific types
-    movements = {
-        'Knee Flexion': {
-            'range_left': categorize_percentage_knee(knee_flexion_range_left, 'range'),
-            'range_right': categorize_percentage_knee(knee_flexion_range_right, 'range'),
-            'strength_left': categorize_percentage_knee(knee_flexion_force_left, 'strength'),
-            'strength_right': categorize_percentage_knee(knee_flexion_force_right, 'strength'),
-            'range_left_val': knee_flexion_range_left,
-            'range_right_val': knee_flexion_range_right,
-            'strength_left_val': knee_flexion_force_left,
-            'strength_right_val': knee_flexion_force_right
-        },
-        'Knee Extension': {
-            'range_left': categorize_percentage_knee(knee_extension_range_left, 'range'),
-            'range_right': categorize_percentage_knee(knee_extension_range_right, 'range'),
-            'strength_left': categorize_percentage_knee(knee_extension_force_left, 'strength'),
-            'strength_right': categorize_percentage_knee(knee_extension_force_right, 'strength'),
-            'range_left_val': knee_extension_range_left,
-            'range_right_val': knee_extension_range_right,
-            'strength_left_val': knee_extension_force_left,
-            'strength_right_val': knee_extension_force_right
-        }
-    }
-    
-    # Function to calculate left vs right percentage comparison
-    def calculate_side_comparison(left_val, right_val, measurement_type):
-        try:
-            left_num = float(left_val) if left_val is not None else None
-            right_num = float(right_val) if right_val is not None else None
-
-            if left_num is not None and right_num is not None:
-                if left_num > right_num:
-                    difference = left_num - right_num
-                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
-                    return f"Left {percentage_diff:.1f}% stronger than right"
-                elif right_num > left_num:
-                    difference = right_num - left_num
-                    percentage_diff = (difference / left_num * 100) if left_num != 0 else 0
-                    return f"Right {percentage_diff:.1f}% stronger than left"
-                else:
-                    return "Left and right equal"
-            else:
-                return "Cannot compare - missing data"
-        except (TypeError, ValueError):
-            return "Cannot compare - invalid data"
-        
-    hq_results,hq_report = TextGen_Knee_HQ_Ratio(sheet_id,data_overview_sheet)
-    
-    # Build concise input prompt
-    input_lines = []
-    
-    # Track deficits for summary
-    range_deficits_left = []
-    range_deficits_right = []
-    strength_deficits_left = []
-    strength_deficits_right = []
-    
-    for movement_name, data in movements.items():
-        input_lines.append(f"{movement_name}")
-        input_lines.append("")
-        
-        # Range assessment with individual left/right values
-        input_lines.append(f"Range Left: {data['range_left']}")
-        input_lines.append(f"Range Right: {data['range_right']}")
-        
-        # Range comparison
-        range_comparison = calculate_side_comparison(data['range_left_val'], data['range_right_val'], "range")
-        input_lines.append(f"Range Comparison: {range_comparison}")
-        input_lines.append("")
-        
-        # Strength assessment with individual left/right values
-        input_lines.append(f"Strength Left: {data['strength_left']}")
-        input_lines.append(f"Strength Right: {data['strength_right']}")
-        
-        # Strength comparison
-        strength_comparison = calculate_side_comparison(data['strength_left_val'], data['strength_right_val'], "strength")
-        input_lines.append(f"Strength Comparison: {strength_comparison}")
-        input_lines.append("")
-        
-        # Track deficits for summary (include lack and poor categories)
-        if "lack range" in data['range_left'] or "poor range" in data['range_left']:
-            range_deficits_left.append(movement_name.replace('Knee ', ''))
-        if "lack range" in data['range_right'] or "poor range" in data['range_right']:
-            range_deficits_right.append(movement_name.replace('Knee ', ''))
-        if "lack strength" in data['strength_left'] or "poor strength" in data['strength_left']:
-            strength_deficits_left.append(movement_name.replace('Knee ', ''))
-        if "lack strength" in data['strength_right'] or "poor strength" in data['strength_right']:
-            strength_deficits_right.append(movement_name.replace('Knee ', ''))
-    
-
-        
-    
-    # Overall Notes section
-    input_lines.append("Overall Notes:")
-    input_lines.append("")
-    
-    # Range deficits
-    if range_deficits_left or range_deficits_right:
-        deficit_parts = []
-        if range_deficits_left:
-            deficit_parts.append(f"Left → {', '.join(range_deficits_left)}")
-        if range_deficits_right:
-            deficit_parts.append(f"Right → {', '.join(range_deficits_right)}")
-        input_lines.append(f"Range deficits: {'; '.join(deficit_parts)}")
-    
-    # Strength deficits
-    if strength_deficits_left or strength_deficits_right:
-        deficit_parts = []
-        if strength_deficits_left:
-            deficit_parts.append(f"Left → {', '.join(strength_deficits_left)}")
-        if strength_deficits_right:
-            deficit_parts.append(f"Right → {', '.join(strength_deficits_right)}")
-        input_lines.append(f"Strength deficits: {'; '.join(deficit_parts)}")
-
-    # Hamstring to Quadriceps Ratio
-    if hq_results:
-        input_lines.append("")
-        input_lines.append("Hamstring to Quadriceps Ratio:")
-        input_lines.append(hq_report)
-
-    # # Flexion vs Extension comparison
-    # left_flex_ext_comparison = calc_opposing_comparison(knee_flexion_range_left, knee_extension_range_left, "Left")
-    # right_flex_ext_comparison = calc_opposing_comparison(knee_flexion_range_right, knee_extension_range_right, "Right")
-    
-    # if left_flex_ext_comparison or right_flex_ext_comparison:
-    #     input_lines.append("")
-    #     input_lines.append("Flexion vs Extension Range:")
-    #     input_lines.append(left_flex_ext_comparison)
-    #     input_lines.append(right_flex_ext_comparison)
-    
-    # # Force comparison for flexion vs extension
-    # left_flex_ext_force_comparison = calc_opposing_comparison(knee_flexion_force_left, knee_extension_force_left, "Left")
-    # right_flex_ext_force_comparison = calc_opposing_comparison(knee_flexion_force_right, knee_extension_force_right, "Right")
-    
-    # if left_flex_ext_force_comparison or right_flex_ext_force_comparison:
-    #     input_lines.append("")
-    #     input_lines.append("Flexion vs Extension Strength:")
-    #     input_lines.append(left_flex_ext_force_comparison)
-    #     input_lines.append(right_flex_ext_force_comparison)
-
-    
-    
-    
-    return "\n".join(input_lines)
 
 def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
     """
@@ -2141,166 +1977,10 @@ def TextGen_Hip(sheet_id,data_overview_sheet):
         largest_movement_summary,
         concise_input  # Add concise input as the last return value
     )
-def evaluate_hamstring_quad_ratio(knee_flexion_force_left, knee_extension_force_left, 
-                                 knee_flexion_force_right, knee_extension_force_right):
+def TextGen_Knee_HQ_Ratio_Split(sheet_id, data_overview_sheet):
     """
-    Evaluate hamstring to quadriceps ratio for both left and right sides
-    
-    Parameters:
-    - knee_flexion_force_left: Left knee flexion force (hamstring)
-    - knee_extension_force_left: Left knee extension force (quadriceps)
-    - knee_flexion_force_right: Right knee flexion force (hamstring)
-    - knee_extension_force_right: Right knee extension force (quadriceps)
-    
-    Returns:
-    - Dictionary with left and right H:Q ratios and classifications
-    """
-    
-    def calculate_hq_ratio_single_side(flexion_force, extension_force, side):
-        """
-        Calculate H:Q ratio for a single side
-        """
-        try:
-            # Convert to float if needed
-            flexion_val = float(flexion_force) if flexion_force is not None else 0
-            extension_val = float(extension_force) if extension_force is not None else 0
-            
-            # Apply multipliers
-            # Flexion (hamstring) * 0.31
-            adjusted_flexion = flexion_val 
-            # Extension (quadriceps) * 0.71  
-            adjusted_extension = extension_val 
-            
-            # Check valid input
-            if adjusted_flexion <= 0 or adjusted_extension <= 0:
-                return {
-                    'ratio': None,
-                    'classification': f"Invalid: {side} forces must be positive",
-                    'adjusted_flexion': adjusted_flexion,
-                    'adjusted_extension': adjusted_extension,
-                    'original_flexion': flexion_val,
-                    'original_extension': extension_val
-                }
-            
-            # Calculate H:Q ratio
-            ratio = adjusted_flexion / adjusted_extension
-            
-            # Classify ratio
-            if ratio < 0.55:
-                ratio_class = "Poor"
-            elif 0.55 <= ratio <= 0.75:
-                ratio_class = "Good"
-            else:  # ratio > 0.75
-                # Strength benchmarks
-                QUAD_THRESHOLD = 200/9.81   # Apply multiplier to threshold
-                HAM_THRESHOLD = 120/9.81    # Apply multiplier to threshold
-                
-                if adjusted_extension < QUAD_THRESHOLD:
-                    ratio_class = "High Ratio due to Weak Quadriceps"
-                elif adjusted_flexion > HAM_THRESHOLD * 1.2:  # 20% above normal benchmark
-                    ratio_class = "High Ratio due to Strong Hamstrings"
-                else:
-                    ratio_class = "High Ratio – Mixed Cause"
-            
-            return {
-                'ratio': round(ratio, 3),
-                'classification': ratio_class,
-                'adjusted_flexion': round(adjusted_flexion, 2),
-                'adjusted_extension': round(adjusted_extension, 2),
-                'original_flexion': flexion_val,
-                'original_extension': extension_val
-            }
-            
-        except (ValueError, TypeError, ZeroDivisionError):
-            return {
-                'ratio': None,
-                'classification': f"Error: Invalid {side} input data",
-                'adjusted_flexion': None,
-                'adjusted_extension': None,
-                'original_flexion': flexion_force,
-                'original_extension': extension_force
-            }
-    
-    # Calculate for both sides
-    left_result = calculate_hq_ratio_single_side(knee_flexion_force_left, knee_extension_force_left, "Left")
-    right_result = calculate_hq_ratio_single_side(knee_flexion_force_right, knee_extension_force_right, "Right")
-    
-    # Calculate bilateral comparison if both sides are valid
-    bilateral_comparison = ""
-    if left_result['ratio'] is not None and right_result['ratio'] is not None:
-        left_ratio = left_result['ratio']
-        right_ratio = right_result['ratio']
-        
-        if left_ratio > right_ratio:
-            difference = left_ratio - right_ratio
-            percentage_diff = (difference / right_ratio * 100) if right_ratio != 0 else 0
-            bilateral_comparison = f"Left H:Q ratio {percentage_diff:.1f}% higher than right"
-        elif right_ratio > left_ratio:
-            difference = right_ratio - left_ratio
-            percentage_diff = (difference / left_ratio * 100) if left_ratio != 0 else 0
-            bilateral_comparison = f"Right H:Q ratio {percentage_diff:.1f}% higher than left"
-        else:
-            bilateral_comparison = "Left and right H:Q ratios are equal"
-    else:
-        bilateral_comparison = "Cannot compare - missing or invalid data"
-
-    
-    
-    return {
-        'left': left_result,
-        'right': right_result,
-        'bilateral_comparison': bilateral_comparison
-
-    }
-
-def format_hq_ratio_report(hq_results):
-    """
-    Format the H:Q ratio results into a readable report
-    """
-    report_lines = []
-    
-    report_lines.append("Hamstring to Quadriceps (H:Q) Ratio Analysis:")
-    report_lines.append("=" * 50)
-    report_lines.append("")
-    
-    # Left side
-    left = hq_results['left']
-    report_lines.append("LEFT SIDE:")
-    if left['ratio'] is not None:
-        # report_lines.append(f"   Flexion Force Percentage: {left['original_flexion']}")
-        # report_lines.append(f"   Extension Force Percentage: {left['original_extension']}")
-        # report_lines.append(f"   Flexion Force: {left['adjusted_flexion']}")
-        # report_lines.append(f"   Extension Force: {left['adjusted_extension']}")
-        report_lines.append(f"   Hamstring to Quadriceps Ratio: {left['ratio']}")
-        report_lines.append(f"   Classification: {left['classification']}")
-    else:
-        report_lines.append(f"  {left['classification']}")
-    report_lines.append("")
-    
-    # Right side
-    right = hq_results['right']
-    report_lines.append("RIGHT SIDE:")
-    if right['ratio'] is not None:
-        # report_lines.append(f"  Flexion Force Percentage: {right['original_flexion']}")
-        # report_lines.append(f"  Extension Force Percentage: {right['original_extension']}")
-        # report_lines.append(f"  Flexion Force: {right['adjusted_flexion']}")
-        # report_lines.append(f"  Extension Force: {right['adjusted_extension']}")
-        report_lines.append(f"  Hamstring to Quadriceps Ratio: {right['ratio']}")
-        report_lines.append(f"  Classification: {right['classification']}")
-    else:
-        report_lines.append(f"  {right['classification']}")
-    report_lines.append("")
-    
-    # Bilateral comparison
-    report_lines.append("BILATERAL COMPARISON:")
-    report_lines.append(f"  {hq_results['bilateral_comparison']}")
-    report_lines.append("")
-    
-    return "\n".join(report_lines)
-
-def TextGen_Knee_HQ_Ratio(sheet_id,data_overview_sheet):
-    """
-    Generate H:Q ratio analysis for knee assessment
+    Generate H:Q ratio analysis split into left, right, and bilateral comparison
+    Returns three separate outputs for use in TextGen_Knee_Concise
     """
     # Get knee metrics
     (
@@ -2318,18 +1998,315 @@ def TextGen_Knee_HQ_Ratio(sheet_id,data_overview_sheet):
     knee_extension_force_right_original,
     knee_hamstring_quad_ratio_left,
     knee_hamstring_quad_ratio_right
-    ) = extract_sheet_metrics_knee(sheet_id,data_overview_sheet)
+    ) = extract_sheet_metrics_knee(sheet_id, data_overview_sheet)
 
-    # Calculate H:Q ratios
-    hq_results = evaluate_hamstring_quad_ratio(
-        knee_flexion_force_left_original, knee_extension_force_left_original,
-        knee_flexion_force_right_original, knee_extension_force_right_original
-    )
+    def calculate_hq_ratio_single_side(flexion_force, extension_force, side):
+        """Calculate H:Q ratio for a single side"""
+        try:
+            flexion_val = float(flexion_force) if flexion_force is not None else 0
+            extension_val = float(extension_force) if extension_force is not None else 0
+            
+            # Check valid input
+            if flexion_val <= 0 or extension_val <= 0:
+                return {
+                    'ratio': None,
+                    'classification': f"Invalid: {side} forces must be positive",
+                    'original_flexion': flexion_val,
+                    'original_extension': extension_val
+                }
+            
+            # Calculate H:Q ratio
+            ratio = flexion_val / extension_val
+            
+            # Classify ratio
+            if ratio < 0.45:
+                ratio_class = "Poor"
+            elif 0.45 <= ratio <= 0.60:
+                ratio_class = "Acceptable"
+            elif 0.60 <= ratio <= 0.75:
+                ratio_class = "Good"
+            else:  # ratio > 0.75
+                ratio_class = "High"
+            
+            return {
+                'ratio': round(ratio, 3),
+                'classification': ratio_class,
+                'original_flexion': flexion_val,
+                'original_extension': extension_val
+            }
+            
+        except (ValueError, TypeError, ZeroDivisionError):
+            return {
+                'ratio': None,
+                'classification': f"Error: Invalid {side} input data",
+                'original_flexion': flexion_force,
+                'original_extension': extension_force
+            }
     
-    # Generate formatted report
-    formatted_report = format_hq_ratio_report(hq_results)
+    # Calculate for both sides
+    left_result = calculate_hq_ratio_single_side(knee_flexion_force_left_original, knee_extension_force_left_original, "Left")
+    right_result = calculate_hq_ratio_single_side(knee_flexion_force_right_original, knee_extension_force_right_original, "Right")
     
-    return hq_results, formatted_report
+    # Format left side output
+    left_hq_output = ""
+    if left_result['ratio'] is not None:
+        left_hq_output = f"LEFT SIDE: Hamstring to Quadriceps Ratio: {left_result['ratio']}, Classification: {left_result['classification']}"
+    else:
+        left_hq_output = f"LEFT SIDE: {left_result['classification']}"
+    
+    # Format right side output
+    right_hq_output = ""
+    if right_result['ratio'] is not None:
+        right_hq_output = f"RIGHT SIDE: Hamstring to Quadriceps Ratio: {right_result['ratio']}, Classification: {right_result['classification']}"
+    else:
+        right_hq_output = f"RIGHT SIDE: {right_result['classification']}"
+    
+    # Calculate bilateral comparison
+    bilateral_comparison = ""
+    if left_result['ratio'] is not None and right_result['ratio'] is not None:
+        left_ratio = left_result['ratio']
+        right_ratio = right_result['ratio']
+        
+        if left_ratio > right_ratio:
+            difference = left_ratio - right_ratio
+            percentage_diff = (difference / right_ratio * 100) if right_ratio != 0 else 0
+            bilateral_comparison = f"BILATERAL COMPARISON: Left H:Q ratio {percentage_diff:.1f}% higher than right"
+        elif right_ratio > left_ratio:
+            difference = right_ratio - left_ratio
+            percentage_diff = (difference / left_ratio * 100) if left_ratio != 0 else 0
+            bilateral_comparison = f"BILATERAL COMPARISON: Right H:Q ratio {percentage_diff:.1f}% higher than left"
+        else:
+            bilateral_comparison = "BILATERAL COMPARISON: Left and right H:Q ratios are equal"
+    else:
+        bilateral_comparison = "BILATERAL COMPARISON: Cannot compare - missing or invalid data"
+    
+    # Check if any valid data exists
+    has_valid_data = (left_result['ratio'] is not None or right_result['ratio'] is not None)
+    
+    return left_hq_output, right_hq_output, bilateral_comparison, has_valid_data
+
+def TextGen_Knee_Concise(sheet_id, data_overview_sheet):
+    """
+    Generate three separate knee assessment input prompts: left, right, and overall
+    """
+    (
+    knee_flexion_range_left,
+    knee_flexion_range_right,
+    knee_extension_range_left,
+    knee_extension_range_right,
+    knee_flexion_force_left,
+    knee_flexion_force_right,
+    knee_extension_force_left,
+    knee_extension_force_right,
+    knee_flexion_force_left_original,
+    knee_flexion_force_right_original,
+    knee_extension_force_left_original,
+    knee_extension_force_right_original,
+    knee_hamstring_quad_ratio_left,
+    knee_hamstring_quad_ratio_right
+    ) = extract_sheet_metrics_knee(sheet_id, data_overview_sheet)
+
+    # Categorize all measurements with specific types
+    movements = {
+        'Knee Flexion': {
+            'range_left': categorize_percentage_knee(knee_flexion_range_left, 'range'),
+            'range_right': categorize_percentage_knee(knee_flexion_range_right, 'range'),
+            'strength_left': categorize_percentage_knee(knee_flexion_force_left, 'strength'),
+            'strength_right': categorize_percentage_knee(knee_flexion_force_right, 'strength'),
+            'range_left_val': knee_flexion_range_left,
+            'range_right_val': knee_flexion_range_right,
+            'strength_left_val': knee_flexion_force_left,
+            'strength_right_val': knee_flexion_force_right
+        },
+        'Knee Extension': {
+            'range_left': categorize_percentage_knee(knee_extension_range_left, 'range'),
+            'range_right': categorize_percentage_knee(knee_extension_range_right, 'range'),
+            'strength_left': categorize_percentage_knee(knee_extension_force_left, 'strength'),
+            'strength_right': categorize_percentage_knee(knee_extension_force_right, 'strength'),
+            'range_left_val': knee_extension_range_left,
+            'range_right_val': knee_extension_range_right,
+            'strength_left_val': knee_extension_force_left,
+            'strength_right_val': knee_extension_force_right
+        }
+    }
+    
+    # Function to calculate left vs right percentage comparison
+    def calculate_side_comparison(left_val, right_val, measurement_type):
+        try:
+            left_num = float(left_val) if left_val is not None else None
+            right_num = float(right_val) if right_val is not None else None
+
+            if left_num is not None and right_num is not None:
+                if left_num > right_num:
+                    difference = left_num - right_num
+                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
+                    return f"Left {percentage_diff:.1f}% stronger than right"
+                elif right_num > left_num:
+                    difference = right_num - left_num
+                    percentage_diff = (difference / left_num * 100) if left_num != 0 else 0
+                    return f"Right {percentage_diff:.1f}% stronger than left"
+                else:
+                    return "Left and right equal"
+            else:
+                return "Cannot compare - missing data"
+        except (TypeError, ValueError):
+            return "Cannot compare - invalid data"
+        
+    # Get H:Q ratio data using the new simplified function
+    left_hq_output, right_hq_output, bilateral_hq_comparison, hq_data_available = TextGen_Knee_HQ_Ratio_Split(sheet_id, data_overview_sheet)
+
+    # Calculate bilateral comparisons
+    flexion_range_comparison = calculate_side_comparison(movements['Knee Flexion']['range_left_val'], movements['Knee Flexion']['range_right_val'], "range")
+    flexion_strength_comparison = calculate_side_comparison(movements['Knee Flexion']['strength_left_val'], movements['Knee Flexion']['strength_right_val'], "strength")
+    extension_range_comparison = calculate_side_comparison(movements['Knee Extension']['range_left_val'], movements['Knee Extension']['range_right_val'], "range")
+    extension_strength_comparison = calculate_side_comparison(movements['Knee Extension']['strength_left_val'], movements['Knee Extension']['strength_right_val'], "strength")
+
+    # Track deficits and good movements for summary
+    range_deficits_left = []
+    range_deficits_right = []
+    strength_deficits_left = []
+    strength_deficits_right = []
+    range_good_left = []
+    range_good_right = []
+    strength_good_left = []
+    strength_good_right = []
+    
+    for movement_name, data in movements.items():
+        # Track deficits for summary (include lack and poor categories)
+        if "lack range" in data['range_left'] or "poor range" in data['range_left']:
+            range_deficits_left.append(movement_name.replace('Knee ', ''))
+        if "lack range" in data['range_right'] or "poor range" in data['range_right']:
+            range_deficits_right.append(movement_name.replace('Knee ', ''))
+        if "lack strength" in data['strength_left'] or "poor strength" in data['strength_left']:
+            strength_deficits_left.append(movement_name.replace('Knee ', ''))
+        if "lack strength" in data['strength_right'] or "poor strength" in data['strength_right']:
+            strength_deficits_right.append(movement_name.replace('Knee ', ''))
+        
+        # Track good movements (sufficient or good categories)
+        if "sufficient range" in data['range_left'] or "good range" in data['range_left']:
+            range_good_left.append(movement_name.replace('Knee ', ''))
+        if "sufficient range" in data['range_right'] or "good range" in data['range_right']:
+            range_good_right.append(movement_name.replace('Knee ', ''))
+        if "sufficient strength" in data['strength_left'] or "good strength" in data['strength_left']:
+            strength_good_left.append(movement_name.replace('Knee ', ''))
+        if "sufficient strength" in data['strength_right'] or "good strength" in data['strength_right']:
+            strength_good_right.append(movement_name.replace('Knee ', ''))
+
+    left_knee_input = []
+    
+    # Add formatted left knee data
+    left_knee_input.append("Knee Flexion (Left):")
+    left_knee_input.append(f"Range: {movements['Knee Flexion']['range_left']}")
+    left_knee_input.append(f"Strength: {movements['Knee Flexion']['strength_left']}")
+    left_knee_input.append("")
+    
+    left_knee_input.append("Knee Extension (Left):")
+    left_knee_input.append(f"Range: {movements['Knee Extension']['range_left']}")
+    left_knee_input.append(f"Strength: {movements['Knee Extension']['strength_left']}")
+    left_knee_input.append("")
+    
+    # Add H:Q ratio information if available (before bilateral comparisons)
+    if hq_data_available and left_hq_output:
+        left_knee_input.append("Hamstring to Quadriceps Ratio:")
+        left_knee_input.append(f"{left_hq_output.replace('LEFT SIDE: ', '')}")
+        left_knee_input.append("")
+    
+    # Add bilateral comparisons
+    left_knee_input.append("Bilateral Comparisons:")
+    left_knee_input.append(f"Flexion Range: {flexion_range_comparison}")
+    left_knee_input.append(f"Flexion Strength: {flexion_strength_comparison}")
+    left_knee_input.append(f"Extension Range: {extension_range_comparison}")
+    left_knee_input.append(f"Extension Strength: {extension_strength_comparison}")
+    
+    # Add H:Q ratio comparison if available
+    if hq_data_available and bilateral_hq_comparison:
+        # Extract just the comparison part from bilateral_hq_comparison
+        hq_comparison_text = bilateral_hq_comparison.replace("BILATERAL COMPARISON: ", "")
+        left_knee_input.append(f"H:Q Ratio: {hq_comparison_text}")
+
+    # ========== RIGHT KNEE INPUT ==========
+    right_knee_input = []
+    
+    # Add formatted right knee data
+    right_knee_input.append("Knee Flexion (Right):")
+    right_knee_input.append(f"Range: {movements['Knee Flexion']['range_right']}")
+    right_knee_input.append(f"Strength: {movements['Knee Flexion']['strength_right']}")
+    right_knee_input.append("")
+    
+    right_knee_input.append("Knee Extension (Right):")
+    right_knee_input.append(f"Range: {movements['Knee Extension']['range_right']}")
+    right_knee_input.append(f"Strength: {movements['Knee Extension']['strength_right']}")
+    right_knee_input.append("")
+    
+    # Add H:Q ratio information if available (before bilateral comparisons)
+    if hq_data_available and right_hq_output:
+        right_knee_input.append("Hamstring to Quadriceps Ratio:")
+        right_knee_input.append(f"{right_hq_output.replace('RIGHT SIDE: ', '')}")
+        right_knee_input.append("")
+    
+    # Add bilateral comparisons
+    right_knee_input.append("Bilateral Comparisons:")
+    right_knee_input.append(f"Flexion Range: {flexion_range_comparison}")
+    right_knee_input.append(f"Flexion Strength: {flexion_strength_comparison}")
+    right_knee_input.append(f"Extension Range: {extension_range_comparison}")
+    right_knee_input.append(f"Extension Strength: {extension_strength_comparison}")
+    
+    # Add H:Q ratio comparison if available
+    if hq_data_available and bilateral_hq_comparison:
+        # Extract just the comparison part from bilateral_hq_comparison
+        hq_comparison_text = bilateral_hq_comparison.replace("BILATERAL COMPARISON: ", "")
+        right_knee_input.append(f"H:Q Ratio: {hq_comparison_text}")
+
+    # ========== OVERALL KNEE INPUT ==========
+    overall_knee_input = []
+    
+    # Overall Notes section
+    overall_knee_input.append("Overall Notes:")
+    overall_knee_input.append("")
+    
+    # Good movements - range
+    if range_good_left or range_good_right:
+        good_parts = []
+        if range_good_left:
+            good_parts.append(f"Left → {', '.join(range_good_left)}")
+        if range_good_right:
+            good_parts.append(f"Right → {', '.join(range_good_right)}")
+        overall_knee_input.append(f"Good range movements: {'; '.join(good_parts)}")
+    
+    # Good movements - strength
+    if strength_good_left or strength_good_right:
+        good_parts = []
+        if strength_good_left:
+            good_parts.append(f"Left → {', '.join(strength_good_left)}")
+        if strength_good_right:
+            good_parts.append(f"Right → {', '.join(strength_good_right)}")
+        overall_knee_input.append(f"Good strength movements: {'; '.join(good_parts)}")
+    
+    # Range deficits
+    if range_deficits_left or range_deficits_right:
+        deficit_parts = []
+        if range_deficits_left:
+            deficit_parts.append(f"Left → {', '.join(range_deficits_left)}")
+        if range_deficits_right:
+            deficit_parts.append(f"Right → {', '.join(range_deficits_right)}")
+        overall_knee_input.append(f"Range deficits: {'; '.join(deficit_parts)}")
+    
+    # Strength deficits
+    if strength_deficits_left or strength_deficits_right:
+        deficit_parts = []
+        if strength_deficits_left:
+            deficit_parts.append(f"Left → {', '.join(strength_deficits_left)}")
+        if strength_deficits_right:
+            deficit_parts.append(f"Right → {', '.join(strength_deficits_right)}")
+        overall_knee_input.append(f"Strength deficits: {'; '.join(deficit_parts)}")
+
+    # Return all three inputs
+    left_knee_input_str = "\n".join(left_knee_input)
+    right_knee_input_str = "\n".join(right_knee_input)
+    overall_knee_input_str = "\n".join(overall_knee_input)
+    
+    return left_knee_input_str, right_knee_input_str, overall_knee_input_str
+
 
 def extract_knee_report_text(sheet_id):
     """
@@ -3337,11 +3314,24 @@ if __name__ == "__main__":
     creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
     client = gspread.authorize(creds)
 
-    sheet_id = "1L964TaAjOiI2HT1jPcdZbY8KeWeSPD22wvxVKfKUVdg"
-    fig = create_radar_chart_shoulder(sheet_id, "shoulder_chart.png")
+    sheet_id = "1wxQPAbUd19wieYNocYMr4wfr3el8gbL6j60yckQVieg"
+    # open data overview sheet
+    data_overview_sheet = client.open_by_key(sheet_id).worksheet("Data Overview")
+    Left_input,Right_input,Overall_input = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
+    report = extract_knee_report_text(sheet_id)
+    # print("Left Input:", Left_input)
+    print("Right Input:", Right_input)
+    # print("Overall Input:", Overall_input)
+    print("Output:", report)
 
-    # Create all charts
-    charts = create_all_radar_charts(sheet_id, "./charts/")
+    
+    
+
+
+    # fig = create_radar_chart_shoulder(sheet_id, "shoulder_chart.png")
+
+    # # Create all charts
+    # charts = create_all_radar_charts(sheet_id, "./charts/")
     # input_lines = TextGen_Shoulder_Concise(sheet_id)
 # output = extract_shoulder_report_text(sheet_id)
 # print("Input :", input_lines)

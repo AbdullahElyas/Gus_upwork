@@ -200,30 +200,81 @@ def test_biomech_hip_concise(sheet_id, data_overview_sheet):
 def test_biomech_knee(sheet_id, data_overview_sheet):
     """
     Test the knee model with data from a specific sheet
-    Takes sheet_id and extracts knee data to generate assessment
+    Takes sheet_id and extracts knee data to generate assessment for left, right, and overall
     """
     from posture_assess import TextGen_Knee_Concise
     
     try:
-        # Extract knee assessment input using the concise function
-        knee_input = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
+        # Extract knee assessment input using the concise function (returns 3 separate inputs)
+        left_knee_input, right_knee_input, overall_knee_input = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
 
-        print(f"Knee Input: {knee_input}")
+        print(f"Left Knee Input: {left_knee_input}")
+        print(f"Right Knee Input: {right_knee_input}")
+        print(f"Overall Knee Input: {overall_knee_input}")
         
-        # Generate response using the biotech_text_expert_knee model
-        if knee_input and knee_input.strip():
-            response = ollama.chat(
-                model='biotech_knee_expert',
-                messages=[
-                    {
-                        "role": "user", 
-                        "content": knee_input
-                    }
-                ]
-            )
-            return response['message']['content']
+        # Initialize results
+        left_result = ""
+        right_result = ""
+        overall_result = ""
+        
+        # Generate left knee assessment
+        if left_knee_input and left_knee_input.strip():
+            try:
+                response = ollama.chat(
+                    model='biotech_knee_left',
+                    messages=[
+                        {
+                            "role": "user", 
+                            "content": left_knee_input
+                        }
+                    ]
+                )
+                left_result = response['message']['content']
+            except Exception as e:
+                left_result = f"Error processing left knee assessment: {e}"
         else:
-            return "No valid knee data available for assessment."
+            left_result = "No valid left knee data available for assessment."
+        
+        # Generate right knee assessment
+        if right_knee_input and right_knee_input.strip():
+            try:
+                response = ollama.chat(
+                    model='biotech_knee_right',
+                    messages=[
+                        {
+                            "role": "user", 
+                            "content": right_knee_input
+                        }
+                    ]
+                )
+                right_result = response['message']['content']
+            except Exception as e:
+                right_result = f"Error processing right knee assessment: {e}"
+        else:
+            right_result = "No valid right knee data available for assessment."
+        
+        # Generate overall knee assessment
+        if overall_knee_input and overall_knee_input.strip():
+            try:
+                response = ollama.chat(
+                    model='biotech_knee_overall',
+                    messages=[
+                        {
+                            "role": "user", 
+                            "content": overall_knee_input
+                        }
+                    ]
+                )
+                overall_result = response['message']['content']
+            except Exception as e:
+                overall_result = f"Error processing overall knee assessment: {e}"
+        else:
+            overall_result = "No valid overall knee data available for assessment."
+        
+        # Combine all results into final output
+        final_output = f"{left_result}\n\n{right_result}\n\n{overall_result}"
+        
+        return final_output
         
     except Exception as e:
         return f"Error processing knee assessment: {e}"
