@@ -975,14 +975,24 @@
 </div>
 {% endif %}
 
-<p class="note">
+{% if overall_conclusion %}
+<div class="assessment-section">
+    <h2>Conclusion</h2>
+    <div class="posture-section">
+        {{ overall_conclusion|safe }}
+    </div>
+</div>
+<div class="section-divider"></div>
+{% endif %}
+
+<!-- <p class="note">
     <strong>Note:</strong> All values are normalized to the patient's body weight and compared to gold-standard ranges. 
     Range measurements are in degrees, force measurements are relative to body weight. 
     "Unavailable data" indicates measurements that could not be obtained during the assessment.
     Asymmetry percentages: <span class="asymmetry-low">Green (0-10%)</span>, 
     <span class="asymmetry-moderate">Yellow (11-20%)</span>, 
     <span class="asymmetry-high">Red (>20%)</span>
-</p>
+</p> -->
 
 
 

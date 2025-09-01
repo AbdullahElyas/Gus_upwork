@@ -11,6 +11,7 @@ import range_force_metrics
 from dotenv import load_dotenv
 import openai
 from textllm import (
+    test_biomech_conclusion,
     test_biomech_posture,
     test_biomech_core_function,
     test_biomech_foot,
@@ -259,6 +260,13 @@ class BiomechanicalReportGenerator:
 
     # Open the Google Sheet
         sheet = client.open_by_key(sheet_id)
+        # create an empty string self.Conclusion
+        self.Conclusion_Posture = ""
+        self.Conclusion_Hip = ""
+        self.Conclusion_Knee = ""
+        self.Conclusion_Ankle = ""
+        self.Conclusion_Shoulder = ""
+        self.Conclusion = ""
 
     # read the values from 7th row in the second sheet
         worksheet = sheet.get_worksheet(1)
@@ -880,8 +888,13 @@ class BiomechanicalReportGenerator:
 
     def extract_thoracic_data(self, sheet_id: str) -> Optional[ThoracicData]:
         """Extract thoracic/ribcage data from the sheet with calculations"""
+
+       
         try:
             metrics = extract_sheet_metrics_posture(sheet_id, self.worksheet, self.first_worksheet, self.third_worksheet)
+            # append to self.Conclusion metric[7]
+            if metrics and len(metrics) > 7:
+                self.Conclusion_Posture += "\nPosture Assessment: " + str(metrics[7])
             if metrics and len(metrics) >= 15:
                 ribcage_rotation_left = round(self.safe_float_convert(metrics[11]))
                 ribcage_rotation_right = round(self.safe_float_convert(metrics[12]))
@@ -990,14 +1003,18 @@ class BiomechanicalReportGenerator:
         try:
             # Get ankle assessment
             ankle_result = test_biomech_foot(sheet_id,self.data_overview_sheet,self.second_worksheet,self.openai_client)
+            
             if ankle_result and len(ankle_result) >= 3:
                 assessments['ankle'] = ankle_result.replace('\n', '<br>')
+                self.Conclusion_Ankle += "\nAnkle Assessment Conclusion: " + ankle_result
         except Exception as e:
             print(f"Error getting ankle assessment: {e}")
             
         try:
             # Get knee assessment
-            knee_assessment = test_biomech_knee(sheet_id,self.data_overview_sheet,self.openai_client)
+            knee_assessment,knee_conclusion = test_biomech_knee(sheet_id,self.data_overview_sheet,self.openai_client)
+            if knee_conclusion:
+                self.Conclusion_Knee += "\nKnee Assessment Conclusion: " + knee_conclusion
             if knee_assessment:
                 assessments['knee'] = knee_assessment.replace('\n', '<br>')
         except Exception as e:
@@ -1005,7 +1022,9 @@ class BiomechanicalReportGenerator:
             
         try:
             # Get hip assessment
-            hip_assessment = test_biomech_hip_concise(sheet_id,self.data_overview_sheet,self.openai_client)
+            hip_assessment, hip_conclusion = test_biomech_hip_concise(sheet_id, self.data_overview_sheet, self.openai_client)
+            if hip_conclusion:
+                self.Conclusion_Hip += "\nHip Assessment Conclusion: " + hip_conclusion
             if hip_assessment:
                 assessments['hip'] = hip_assessment.replace('\n', '<br>')
         except Exception as e:
@@ -1013,12 +1032,23 @@ class BiomechanicalReportGenerator:
             
         try:
             # Get shoulder assessment
-            shoulder_assessment = test_biomech_shoulder(sheet_id,self.data_overview_sheet,self.openai_client)
+            shoulder_assessment,shoulder_conclusion = test_biomech_shoulder(sheet_id,self.data_overview_sheet,self.openai_client)
             if shoulder_assessment:
                 assessments['shoulder'] = shoulder_assessment.replace('\n', '<br>')
+            if shoulder_conclusion:
+                self.Conclusion_Shoulder += "\nShoulder Assessment Conclusion: " + shoulder_conclusion
         except Exception as e:
             print(f"Error getting shoulder assessment: {e}")
-            
+
+        try:
+            # Get Conclusion
+            Conclusion_Input= test_biomech_conclusion(self.Conclusion_Posture, self.Conclusion_Hip, self.Conclusion_Knee, self.Conclusion_Ankle, self.Conclusion_Shoulder, self.openai_client)
+            if Conclusion_Input and len(Conclusion_Input) >= 4:
+                assessments['overall_conclusion'] = Conclusion_Input.replace('\n', '<br>')
+
+        except Exception as e:
+            print(f"Error getting overall conclusion: {e}")
+
         return assessments
 
     def generate_report(self, sheet_id: str, output_path: str = "biomechanical_report.html", 
@@ -1028,11 +1058,12 @@ class BiomechanicalReportGenerator:
         print("Extracting data from sheet...")
         
         # Extract all data
+        thoracic_data = self.extract_thoracic_data(sheet_id)
+        hip_data = self.extract_hip_data(sheet_id)
         ankle_data = self.extract_ankle_data(sheet_id)
         knee_data = self.extract_knee_data(sheet_id)
-        hip_data = self.extract_hip_data(sheet_id)
         shoulder_data = self.extract_shoulder_data(sheet_id)
-        thoracic_data = self.extract_thoracic_data(sheet_id)
+        
 
         print("Generating radar charts...")
         
@@ -1060,6 +1091,7 @@ class BiomechanicalReportGenerator:
             'knee_assessment': assessments.get('knee'),
             'hip_assessment': assessments.get('hip'),
             'shoulder_assessment': assessments.get('shoulder'),
+            'overall_conclusion': assessments.get('overall_conclusion'),
             'ankle_chart': charts.get('ankle'),
             'knee_chart': charts.get('knee'),
             'hip_chart': charts.get('hip'),

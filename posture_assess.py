@@ -912,48 +912,49 @@ def TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet):
     left_foot_text += f", {left_tripod_text}, {left_summary}"
     right_foot_text += f", {right_tripod_text}, {right_summary}"
 
-    def extract_foot_report_text(sheet_id):
-            # Call the main extraction function
-        scopes = [
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive'
-]
 
-        creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
-        client = gspread.authorize(creds)
-
-            # Open the Google Sheet
-        sheet = client.open_by_key(sheet_id)
-             # now search the worksheet with the name 'Report' or 'New Datavis'
-        report_worksheet = None
-        try:
-            report_worksheet = sheet.worksheet('Report')
-        except gspread.WorksheetNotFound:
-            try:
-                report_worksheet = sheet.worksheet('NEW Datavis')
-            except gspread.WorksheetNotFound:
-                print("Neither 'Report' nor 'New Datavis' worksheet found.")
-        foot_ankle_assessment = None
-        if report_worksheet:
-            # search each row 2nd column of report_worksheet whose first word is 'LENGTH TENSION' and then store the whole cell string
-            # If no such row is found, print a message and return None
-            length_tension_row = None
-            for row in report_worksheet.get_all_values():
-                if row[5].startswith('ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:'):
-                    length_tension_row = row
-                    # Now search for string 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' if found then store text coming after it
-                    if len(row) > 2 and 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' in row[5]:
-                        foot_ankle_assessment = row[5].split('ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:')[1].strip()
-                    break
-            if length_tension_row is None:
-                print(f"No 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
-        return foot_ankle_assessment
     
-    foot_ankle_assessment = extract_foot_report_text(sheet_id)
+    # foot_ankle_assessment = extract_foot_report_text(sheet_id)
 
 
-    return left_foot_text, right_foot_text, foot_ankle_assessment, asymmetry_foot
+    return left_foot_text, right_foot_text, asymmetry_foot
 
+def extract_foot_report_text(sheet_id):
+    # Call the main extraction function
+    scopes = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+    ]
+
+    creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+    client = gspread.authorize(creds)
+
+    # Open the Google Sheet
+    sheet = client.open_by_key(sheet_id)
+    # now search the worksheet with the name 'Report' or 'New Datavis'
+    report_worksheet = None
+    try:
+        report_worksheet = sheet.worksheet('Report')
+    except gspread.WorksheetNotFound:
+        try:
+            report_worksheet = sheet.worksheet('NEW Datavis')
+        except gspread.WorksheetNotFound:
+            print("Neither 'Report' nor 'New Datavis' worksheet found.")
+    foot_ankle_assessment = None
+    if report_worksheet:
+        # search each row 2nd column of report_worksheet whose first word is 'LENGTH TENSION' and then store the whole cell string
+        # If no such row is found, print a message and return None
+        length_tension_row = None
+        for row in report_worksheet.get_all_values():
+            if row[5].startswith('ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:'):
+                length_tension_row = row
+                # Now search for string 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' if found then store text coming after it
+                if len(row) > 2 and 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' in row[5]:
+                    foot_ankle_assessment = row[5].split('ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:')[1].strip()
+                break
+        if length_tension_row is None:
+            print(f"No 'ASSESSMENT OF THE FOOT AND ANKLE COMPLEX:' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
+    return foot_ankle_assessment
 
 def extract_sheet_metrics_hip(sheet_id, data_overview_sheet):
     # Call the main extraction function
@@ -1507,30 +1508,24 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
         input_lines.append("Hamstring to Quadriceps Ratio:")
         input_lines.append(hq_report)
 
-    # # Flexion vs Extension comparison
-    # left_flex_ext_comparison = calc_opposing_comparison(knee_flexion_range_left, knee_extension_range_left, "Left")
-    # right_flex_ext_comparison = calc_opposing_comparison(knee_flexion_range_right, knee_extension_range_right, "Right")
-    
-    # if left_flex_ext_comparison or right_flex_ext_comparison:
-    #     input_lines.append("")
-    #     input_lines.append("Flexion vs Extension Range:")
-    #     input_lines.append(left_flex_ext_comparison)
-    #     input_lines.append(right_flex_ext_comparison)
-    
-    # # Force comparison for flexion vs extension
-    # left_flex_ext_force_comparison = calc_opposing_comparison(knee_flexion_force_left, knee_extension_force_left, "Left")
-    # right_flex_ext_force_comparison = calc_opposing_comparison(knee_flexion_force_right, knee_extension_force_right, "Right")
-    
-    # if left_flex_ext_force_comparison or right_flex_ext_force_comparison:
-    #     input_lines.append("")
-    #     input_lines.append("Flexion vs Extension Strength:")
-    #     input_lines.append(left_flex_ext_force_comparison)
-    #     input_lines.append(right_flex_ext_force_comparison)
+    # Create Conclusion_knee_lines output with only range and strength deficits
+    conclusion_knee_lines = []
+    conclusion_knee_lines.append("Knee Assessment Summary:")
+    conclusion_knee_lines.append("")
+    conclusion_knee_lines.append("Range Deficits:")
+    if range_deficits_left:
+        conclusion_knee_lines.append(f"Left → {', '.join(range_deficits_left)}")
+    if range_deficits_right:
+        conclusion_knee_lines.append(f"Right → {', '.join(range_deficits_right)}")
+    conclusion_knee_lines.append("")
+    conclusion_knee_lines.append("Strength Deficits:")
+    if strength_deficits_left:
+        conclusion_knee_lines.append(f"Left → {', '.join(strength_deficits_left)}")
+    if strength_deficits_right:
+        conclusion_knee_lines.append(f"Right → {', '.join(strength_deficits_right)}")
+    conclusion_knee_lines.append("")
 
-    
-    
-    
-    return "\n".join(input_lines)
+    return "\n".join(input_lines), "\n".join(conclusion_knee_lines)
 
 def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
     """
@@ -1751,6 +1746,7 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
             if largest_variation is None or result[0] > largest_variation[0]:
                 largest_variation = result
     
+
     # Overall Notes section
     input_lines.append("Overall Notes:")
     input_lines.append("")
@@ -1779,8 +1775,26 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
         input_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
         input_lines.append("")
         input_lines.append("Inverse relationship in ROM highlights femur positioning changes")
-    
-    return "\n".join(input_lines)
+
+    # also make hip_conclusion_lines add everything in it after overall notes
+    hip_conclusion_lines = []
+    hip_conclusion_lines.append("Hip Assessment Summary:")
+    hip_conclusion_lines.append("")
+    hip_conclusion_lines.append("Range Deficits:")
+    hip_conclusion_lines.append(f"Left → {', '.join(range_deficits_left)}")
+    hip_conclusion_lines.append(f"Right → {', '.join(range_deficits_right)}")
+    hip_conclusion_lines.append("")
+    hip_conclusion_lines.append("Strength Deficits:")
+    hip_conclusion_lines.append(f"Left → {', '.join(strength_deficits_left)}")
+    hip_conclusion_lines.append(f"Right → {', '.join(strength_deficits_right)}")
+    hip_conclusion_lines.append("")
+    if largest_variation:
+        hip_conclusion_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
+        hip_conclusion_lines.append("Inverse relationship in ROM highlights femur positioning changes")
+
+
+
+    return "\n".join(input_lines), "\n".join(hip_conclusion_lines)
 
 # Also update the main TextGen_Hip function
 def TextGen_Hip(sheet_id,data_overview_sheet):
@@ -2069,39 +2083,9 @@ def TextGen_Hip(sheet_id,data_overview_sheet):
     else:
         deficit_summary = "No significant range or strength deficits noted in hip movements."
     # Extract existing hip report text (similar to foot/ankle function)
-    def extract_hip_report_text(sheet_id):
-        scopes = [
-            'https://www.googleapis.com/auth/spreadsheets',
-            'https://www.googleapis.com/auth/drive'
-        ]
-        
-        from google.oauth2.service_account import Credentials
-        import gspread
-        
-        creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(sheet_id)
-        report_worksheet = None
-        try:
-            report_worksheet = sheet.worksheet('Report')
-        except gspread.WorksheetNotFound:
-            try:
-                report_worksheet = sheet.worksheet('NEW Datavis')
-            except gspread.WorksheetNotFound:
-                print("Neither 'Report' nor 'New Datavis' worksheet found.")
-        
-        hip_assessment = None
-        if report_worksheet:
-            for row in report_worksheet.get_all_values():
-                if len(row) > 7 and 'ASSESSMENT OF THE HIP:' in row[7]:
-                    hip_assessment = row[7].split('ASSESSMENT OF THE HIP:')[1].strip()
-                    break
-            if hip_assessment is None:
-                print(f"No 'ASSESSMENT OF THE HIP:' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
-        return hip_assessment
+
     
-    hip_assessment_existing = extract_hip_report_text(sheet_id)
+    
     
     # Generate concise input
     concise_input = TextGen_Hip_Concise(sheet_id)
@@ -2121,7 +2105,6 @@ def TextGen_Hip(sheet_id,data_overview_sheet):
     
     return (
         final_hip_assessment,
-        hip_assessment_existing,
         overall_asymmetry,
         {
             'flexion': hip_flexion_summary,
@@ -2871,18 +2854,32 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
             for comp in force_rotation_comparisons:
                 lines.append(f"    {comp}")
             lines.append("")
-    
     # Deficits
     lines.append("Deficits (<85% GS):")
     if left_deficits:
         lines.append(f"  Left: {', '.join(left_deficits)}")
     if right_deficits:
         lines.append(f"  Right: {', '.join(right_deficits)}")
-    
     if not left_deficits and not right_deficits:
         lines.append("  None identified")
-    
-    return "\n".join(lines)
+
+    # Add Conclusion_shoulder_lines output
+    if not left_deficits and not right_deficits:
+        Conclusion_shoulder_lines = None
+    else:
+        Conclusion_shoulder_lines = []
+        Conclusion_shoulder_lines.append("Shoulder Assessment Summary:")
+        Conclusion_shoulder_lines.append("")
+        Conclusion_shoulder_lines.append("Deficits (<85% GS):")
+        if left_deficits:
+            Conclusion_shoulder_lines.append(f"Left: {', '.join(left_deficits)}")
+        if right_deficits:
+            Conclusion_shoulder_lines.append(f"Right: {', '.join(right_deficits)}")
+        Conclusion_shoulder_lines.append("")
+
+        Conclusion_shoulder_lines = "\n".join(Conclusion_shoulder_lines)
+
+    return "\n".join(lines), Conclusion_shoulder_lines
 
 
 def extract_shoulder_report_text(sheet_id):
@@ -3327,6 +3324,38 @@ def create_all_radar_charts(sheet_id, data_overview_sheet, second_worksheet, sav
     return charts
 
 
+def extract_hip_report_text(sheet_id):
+        scopes = [
+            'https://www.googleapis.com/auth/spreadsheets',
+            'https://www.googleapis.com/auth/drive'
+        ]
+        
+        from google.oauth2.service_account import Credentials
+        import gspread
+        
+        creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id)
+        report_worksheet = None
+        try:
+            report_worksheet = sheet.worksheet('Report')
+        except gspread.WorksheetNotFound:
+            try:
+                report_worksheet = sheet.worksheet('NEW Datavis')
+            except gspread.WorksheetNotFound:
+                print("Neither 'Report' nor 'New Datavis' worksheet found.")
+        
+        hip_assessment = None
+        if report_worksheet:
+            for row in report_worksheet.get_all_values():
+                if len(row) > 7 and 'ASSESSMENT OF THE HIP:' in row[7]:
+                    hip_assessment = row[7].split('ASSESSMENT OF THE HIP:')[1].strip()
+                    break
+            if hip_assessment is None:
+                print(f"No 'ASSESSMENT OF THE HIP:' row found in 'Report' or 'NEW Datavis' worksheet for sheet ID {sheet_id}.")
+        return hip_assessment
+
 # Create individual charts
 if __name__ == "__main__":
     scopes = [
@@ -3338,14 +3367,43 @@ if __name__ == "__main__":
     client = gspread.authorize(creds)
 
     sheet_id = "1L964TaAjOiI2HT1jPcdZbY8KeWeSPD22wvxVKfKUVdg"
-    fig = create_radar_chart_shoulder(sheet_id, "shoulder_chart.png")
 
-    # Create all charts
-    charts = create_all_radar_charts(sheet_id, "./charts/")
-    # input_lines = TextGen_Shoulder_Concise(sheet_id)
-# output = extract_shoulder_report_text(sheet_id)
-# print("Input :", input_lines)
-# print("Output:", output)
+    sheet = client.open_by_key(sheet_id)
+    data_overview_sheet = sheet.worksheet("Data Overview")
+    second_worksheet = sheet.get_worksheet(1)
+    # get hip concise text gen
+
+    # Get the Conclusion for Knee,Hip and Shoulder
+    _,input_lines_knee = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
+    # output = extract_knee_report_text(sheet_id)
+    
+    # print("Output:", output)
+
+    _,input_lines_hip = TextGen_Hip_Concise(sheet_id, data_overview_sheet)
+    # output = extract_hip_report_text(sheet_id)
+   
+    # print("Output:", output)
+
+    _,input_lines_shoulder = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
+    # output = extract_shoulder_report_text(sheet_id)
+
+    left_ankle,right_ankle,assymetry =TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet)
+
+    ankle = f"{left_ankle}\n{right_ankle}\n{assymetry}"
+
+    ankle_input = f"Ankle Assessment Summary:\n\n{ankle}"
+
+    worksheet_first = sheet.get_worksheet(0)
+    worksheet_third = sheet.get_worksheet(2)
+    metrics = extract_sheet_metrics_posture(sheet_id, second_worksheet,worksheet_first,worksheet_third)
+    posture = metrics[7]
+    posture_input = f"Posture Assessment Summary:\n\n{posture}"
+
+    Conclusion_input = posture_input + "\n\n" + input_lines_hip + "\n\n" + input_lines_knee + "\n\n" + ankle_input + "\n\n" + input_lines_shoulder
+
+    print("Input:", Conclusion_input)
+
+   # print("Output:", output)
 
 # # evaluate the function
 # # Example usage:

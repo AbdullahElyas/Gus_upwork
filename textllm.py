@@ -159,7 +159,7 @@ def test_biomech_foot(sheet_id,data_overview_sheet,second_worksheet, openai_clie
     
     try:
         # Extract foot and ankle metrics from the sheet
-        left_foot_text, right_foot_text, foot_ankle_assessment, asymmetry_foot = TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet)
+        left_foot_text, right_foot_text, asymmetry_foot = TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet)
 
         # Combine left and right foot data into input string
         input_string = f"{left_foot_text}\n{right_foot_text}\n{asymmetry_foot}"
@@ -313,7 +313,7 @@ def test_biomech_hip_concise(sheet_id, data_overview_sheet, openai_client):
     
     try:
         # Extract concise hip assessment input
-        concise_input = TextGen_Hip_Concise(sheet_id, data_overview_sheet)
+        concise_input,conclusion_hip = TextGen_Hip_Concise(sheet_id, data_overview_sheet)
 
         print(f"Concise Hip Input: {concise_input}")
         
@@ -371,12 +371,12 @@ YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED."""
                 max_tokens=700,
                 top_p=0.7
             )
-            return response.choices[0].message.content.strip()
+            return response.choices[0].message.content.strip(), conclusion_hip
         else:
             return "No valid hip data available for concise assessment."
         
     except Exception as e:
-        return f"Error processing concise hip assessment: {e}"
+        return f"Error processing concise hip assessment: {e}", conclusion_hip
 
 def test_biomech_knee(sheet_id, data_overview_sheet, openai_client):
     """
@@ -387,7 +387,7 @@ def test_biomech_knee(sheet_id, data_overview_sheet, openai_client):
     
     try:
         # Extract knee assessment input using the concise function
-        knee_input = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
+        knee_input,conclusion_knee = TextGen_Knee_Concise(sheet_id, data_overview_sheet)
 
         print(f"Knee Input: {knee_input}")
         
@@ -464,13 +464,12 @@ YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED."""
                 max_tokens=600,
                 top_p=0.7
             )
-            return response.choices[0].message.content.strip()
+            return response.choices[0].message.content.strip(), conclusion_knee
         else:
-            return "No valid knee data available for assessment."
-        
+            return "No valid knee data available for assessment.", conclusion_knee
+
     except Exception as e:
-        return f"Error processing knee assessment: {e}"
-    
+        return f"Error processing knee assessment: {e}", conclusion_knee
 
 
 
@@ -483,7 +482,7 @@ def test_biomech_shoulder(sheet_id, data_overview_sheet, openai_client):
     
     try:
         # Extract shoulder assessment input using the concise function
-        shoulder_input = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
+        shoulder_input,conclusion_shoulder = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
 
         print(f"Shoulder Input: {shoulder_input}")
         
@@ -537,12 +536,97 @@ Shoulder Summary: Your transverse plane range is biased towards external rotatio
                 max_tokens=600,
                 top_p=0.6
             )
+            return response.choices[0].message.content.strip(), conclusion_shoulder
+        else:
+            return "No valid shoulder data available for assessment.", conclusion_shoulder
+
+    except Exception as e:
+        return f"Error processing shoulder assessment: {e}", conclusion_shoulder
+
+def test_biomech_conclusion(posture_text, hip_text, knee_text, ankle_text, shoulder_text, openai_client):
+    """
+    Generate a comprehensive biomechanical assessment conclusion using OpenAI GPT-4o-mini
+    Takes individual assessment summaries and creates unified conclusion following strict template
+    """
+    
+    try:
+        # Combine all assessment inputs into structured format
+        input_string = f"""Posture Assessment Summary:
+{posture_text}
+
+Hip Assessment Summary:
+{hip_text}
+
+Knee Assessment Summary:
+{knee_text}
+
+Ankle Assessment Summary:
+{ankle_text}
+
+Shoulder Assessment Summary:
+{shoulder_text}"""
+
+        print(f"Conclusion Input: {input_string}")
+        
+        # System prompt with strict template enforcement based on provided example
+        system_prompt = """You are a biomechanical assessment expert creating comprehensive conclusions. You MUST follow the EXACT 4-paragraph template structure shown in the example. DO NOT deviate from this format or exceed the length.
+
+MANDATORY TEMPLATE STRUCTURE:
+1. Paragraph 1: Posture analysis (forward head posture, thoracic kyphosis, rib cage depression, shoulder positioning, pelvic rotation effects)
+2. Paragraph 2: Hip compensation patterns (propulsion strategies, internal rotation limitations, hip extension issues, spine overuse, mid-foot awareness)
+3. Paragraph 3: Hip/knee/ankle integration (range of motion improvements, tissue loading efficiency, joint articulation, muscle contraction quality, force discrepancies)
+4. Paragraph 4: Shoulder girdle solutions (ribcage and scapula mechanics, resistance training approach, fascial release, deltoids and rotator cuff focus)
+
+KEY TERMINOLOGY:
+- Posture: thoracic kyphosis, rib cage depression, externally rotated position, internal/external rotation, correctives, gait consequences
+- Hip: compensations, forward propulsion, closed-chain movements, force transfer, hip extension, downward force, mid-foot pressurizing
+- Integration: range of motion, tissue loading patterns, joint articulation, muscle contraction quality, force discrepancies
+- Shoulder: shoulder girdle, ribcage mechanics, scapula mechanics, heavy isometrics, eccentrics, fascial release, deltoids, rotator cuff complex
+
+STRICT EXAMPLE TO FOLLOW EXACTLY:
+Input: Posture Assessment Summary: These readings indicate you have a Forward Head Posture
+Hip Assessment Summary: Range Deficits: Left → Extension, Abduction, Internal Rotation; Right → Extension, Abduction, Internal Rotation; Strength Deficits: Left → Flexion, Abduction, Adduction, External Rotation, Internal Rotation; Right → Flexion, Extension, Abduction, Adduction, External Rotation, Internal Rotation; Largest range variation: Hip Flexion/Extension Range (Left) → 58.6% difference; Inverse relationship in ROM highlights femur positioning changes
+Knee Assessment Summary: Range Deficits: Left → Flexion; Right → Flexion; Strength Deficits: Left → Flexion, Extension; Right → Flexion, Extension
+Ankle Assessment Summary: Left/Right Foot Position: neutral position, poor dorsiflexion range and strength, poor plantarflexion strength, very little midfoot movement, asymmetry present
+Shoulder Assessment Summary: Deficits (<85% GS): Left: Shoulder "I", Shoulder "Y", Shoulder "T"; Right: Internal Rotation, Shoulder "Y", Shoulder "T"
+
+MANDATORY OUTPUT FORMAT:
+Our results indicate you have a forward head posture. This is characterised by thoracic kyphosis which creates a depression of the rib cage since the thorax is tipped forward. From a standing position this gives the appearance of the shoulders rounding forward and thus sitting in an externally rotated position. At the pelvis there is often a loss of internal rotation and a magnification of external rotation. Your results would suggest this and you would benefit from some correctives to help address this posture and rib cage dynamics. This position also has consequences during gait.
+
+There are some obvious compensations occurring at the hip; with different strategies are being utilised to generate forward propulsion during gait/running and when pushing through the ground in closed-chain movements common when transferring force. Internal rotation is also closely paired with achieving hip extension, both movements had limitations in your case. When both are reduced this would indicate the spine is being overused to generate a downward force. Alongside working on your downforce, we need to build some awareness of the mid foot and pressurising through the floor.
+
+Our method would be to increase range of motion at the hip and integrate lots of work around the foot to help you load into tissues in the most efficient pattern. This will ensure key areas are not being overloaded. Increasing range will allow for better articulation of the joint, this will in turn improve muscle contraction quality and we can begin the address the force discrepancies at the knee and the hip.
+
+In order to move your shoulder girdle more efficiently, we need to address your ribcage and scapula mechanics. We believe you would adapt to this faster through a high level of resistance (heavy isometrics and eccentrics) after fascial release work. A large emphasis should be on your deltoids and rotator cuff complex as well as the scapula.
+
+YOU MUST FOLLOW THIS EXACT FOUR-PARAGRAPH STRUCTURE. KEEP LENGTH SIMILAR TO EXAMPLE. NO DEVIATIONS ALLOWED."""
+
+        # Generate response using OpenAI GPT-4o-mini
+        if input_string.strip():
+            response = openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": input_string
+                    }
+                ],
+                temperature=0.1,  # Low temperature for consistent template adherence
+                max_tokens=800,
+                top_p=0.6
+            )
             return response.choices[0].message.content.strip()
         else:
-            return "No valid shoulder data available for assessment."
+            return "No valid assessment data available for conclusion generation."
         
     except Exception as e:
-        return f"Error processing shoulder assessment: {e}"
+        return f"Error processing biomechanical conclusion: {e}"
+
+# ...existing code...
 # final_text = test_biomech_posture(sheet_id)
 # print(f"Posture Assessment Result: {final_text}")
 # result = test_biomech_shoulder(sheet_id)
