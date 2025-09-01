@@ -8,6 +8,8 @@ from typing import Optional, Dict, Any
 import base64
 from io import BytesIO
 import range_force_metrics
+from dotenv import load_dotenv
+import openai
 from textllm import (
     test_biomech_posture,
     test_biomech_core_function,
@@ -269,6 +271,14 @@ class BiomechanicalReportGenerator:
         self.first_worksheet = first_worksheet
         self.third_worksheet = third_worksheet
         self.mass = 1
+        # Load environment variables from .env file
+        load_dotenv()
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if openai_api_key:
+            openai_client = openai.OpenAI(api_key=openai_api_key)
+            self.openai_client = openai_client
+        else:
+            self.openai_client = None
 
         # Define gold standards
         self.gold_standards = {
@@ -964,7 +974,7 @@ class BiomechanicalReportGenerator:
         
         try:
             # Get posture assessment
-            posture_result = test_biomech_posture(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet)
+            posture_result = test_biomech_posture(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet,self.openai_client)
             if posture_result and len(posture_result) >= 4:
                 assessments['posture'] = posture_result.replace('\n', '<br>')
         except Exception as e:
@@ -972,14 +982,14 @@ class BiomechanicalReportGenerator:
 
         try:
             #Get Core Function Assessment
-            core_result = test_biomech_core_function(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet)
+            core_result = test_biomech_core_function(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet,self.openai_client)
             if core_result and len(core_result) >= 4:
                 assessments['core'] = core_result.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting core assessment: {e}")
         try:
             # Get ankle assessment
-            ankle_result = test_biomech_foot(sheet_id,self.data_overview_sheet,self.second_worksheet)
+            ankle_result = test_biomech_foot(sheet_id,self.data_overview_sheet,self.second_worksheet,self.openai_client)
             if ankle_result and len(ankle_result) >= 3:
                 assessments['ankle'] = ankle_result.replace('\n', '<br>')
         except Exception as e:
@@ -987,7 +997,7 @@ class BiomechanicalReportGenerator:
             
         try:
             # Get knee assessment
-            knee_assessment = test_biomech_knee(sheet_id,self.data_overview_sheet)
+            knee_assessment = test_biomech_knee(sheet_id,self.data_overview_sheet,self.openai_client)
             if knee_assessment:
                 assessments['knee'] = knee_assessment.replace('\n', '<br>')
         except Exception as e:
@@ -995,7 +1005,7 @@ class BiomechanicalReportGenerator:
             
         try:
             # Get hip assessment
-            hip_assessment = test_biomech_hip_concise(sheet_id,self.data_overview_sheet)
+            hip_assessment = test_biomech_hip_concise(sheet_id,self.data_overview_sheet,self.openai_client)
             if hip_assessment:
                 assessments['hip'] = hip_assessment.replace('\n', '<br>')
         except Exception as e:
@@ -1003,7 +1013,7 @@ class BiomechanicalReportGenerator:
             
         try:
             # Get shoulder assessment
-            shoulder_assessment = test_biomech_shoulder(sheet_id,self.data_overview_sheet)
+            shoulder_assessment = test_biomech_shoulder(sheet_id,self.data_overview_sheet,self.openai_client)
             if shoulder_assessment:
                 assessments['shoulder'] = shoulder_assessment.replace('\n', '<br>')
         except Exception as e:
