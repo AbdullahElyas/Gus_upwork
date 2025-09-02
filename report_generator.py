@@ -10,6 +10,7 @@ from io import BytesIO
 import range_force_metrics
 from dotenv import load_dotenv
 import openai
+import json
 from textllm import (
     test_biomech_conclusion,
     test_biomech_posture,
@@ -982,46 +983,56 @@ class BiomechanicalReportGenerator:
         return charts
 
     def get_assessment_texts(self, sheet_id: str) -> Dict[str, str]:
-        """Get assessment texts from LLM functions"""
+        """Get assessment texts from LLM functions, with caching"""
+
         assessments = {}
-        
+        cache_dir = "./cache"
+        os.makedirs(cache_dir, exist_ok=True)
+        cache_path = os.path.join(cache_dir, f"{sheet_id}_assessments.json")
+
+        # Try to load from cache
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, "r", encoding="utf-8") as f:
+                    cached = json.load(f)
+                if isinstance(cached, dict):
+                    return cached
+            except Exception as e:
+                print(f"Error loading cached assessments: {e}")
+
+        # If not cached, generate assessments
         try:
-            # Get posture assessment
-            posture_result = test_biomech_posture(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet,self.openai_client)
+            posture_result = test_biomech_posture(sheet_id, self.worksheet, self.first_worksheet, self.third_worksheet, self.openai_client)
             if posture_result and len(posture_result) >= 4:
                 assessments['posture'] = posture_result.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting posture assessment: {e}")
 
         try:
-            #Get Core Function Assessment
-            core_result = test_biomech_core_function(sheet_id,self.worksheet,self.first_worksheet,self.third_worksheet,self.openai_client)
+            core_result = test_biomech_core_function(sheet_id, self.worksheet, self.first_worksheet, self.third_worksheet, self.openai_client)
             if core_result and len(core_result) >= 4:
                 assessments['core'] = core_result.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting core assessment: {e}")
+
         try:
-            # Get ankle assessment
-            ankle_result = test_biomech_foot(sheet_id,self.data_overview_sheet,self.second_worksheet,self.openai_client)
-            
+            ankle_result = test_biomech_foot(sheet_id, self.data_overview_sheet, self.second_worksheet, self.openai_client)
             if ankle_result and len(ankle_result) >= 3:
                 assessments['ankle'] = ankle_result.replace('\n', '<br>')
                 self.Conclusion_Ankle += "\nAnkle Assessment Conclusion: " + ankle_result
         except Exception as e:
             print(f"Error getting ankle assessment: {e}")
-            
+
         try:
-            # Get knee assessment
-            knee_assessment,knee_conclusion = test_biomech_knee(sheet_id,self.data_overview_sheet,self.openai_client)
+            knee_assessment, knee_conclusion = test_biomech_knee(sheet_id, self.data_overview_sheet, self.openai_client)
             if knee_conclusion:
                 self.Conclusion_Knee += "\nKnee Assessment Conclusion: " + knee_conclusion
             if knee_assessment:
                 assessments['knee'] = knee_assessment.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting knee assessment: {e}")
-            
+
         try:
-            # Get hip assessment
             hip_assessment, hip_conclusion = test_biomech_hip_concise(sheet_id, self.data_overview_sheet, self.openai_client)
             if hip_conclusion:
                 self.Conclusion_Hip += "\nHip Assessment Conclusion: " + hip_conclusion
@@ -1029,10 +1040,9 @@ class BiomechanicalReportGenerator:
                 assessments['hip'] = hip_assessment.replace('\n', '<br>')
         except Exception as e:
             print(f"Error getting hip assessment: {e}")
-            
+
         try:
-            # Get shoulder assessment
-            shoulder_assessment,shoulder_conclusion = test_biomech_shoulder(sheet_id,self.data_overview_sheet,self.openai_client)
+            shoulder_assessment, shoulder_conclusion = test_biomech_shoulder(sheet_id, self.data_overview_sheet, self.openai_client)
             if shoulder_assessment:
                 assessments['shoulder'] = shoulder_assessment.replace('\n', '<br>')
             if shoulder_conclusion:
@@ -1041,13 +1051,25 @@ class BiomechanicalReportGenerator:
             print(f"Error getting shoulder assessment: {e}")
 
         try:
-            # Get Conclusion
-            Conclusion_Input= test_biomech_conclusion(self.Conclusion_Posture, self.Conclusion_Hip, self.Conclusion_Knee, self.Conclusion_Ankle, self.Conclusion_Shoulder, self.openai_client)
+            Conclusion_Input = test_biomech_conclusion(
+                self.Conclusion_Posture,
+                self.Conclusion_Hip,
+                self.Conclusion_Knee,
+                self.Conclusion_Ankle,
+                self.Conclusion_Shoulder,
+                self.openai_client
+            )
             if Conclusion_Input and len(Conclusion_Input) >= 4:
                 assessments['overall_conclusion'] = Conclusion_Input.replace('\n', '<br>')
-
         except Exception as e:
             print(f"Error getting overall conclusion: {e}")
+
+        # Save to cache
+        try:
+            with open(cache_path, "w", encoding="utf-8") as f:
+                json.dump(assessments, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Error saving assessments to cache: {e}")
 
         return assessments
 
