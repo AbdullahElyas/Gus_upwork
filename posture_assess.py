@@ -3403,6 +3403,12 @@ if __name__ == "__main__":
 
     print("Input:", Conclusion_input)
 
+
+
+    ffat_status, stva_status, ptva_status, lact_status, LAST_Strength, JUAST_Strength, ffat_note, stva_note, ptva_note, lact_note, LAST_note, JUAST_note, string_core_function=extract_sheet_metrics_corefunction(sheet_id, second_worksheet,worksheet_first,worksheet_third)
+
+    print("core_input:", string_core_function)
+
    # print("Output:", output)
 
 # # evaluate the function

@@ -128,7 +128,7 @@ def create_radar_chart(gold_standard, left, right, movement_names, title="Radar 
     ax.set_xticklabels([])  # Remove default labels
     ax.set_ylim(0,120)
     ax.set_yticks(axis_array)
-    ax.set_yticklabels([str(i) for i in axis_array], fontsize=11, color='#c9ada7')
+    ax.set_yticklabels([str(i) for i in axis_array], fontsize=11, color='#c9ada7', zorder=15)
     ax.set_rlabel_position(90)
     
     # Plot curves with fill and shadow

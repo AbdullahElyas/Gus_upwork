@@ -137,7 +137,7 @@ Use professional biomechanical terminology while maintaining clarity. Adapt your
                     },
                     {
                         "role": "user",
-                        "content": clean_input
+                        "content": string_core_function
                     }
                 ],
                 temperature=0.1,

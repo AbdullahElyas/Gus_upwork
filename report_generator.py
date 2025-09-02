@@ -11,6 +11,7 @@ import range_force_metrics
 from dotenv import load_dotenv
 import openai
 import json
+from sheetid_fetch import get_sheet_ids_from_folder
 from textllm import (
     test_biomech_conclusion,
     test_biomech_posture,
@@ -257,6 +258,7 @@ class BiomechanicalReportGenerator:
 
         creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
         client = gspread.authorize(creds)
+        drive_service = build('drive', 'v3', credentials=creds)
         
 
     # Open the Google Sheet
@@ -268,6 +270,18 @@ class BiomechanicalReportGenerator:
         self.Conclusion_Ankle = ""
         self.Conclusion_Shoulder = ""
         self.Conclusion = ""
+        self.FOLDER_ID = '1Tp9NL94dqQVD8XiZVjNH4_yT4CGhFER4'  # Not the link! Just the ID
+        try:
+            self.SheetID = get_sheet_ids_from_folder(self.FOLDER_ID, drive_service)
+        except Exception as e:
+            print(f"Error fetching sheet IDs from folder: {e}")
+            # Fallback: read from text file
+            try:
+                with open("sheetid_fetch.txt", "r", encoding="utf-8") as f:
+                    self.SheetID = [line.strip() for line in f if line.strip()]
+            except Exception as e2:
+                print(f"Error reading sheet IDs from sheetid_fetch.txt: {e2}")
+                self.SheetID = []
 
     # read the values from 7th row in the second sheet
         worksheet = sheet.get_worksheet(1)
