@@ -482,7 +482,9 @@ def test_biomech_shoulder(sheet_id, data_overview_sheet, openai_client):
     
     try:
         # Extract shoulder assessment input using the concise function
-        shoulder_input,conclusion_shoulder = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
+        shoulder_input, conclusion_shoulder = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
+        if not shoulder_input or not conclusion_shoulder:
+            return None, None
 
         print(f"Shoulder Input: {shoulder_input}")
         
@@ -550,32 +552,49 @@ def test_biomech_conclusion(posture_text, hip_text, knee_text, ankle_text, shoul
     """
     
     try:
-        # Combine all assessment inputs into structured format
-        input_string = f"""Posture Assessment Summary:
-{posture_text}
-
-Hip Assessment Summary:
-{hip_text}
-
-Knee Assessment Summary:
-{knee_text}
-
-Ankle Assessment Summary:
-{ankle_text}
-
-Shoulder Assessment Summary:
-{shoulder_text}"""
-
-        print(f"Conclusion Input: {input_string}")
+        # Combine all assessment inputs into structured format, only include headings if text is present
+        input_parts = []
+        available_sections = []
         
-        # System prompt with strict template enforcement based on provided example
-        system_prompt = """You are a biomechanical assessment expert creating comprehensive conclusions. You MUST follow the EXACT 4-paragraph template structure shown in the example. DO NOT deviate from this format or exceed the length.
+        if posture_text and posture_text.strip():
+            input_parts.append(f"Posture Assessment Summary:\n{posture_text}")
+            available_sections.append("posture")
+        if hip_text and hip_text.strip():
+            input_parts.append(f"Hip Assessment Summary:\n{hip_text}")
+            available_sections.append("hip")
+        if knee_text and knee_text.strip():
+            input_parts.append(f"Knee Assessment Summary:\n{knee_text}")
+            available_sections.append("knee")
+        if ankle_text and ankle_text.strip():
+            input_parts.append(f"Ankle Assessment Summary:\n{ankle_text}")
+            available_sections.append("ankle")
+        if shoulder_text and shoulder_text.strip():
+            input_parts.append(f"Shoulder Assessment Summary:\n{shoulder_text}")
+            available_sections.append("shoulder")
 
-MANDATORY TEMPLATE STRUCTURE:
-1. Paragraph 1: Posture analysis (forward head posture, thoracic kyphosis, rib cage depression, shoulder positioning, pelvic rotation effects)
-2. Paragraph 2: Hip compensation patterns (propulsion strategies, internal rotation limitations, hip extension issues, spine overuse, mid-foot awareness)
-3. Paragraph 3: Hip/knee/ankle integration (range of motion improvements, tissue loading efficiency, joint articulation, muscle contraction quality, force discrepancies)
-4. Paragraph 4: Shoulder girdle solutions (ribcage and scapula mechanics, resistance training approach, fascial release, deltoids and rotator cuff focus)
+        input_string = "\n\n".join(input_parts)
+        print(f"Conclusion Input: {input_string}")
+        print(f"Available sections: {available_sections}")
+        
+        # Dynamic system prompt based on available sections
+        system_prompt = f"""You are a biomechanical assessment expert creating comprehensive conclusions. You MUST follow the template structure but ONLY include paragraphs for assessment sections that are provided in the input.
+
+AVAILABLE ASSESSMENT SECTIONS: {', '.join(available_sections)}
+
+PARAGRAPH STRUCTURE RULES:
+- ONLY write paragraphs for assessment sections that appear in the input
+- If Posture Assessment Summary is provided: Include paragraph about posture analysis (forward head posture, thoracic kyphosis, rib cage depression, shoulder positioning, pelvic rotation effects)
+- If Hip Assessment Summary is provided: Include paragraph about hip compensation patterns (propulsion strategies, internal rotation limitations, hip extension issues, spine overuse, mid-foot awareness)
+- If Knee/Ankle Assessment Summary is provided: Include paragraph about integration (range of motion improvements, tissue loading efficiency, joint articulation, muscle contraction quality, force discrepancies)
+- If Shoulder Assessment Summary is provided: Include paragraph about shoulder girdle solutions (ribcage and scapula mechanics, resistance training approach, fascial release, deltoids and rotator cuff focus)
+
+IMPORTANT INSTRUCTIONS:
+- DO NOT write paragraphs for missing assessment sections
+- DO NOT mention assessments that were not provided in the input
+- If Shoulder Assessment Summary is missing from input, DO NOT include the shoulder paragraph
+- Adapt the conclusion length based on available data
+- Maintain professional biomechanical terminology
+- Focus only on the assessments that are actually present
 
 KEY TERMINOLOGY:
 - Posture: thoracic kyphosis, rib cage depression, externally rotated position, internal/external rotation, correctives, gait consequences
@@ -583,14 +602,13 @@ KEY TERMINOLOGY:
 - Integration: range of motion, tissue loading patterns, joint articulation, muscle contraction quality, force discrepancies
 - Shoulder: shoulder girdle, ribcage mechanics, scapula mechanics, heavy isometrics, eccentrics, fascial release, deltoids, rotator cuff complex
 
-STRICT EXAMPLE TO FOLLOW EXACTLY:
-Input: Posture Assessment Summary: These readings indicate you have a Forward Head Posture
-Hip Assessment Summary: Range Deficits: Left → Extension, Abduction, Internal Rotation; Right → Extension, Abduction, Internal Rotation; Strength Deficits: Left → Flexion, Abduction, Adduction, External Rotation, Internal Rotation; Right → Flexion, Extension, Abduction, Adduction, External Rotation, Internal Rotation; Largest range variation: Hip Flexion/Extension Range (Left) → 58.6% difference; Inverse relationship in ROM highlights femur positioning changes
-Knee Assessment Summary: Range Deficits: Left → Flexion; Right → Flexion; Strength Deficits: Left → Flexion, Extension; Right → Flexion, Extension
-Ankle Assessment Summary: Left/Right Foot Position: neutral position, poor dorsiflexion range and strength, poor plantarflexion strength, very little midfoot movement, asymmetry present
-Shoulder Assessment Summary: Deficits (<85% GS): Left: Shoulder "I", Shoulder "Y", Shoulder "T"; Right: Internal Rotation, Shoulder "Y", Shoulder "T"
+EXAMPLE STRUCTURE (when all sections are available):
+Paragraph 1: Posture analysis (only if Posture Assessment Summary provided)
+Paragraph 2: Hip compensation patterns (only if Hip Assessment Summary provided)  
+Paragraph 3: Hip/knee/ankle integration (only if Knee or Ankle Assessment Summary provided)
+Paragraph 4: Shoulder girdle solutions (only if Shoulder Assessment Summary provided)
 
-MANDATORY OUTPUT FORMAT:
+EXAMPLE OUTPUT FORMAT (when all sections present):
 Our results indicate you have a forward head posture. This is characterised by thoracic kyphosis which creates a depression of the rib cage since the thorax is tipped forward. From a standing position this gives the appearance of the shoulders rounding forward and thus sitting in an externally rotated position. At the pelvis there is often a loss of internal rotation and a magnification of external rotation. Your results would suggest this and you would benefit from some correctives to help address this posture and rib cage dynamics. This position also has consequences during gait.
 
 There are some obvious compensations occurring at the hip; with different strategies are being utilised to generate forward propulsion during gait/running and when pushing through the ground in closed-chain movements common when transferring force. Internal rotation is also closely paired with achieving hip extension, both movements had limitations in your case. When both are reduced this would indicate the spine is being overused to generate a downward force. Alongside working on your downforce, we need to build some awareness of the mid foot and pressurising through the floor.
@@ -599,7 +617,7 @@ Our method would be to increase range of motion at the hip and integrate lots of
 
 In order to move your shoulder girdle more efficiently, we need to address your ribcage and scapula mechanics. We believe you would adapt to this faster through a high level of resistance (heavy isometrics and eccentrics) after fascial release work. A large emphasis should be on your deltoids and rotator cuff complex as well as the scapula.
 
-YOU MUST FOLLOW THIS EXACT FOUR-PARAGRAPH STRUCTURE. KEEP LENGTH SIMILAR TO EXAMPLE. NO DEVIATIONS ALLOWED."""
+REMEMBER: Only include paragraphs for assessment sections that are actually provided in the input. If shoulder assessment is missing, do not include the shoulder paragraph."""
 
         # Generate response using OpenAI GPT-4o-mini
         if input_string.strip():

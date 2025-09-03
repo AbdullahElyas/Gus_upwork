@@ -2741,6 +2741,32 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
         
         return comparisons
     
+    # Check if all shoulder metrics are unavailable
+    all_metrics = [
+        shoulder_ext_rotation_range_left,
+        shoulder_ext_rotation_range_right,
+        shoulder_int_rotation_range_left,
+        shoulder_int_rotation_range_right,
+        shoulder_flexion_range_left,
+        shoulder_flexion_range_right,
+        shoulder_extension_range_left,
+        shoulder_extension_range_right,
+        shoulder_ext_rotation_force_left,
+        shoulder_ext_rotation_force_right,
+        shoulder_int_rotation_force_left,
+        shoulder_int_rotation_force_right,
+        shoulder_flexion_force_left,
+        shoulder_flexion_force_right,
+        shoulder_i_iso_left_final,
+        shoulder_i_iso_right_final,
+        shoulder_y_iso_left_final,
+        shoulder_y_iso_right_final,
+        shoulder_t_iso_left_final,
+        shoulder_t_iso_right_final
+    ]
+    if all(val == "unavailable data" or val is None or val == "" for val in all_metrics):
+        return None, None
+
     # Build the new format
     lines = []
     lines.append("Shoulder Assessment:")
@@ -3366,7 +3392,7 @@ if __name__ == "__main__":
     creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
     client = gspread.authorize(creds)
 
-    sheet_id = "1L964TaAjOiI2HT1jPcdZbY8KeWeSPD22wvxVKfKUVdg"
+    sheet_id = "1XLHc0boxOxkn18ECPTJKK-FvL0_zHtqz4Awavz1Qo4c"
 
     sheet = client.open_by_key(sheet_id)
     data_overview_sheet = sheet.worksheet("Data Overview")
@@ -3399,15 +3425,20 @@ if __name__ == "__main__":
     posture = metrics[7]
     posture_input = f"Posture Assessment Summary:\n\n{posture}"
 
-    Conclusion_input = posture_input + "\n\n" + input_lines_hip + "\n\n" + input_lines_knee + "\n\n" + ankle_input + "\n\n" + input_lines_shoulder
+    # Conclusion_input = posture_input + "\n\n" + input_lines_hip + "\n\n" + input_lines_knee + "\n\n" + ankle_input + "\n\n" + input_lines_shoulder
 
-    print("Input:", Conclusion_input)
+    # print("Input:", Conclusion_input)
 
 
 
     ffat_status, stva_status, ptva_status, lact_status, LAST_Strength, JUAST_Strength, ffat_note, stva_note, ptva_note, lact_note, LAST_note, JUAST_note, string_core_function=extract_sheet_metrics_corefunction(sheet_id, second_worksheet,worksheet_first,worksheet_third)
 
     print("core_input:", string_core_function)
+
+    shoulder_input,conclusion_shoulder = TextGen_Shoulder_Concise(sheet_id, data_overview_sheet)
+
+    print("Shoulder Input:", shoulder_input)
+    print("Shoulder Conclusion:", conclusion_shoulder)
 
    # print("Output:", output)
 

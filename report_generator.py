@@ -270,18 +270,18 @@ class BiomechanicalReportGenerator:
         self.Conclusion_Ankle = ""
         self.Conclusion_Shoulder = ""
         self.Conclusion = ""
-        self.FOLDER_ID = '1Tp9NL94dqQVD8XiZVjNH4_yT4CGhFER4'  # Not the link! Just the ID
-        try:
-            self.SheetID = get_sheet_ids_from_folder(self.FOLDER_ID, drive_service)
-        except Exception as e:
-            print(f"Error fetching sheet IDs from folder: {e}")
-            # Fallback: read from text file
-            try:
-                with open("sheetid_fetch.txt", "r", encoding="utf-8") as f:
-                    self.SheetID = [line.strip() for line in f if line.strip()]
-            except Exception as e2:
-                print(f"Error reading sheet IDs from sheetid_fetch.txt: {e2}")
-                self.SheetID = []
+        # self.FOLDER_ID = '1Tp9NL94dqQVD8XiZVjNH4_yT4CGhFER4'  # Not the link! Just the ID
+        # try:
+        #     self.SheetID = get_sheet_ids_from_folder(self.FOLDER_ID, drive_service)
+        # except Exception as e:
+        #     print(f"Error fetching sheet IDs from folder: {e}")
+        #     # Fallback: read from text file
+        #     try:
+        #         with open("sheetid_fetch.txt", "r", encoding="utf-8") as f:
+        #             self.SheetID = [line.strip() for line in f if line.strip()]
+        #     except Exception as e2:
+        #         print(f"Error reading sheet IDs from sheetid_fetch.txt: {e2}")
+        #         self.SheetID = []
 
     # read the values from 7th row in the second sheet
         worksheet = sheet.get_worksheet(1)
@@ -353,12 +353,17 @@ class BiomechanicalReportGenerator:
     
     def safe_float_convert(self, value, default=0.0):
         """Safely convert value to float"""
-        if value is None or value == "unavailable data" or value == "":
+        if value is None or value == "unavailable data" or value == "" or str(value).strip() == "":
             return default
         try:
-            return float(str(value).strip())
+            # Handle string "0" case
+            str_val = str(value).strip()
+            if str_val.lower() == "unavailable data":
+                return default
+            return float(str_val)
         except (ValueError, TypeError):
             return default
+        
     def calculate_range_from_percentage(self, percentage, gold_standard):
         """Calculate range from percentage of gold standard"""
         try:
@@ -496,30 +501,36 @@ class BiomechanicalReportGenerator:
             metrics = extract_sheet_metrics_knee(sheet_id, self.data_overview_sheet)
             metrics_raw = range_force_metrics.extract_range_force_knee(sheet_id, self.data_overview_sheet, self.second_worksheet)
             if metrics and len(metrics) >= 14:
+                # Helper to normalize values
+                def normalize(val):
+                    if val is None or str(val).strip() == "" or str(val).strip().lower() == "unavailable data":
+                        return "0"
+                    return str(val)
+
                 # Raw data
-                flex_range_left = str(metrics[0])
-                flex_range_right = str(metrics[1])
-                ext_range_left = str(metrics[2])
-                ext_range_right = str(metrics[3])
-                flex_force_left = str(metrics[4])
-                flex_force_right = str(metrics[5])
-                ext_force_left = str(metrics[6])
-                ext_force_right = str(metrics[7])
-                hq_ratio_left = str(metrics[12])
-                hq_ratio_right = str(metrics[13])
-                
+                flex_range_left = normalize(metrics[0])
+                flex_range_right = normalize(metrics[1])
+                ext_range_left = normalize(metrics[2])
+                ext_range_right = normalize(metrics[3])
+                flex_force_left = normalize(metrics[4])
+                flex_force_right = normalize(metrics[5])
+                ext_force_left = normalize(metrics[6])
+                ext_force_right = normalize(metrics[7])
+                hq_ratio_left = normalize(metrics[12])
+                hq_ratio_right = normalize(metrics[13])
+
                 # Calculate percentages and asymmetry
                 gs = self.gold_standards['knee']
-                
+
                 # Prepare force values for asymmetry calculation (raw values)
-                flexion_force_left_val = metrics_raw[4]
-                flexion_force_right_val = metrics_raw[5]
-                extension_force_left_val = metrics_raw[6]
-                extension_force_right_val = metrics_raw[7]
+                flexion_force_left_val = normalize(metrics_raw[4])
+                flexion_force_right_val = normalize(metrics_raw[5])
+                extension_force_left_val = normalize(metrics_raw[6])
+                extension_force_right_val = normalize(metrics_raw[7])
 
                 def safe_force(val):
                     try:
-                        if val is not None and str(val) != "unavailable data":
+                        if val is not None and str(val) != "unavailable data" and str(val) != "0":
                             return float(val)
                     except Exception:
                         pass
@@ -532,48 +543,48 @@ class BiomechanicalReportGenerator:
 
                 return KneeData(
                     # Range data (calculated from percentage, rounded to whole number)
-                    flexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[0], gs['flexion_range'])))),
-                    flexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[1], gs['flexion_range'])))),
-                    extension_range_left=str(round(float(self.calculate_range_from_percentage(metrics[2], gs['extension_range'])))),
-                    extension_range_right=str(round(float(self.calculate_range_from_percentage(metrics[3], gs['extension_range'])))),
+                    flexion_range_left=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[0], gs['flexion_range'])))),
+                    flexion_range_right=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[1], gs['flexion_range'])))),
+                    extension_range_left=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[2], gs['extension_range'])))),
+                    extension_range_right=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[3], gs['extension_range'])))),
                     
                     # Range percentages and asymmetry
-                    flexion_left_percent=str(round(float(metrics[0]))),
-                    flexion_right_percent=str(round(float(metrics[1]))),
+                    flexion_left_percent=str(round(self.safe_float_convert(metrics[0]))),
+                    flexion_right_percent=str(round(self.safe_float_convert(metrics[1]))),
                     flexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[0], gs['flexion_range']),
                         self.calculate_range_from_percentage(metrics[1], gs['flexion_range'])
                     ),
-                    extension_left_percent=str(round(float(metrics[2]))),
-                    extension_right_percent=str(round(float(metrics[3]))),
+                    extension_left_percent=str(round(self.safe_float_convert(metrics[2]))),
+                    extension_right_percent=str(round(self.safe_float_convert(metrics[3]))),
                     extension_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[2], gs['extension_range']),
                         self.calculate_range_from_percentage(metrics[3], gs['extension_range'])
                     ),
                     
                     # Force data (raw values, rounded to whole number)
-                    flexion_force_left=str(round(flexion_force_left_float)),
-                    flexion_force_right=str(round(flexion_force_right_float)),
-                    extension_force_left=str(round(extension_force_left_float)),
-                    extension_force_right=str(round(extension_force_right_float)),
+                    flexion_force_left=str(round(self.safe_float_convert(flexion_force_left_float))),
+                    flexion_force_right=str(round(self.safe_float_convert(flexion_force_right_float))),
+                    extension_force_left=str(round(self.safe_float_convert(extension_force_left_float))),
+                    extension_force_right=str(round(self.safe_float_convert(extension_force_right_float))),
                     hamstring_quad_ratio_left=str(round(self.safe_float_convert(metrics[12]))),
                     hamstring_quad_ratio_right=str(round(self.safe_float_convert(metrics[13]))),
                     
                     # Force percentages and asymmetry
-                    flexion_force_left_percent=str(round(float(metrics[4]))),
-                    flexion_force_right_percent=str(round(float(metrics[5]))),
+                    flexion_force_left_percent=str(round(self.safe_float_convert(metrics[4]))),
+                    flexion_force_right_percent=str(round(self.safe_float_convert(metrics[5]))),
                     flexion_force_asymmetry=self.calculate_asymmetry(
                         flexion_force_left_float,
                         flexion_force_right_float
                     ),
-                    extension_force_left_percent=str(round(float(metrics[6]))),
-                    extension_force_right_percent=str(round(float(metrics[7]))),
+                    extension_force_left_percent=str(round(self.safe_float_convert(metrics[6]))),
+                    extension_force_right_percent=str(round(self.safe_float_convert(metrics[7]))),
                     extension_force_asymmetry=self.calculate_asymmetry(
                         extension_force_left_float,
                         extension_force_right_float
                     ),
-                    hq_ratio_left_percent=str(round(float(metrics[12]))),
-                    hq_ratio_right_percent=str(round(float(metrics[13]))),
+                    hq_ratio_left_percent=str(round(self.safe_float_convert(metrics[12]))),
+                    hq_ratio_right_percent=str(round(self.safe_float_convert(metrics[13]))),
                     hq_ratio_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[12], gs['hq_ratio']),
                         self.calculate_range_from_percentage(metrics[13], gs['hq_ratio'])
@@ -591,30 +602,30 @@ class BiomechanicalReportGenerator:
             if metrics and len(metrics) >= 24:
                 # Raw data extraction
                 raw_data = {
-                    'flexion_range_left': str(metrics[0]),
-                    'flexion_range_right': str(metrics[1]),
-                    'extension_range_left': str(metrics[2]),
-                    'extension_range_right': str(metrics[3]),
-                    'abduction_range_left': str(metrics[4]),
-                    'abduction_range_right': str(metrics[5]),
-                    'adduction_range_left': str(metrics[6]),
-                    'adduction_range_right': str(metrics[7]),
-                    'ext_rotation_range_left': str(metrics[8]),
-                    'ext_rotation_range_right': str(metrics[9]),
-                    'int_rotation_range_left': str(metrics[10]),
-                    'int_rotation_range_right': str(metrics[11]),
-                    'flexion_force_left': str(metrics[12]),
-                    'flexion_force_right': str(metrics[13]),
-                    'extension_force_left': str(metrics[14]),
-                    'extension_force_right': str(metrics[15]),
-                    'abduction_force_left': str(metrics[16]),
-                    'abduction_force_right': str(metrics[17]),
-                    'adduction_force_left': str(metrics[18]),
-                    'adduction_force_right': str(metrics[19]),
-                    'ext_rotation_force_left': str(metrics[20]),
-                    'ext_rotation_force_right': str(metrics[21]),
-                    'int_rotation_force_left': str(metrics[22]),
-                    'int_rotation_force_right': str(metrics[23])
+                    'flexion_range_left': str(self.safe_float_convert(metrics[0])),
+                    'flexion_range_right': str(self.safe_float_convert(metrics[1])),
+                    'extension_range_left': str(self.safe_float_convert(metrics[2])),
+                    'extension_range_right': str(self.safe_float_convert(metrics[3])),
+                    'abduction_range_left': str(self.safe_float_convert(metrics[4])),
+                    'abduction_range_right': str(self.safe_float_convert(metrics[5])),
+                    'adduction_range_left': str(self.safe_float_convert(metrics[6])),
+                    'adduction_range_right': str(self.safe_float_convert(metrics[7])),
+                    'ext_rotation_range_left': str(self.safe_float_convert(metrics[8])),
+                    'ext_rotation_range_right': str(self.safe_float_convert(metrics[9])),
+                    'int_rotation_range_left': str(self.safe_float_convert(metrics[10])),
+                    'int_rotation_range_right': str(self.safe_float_convert(metrics[11])),
+                    'flexion_force_left': str(self.safe_float_convert(metrics[12])),
+                    'flexion_force_right': str(self.safe_float_convert(metrics[13])),
+                    'extension_force_left': str(self.safe_float_convert(metrics[14])),
+                    'extension_force_right': str(self.safe_float_convert(metrics[15])),
+                    'abduction_force_left': str(self.safe_float_convert(metrics[16])),
+                    'abduction_force_right': str(self.safe_float_convert(metrics[17])),
+                    'adduction_force_left': str(self.safe_float_convert(metrics[18])),
+                    'adduction_force_right': str(self.safe_float_convert(metrics[19])),
+                    'ext_rotation_force_left': str(self.safe_float_convert(metrics[20])),
+                    'ext_rotation_force_right': str(self.safe_float_convert(metrics[21])),
+                    'int_rotation_force_left': str(self.safe_float_convert(metrics[22])),
+                    'int_rotation_force_right': str(self.safe_float_convert(metrics[23]))
                 }
                 
                 gs = self.gold_standards['hip']
@@ -770,26 +781,26 @@ class BiomechanicalReportGenerator:
             if metrics and len(metrics) >= 16:
                 # Raw data extraction
                 raw_data = {
-                    'ext_rotation_range_left': str(metrics[0]),
-                    'ext_rotation_range_right': str(metrics[1]),
-                    'int_rotation_range_left': str(metrics[2]),
-                    'int_rotation_range_right': str(metrics[3]),
-                    'flexion_range_left': str(metrics[4]),
-                    'flexion_range_right': str(metrics[5]),
-                    'extension_range_left': str(metrics[6]),
-                    'extension_range_right': str(metrics[7]),
-                    'ext_rotation_force_left': str(metrics[8]),
-                    'ext_rotation_force_right': str(metrics[9]),
-                    'int_rotation_force_left': str(metrics[10]),
-                    'int_rotation_force_right': str(metrics[11]),
-                    'flexion_force_left': str(metrics[12]),
-                    'flexion_force_right': str(metrics[13]),
-                    'i_iso_left': str(metrics[14]),
-                    'i_iso_right': str(metrics[15]),
-                    'y_iso_left': str(metrics[16]) if len(metrics) > 16 else "unavailable data",
-                    'y_iso_right': str(metrics[17]) if len(metrics) > 17 else "unavailable data",
-                    't_iso_left': str(metrics[18]) if len(metrics) > 18 else "unavailable data",
-                    't_iso_right': str(metrics[19]) if len(metrics) > 19 else "unavailable data"
+                    'ext_rotation_range_left': str(self.safe_float_convert(metrics[0])),
+                    'ext_rotation_range_right': str(self.safe_float_convert(metrics[1])),
+                    'int_rotation_range_left': str(self.safe_float_convert(metrics[2])),
+                    'int_rotation_range_right': str(self.safe_float_convert(metrics[3])),
+                    'flexion_range_left': str(self.safe_float_convert(metrics[4])),
+                    'flexion_range_right': str(self.safe_float_convert(metrics[5])),
+                    'extension_range_left': str(self.safe_float_convert(metrics[6])),
+                    'extension_range_right': str(self.safe_float_convert(metrics[7])),
+                    'ext_rotation_force_left': str(self.safe_float_convert(metrics[8])),
+                    'ext_rotation_force_right': str(self.safe_float_convert(metrics[9])),
+                    'int_rotation_force_left': str(self.safe_float_convert(metrics[10])),
+                    'int_rotation_force_right': str(self.safe_float_convert(metrics[11])),
+                    'flexion_force_left': str(self.safe_float_convert(metrics[12])),
+                    'flexion_force_right': str(self.safe_float_convert(metrics[13])),
+                    'i_iso_left': str(self.safe_float_convert(metrics[14])),
+                    'i_iso_right': str(self.safe_float_convert(metrics[15])),
+                    'y_iso_left': str(self.safe_float_convert(metrics[16])),
+                    'y_iso_right': str(self.safe_float_convert(metrics[17])),
+                    't_iso_left': str(self.safe_float_convert(metrics[18])),
+                    't_iso_right': str(self.safe_float_convert(metrics[19]))
                 }
                 
                 gs = self.gold_standards['shoulder']
