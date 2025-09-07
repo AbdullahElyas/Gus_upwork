@@ -7,6 +7,154 @@ import os
 import sys
 from io import StringIO
 import contextlib
+import json
+
+def show_assessment_editor(sheet_id, sheet_name):
+    """Show assessment editor UI and handle state management"""
+    st.markdown("---")
+    st.subheader("📝 Assessment Texts")
+    
+    # Ensure we have a place for edited assessments
+    if "edited_assessments" not in st.session_state:
+        st.session_state.edited_assessments = {}
+    
+    # Cache file path
+    cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
+    
+    # Load cached data if we haven't already
+    if sheet_id not in st.session_state.edited_assessments:
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    st.session_state.edited_assessments[sheet_id] = json.load(f)
+                    st.success("✅ Loaded assessment data from cache")
+            except Exception as e:
+                st.error(f"Error loading assessment data: {str(e)}")
+                st.session_state.edited_assessments[sheet_id] = {}
+        else:
+            st.warning("No cached assessments found. Generate a report first.")
+            st.session_state.edited_assessments[sheet_id] = {}
+    
+    # Now access the data (or empty dict if nothing loaded)
+    assessments = st.session_state.edited_assessments.get(sheet_id, {})
+    
+    if assessments:
+        # For stability, use fixed tab names
+        tab_names = ["posture", "core", "ankle", "knee", "hip", "shoulder", "conclusion"]
+        tab_labels = ["📊 Posture", "🏋️ Core", "🦶 Ankle", "🦵 Knee", "🍑 Hip", "💪 Shoulder", "📋 Conclusion"]
+        
+        # Create tabs
+        assessment_tabs = st.tabs(tab_labels)
+        
+        # Define a common function for updating edited text
+        def handle_edit(tab_idx, field_name):
+            text = assessments.get(field_name, "")
+            if text:
+                # Display text in a human-readable format
+                display_text = text.replace('<br>', '\n')
+                edited = st.text_area(
+                    f"Edit {tab_labels[tab_idx].split(' ')[1]} Assessment",
+                    value=display_text,
+                    height=300,
+                    key=f"edit_{field_name}_{sheet_id}"
+                )
+                if edited != display_text:
+                    # Store edited text back to session state
+                    assessments[field_name] = edited.replace('\n', '<br>')
+                    st.session_state.edited_assessments[sheet_id] = assessments
+                    # Add a visual confirmation
+                    st.success("Changes detected! Click 'Save Edited Assessments' below to save.")
+            else:
+                st.info(f"No {tab_labels[tab_idx].split(' ')[1]} assessment available")
+        
+        # Handle each tab
+        with assessment_tabs[0]:
+            st.markdown("### Posture Assessment")
+            handle_edit(0, "posture")
+            
+        with assessment_tabs[1]:
+            st.markdown("### Core Function Assessment")
+            handle_edit(1, "core")
+            
+        with assessment_tabs[2]:
+            st.markdown("### Ankle Assessment")
+            handle_edit(2, "ankle")
+            
+        with assessment_tabs[3]:
+            st.markdown("### Knee Assessment")
+            handle_edit(3, "knee")
+            
+        with assessment_tabs[4]:
+            st.markdown("### Hip Assessment")
+            handle_edit(4, "hip")
+            
+        with assessment_tabs[5]:
+            st.markdown("### Shoulder Assessment")
+            handle_edit(5, "shoulder")
+            
+        with assessment_tabs[6]:
+            st.markdown("### Overall Conclusion")
+            handle_edit(6, "overall_conclusion")
+        
+        # Add a save button outside the tabs
+        st.markdown("### Save Changes")
+        
+        # Add save button outside the tabs - more reliable than in the tab container
+        save_col1, save_col2 = st.columns([1, 3])
+        with save_col1:
+            # Properly define the button using the standard st.button pattern
+            save_button = st.button(
+                "💾 Save Edited Assessments", 
+                key=f"save_assessments_{sheet_id}",
+                help="Save edited assessment texts to cache file"
+            )
+            
+            # Check if button was clicked
+            if save_button:
+                try:
+                    # Ensure directory exists
+                    os.makedirs("./cache", exist_ok=True)
+                    
+                    # Write the data
+                    with open(cache_file, 'w', encoding='utf-8') as f:
+                        json.dump(assessments, f, ensure_ascii=False, indent=2)
+                    
+                    # Verify it saved
+                    if os.path.exists(cache_file):
+                        st.success("✅ Successfully saved edited assessments!")
+                        st.balloons()
+                    else:
+                        st.error("Failed to save assessments - file not created")
+                except Exception as e:
+                    st.error(f"Error saving assessments: {str(e)}")
+        
+        with save_col2:
+            st.info("💡 Click to save any edited assessment texts back to cache. This will affect future reports.")
+    else:
+        st.warning("No assessment data available for editing. Generate a report first.")
+        
+def save_assessment_to_cache(sheet_id, assessments):
+    """Save assessment texts to the cache file"""
+    cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
+    try:
+        # Make sure the cache directory exists
+        os.makedirs("./cache", exist_ok=True)
+        
+        # Make sure we have valid data to save
+        if not isinstance(assessments, dict):
+            return False
+            
+        # Save the data
+        with open(cache_file, 'w', encoding='utf-8') as f:
+            json.dump(assessments, f, ensure_ascii=False, indent=2)
+            
+        # Verify the file was created
+        if os.path.exists(cache_file):
+            return True
+        return False
+    except Exception as e:
+        print(f"Error saving assessments: {e}")
+        return False
 
 def setup_drive_service():
     """Set up Google Drive service with credentials."""
@@ -103,6 +251,10 @@ def main():
         st.session_state.last_folder_id = ""
     if 'report_results' not in st.session_state:
         st.session_state.report_results = {}
+    if 'edited_assessments' not in st.session_state:
+        st.session_state.edited_assessments = {}
+
+# Then make these fixes to your Assessment Editing Section
     
     # Buttons for actions
     col1, col2, col3 = st.sidebar.columns(3)
@@ -212,6 +364,12 @@ def main():
             st.markdown("---")
             st.markdown("**🚀 Generate Report**")
             
+            # Use cached response checkbox
+            use_cached = st.checkbox(
+                "Use Cached Response", 
+                value=True,
+                help="Use cached assessment data if available. Uncheck to force regeneration."
+            )
             # Generate Report Button
             generate_button = st.button(
                 "📄 Generate Biomechanical Report",
@@ -238,7 +396,9 @@ def main():
                                 output_dir=sheet_output_dir,
                                 charts_dir=sheet_charts_dir,
                                 convert_to_pdf=convert_to_pdf,
-                                pdf_method=pdf_method
+                                pdf_method=pdf_method,
+                                use_cache=use_cached
+                                
                             )
                         
                         # Get captured output
@@ -278,7 +438,10 @@ def main():
                                         chart_exists = os.path.exists(chart)
                                         status_icon = "✅" if chart_exists else "❌"
                                         st.write(f"{status_icon} {chart}")
-                            
+
+                                                        # Assessment Editing Section
+
+                            show_assessment_editor(selected_sheet['id'], selected_sheet['name'])
                         else:
                             st.error(f"❌ Report generation failed: {result['message']}")
                         

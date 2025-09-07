@@ -1,0 +1,41 @@
+# Core API and Google Integration
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+gspread
+
+# AI/ML
+openai
+
+# Web Framework and Interface
+streamlit
+jinja2
+
+# PDF Generation Tools
+playwright
+weasyprint
+pdfkit
+
+# Data Handling and Manipulation
+pandas
+numpy
+
+# Visualization
+matplotlib
+plotly
+pillow
+
+# File System and Environment
+pathlib
+python-dotenv
+
+# Utilities
+requests
+contextlib2
+
+# Dependencies for PDF conversion
+# NOTE: System dependencies are also required:
+# - For WeasyPrint: Cairo, Pango and GDK-PixBuf
+# - For pdfkit: wkhtmltopdf
+# - For Playwright: Browser binaries (can be installed with `playwright install`)

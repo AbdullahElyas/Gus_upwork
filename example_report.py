@@ -288,7 +288,7 @@ def convert_html_to_pdf(html_path, pdf_path, method="weasyprint"):
     
     return False
 def generate_biomechanical_report_with_pdf(sheet_id, output_dir="./reports/", charts_dir="./charts/", 
-                                         convert_to_pdf=True, pdf_method="weasyprint"):
+                                         convert_to_pdf=True, pdf_method="weasyprint", use_cache=True):
     """
     Generate both HTML and PDF versions of the biomechanical assessment report
     
@@ -315,7 +315,8 @@ def generate_biomechanical_report_with_pdf(sheet_id, output_dir="./reports/", ch
             sheet_id=sheet_id,
             output_file=html_path,  # Use the full path
             template_dir="./",
-            charts_dir=charts_dir
+            charts_dir=charts_dir,
+            use_cache=use_cache
         )
         
         print(f"✅ HTML report generated: {report_path}")
@@ -355,111 +356,111 @@ def generate_biomechanical_report_with_pdf(sheet_id, output_dir="./reports/", ch
         return None, None
     
 
+# def generate_report_for_sheet(sheet_id, output_dir="./reports/", charts_dir="./charts/", 
+#                              convert_to_pdf=True, pdf_method="playwright",use_cache=True):
+#     """
+#     Generate biomechanical assessment report for a specific sheet ID
+    
+#     Args:
+#         sheet_id: Google Sheets ID to generate report for
+#         output_dir: Directory for output files (default: "./reports/")
+#         charts_dir: Directory for radar charts (default: "./charts/")
+#         convert_to_pdf: Whether to convert HTML to PDF (default: True)
+#         pdf_method: Method for PDF conversion - "weasyprint", "pdfkit", or "playwright" (default: "playwright")
+    
+#     Returns:
+#         dict: Dictionary containing paths and status information
+#         {
+#             'success': bool,
+#             'html_path': str or None,
+#             'pdf_path': str or None,
+#             'chart_files': list,
+#             'message': str
+#         }
+#     """
+    
+#     # Create output directories
+#     os.makedirs(output_dir, exist_ok=True)
+#     os.makedirs(charts_dir, exist_ok=True)
+    
+#     result = {
+#         'success': False,
+#         'html_path': None,
+#         'pdf_path': None,
+#         'chart_files': [],
+#         'message': ''
+#     }
+    
+#     try:
+#         print(f"Starting biomechanical assessment report generation for sheet: {sheet_id}")
+        
+#         # Generate both HTML and PDF reports
+#         html_path, pdf_path = generate_biomechanical_report_with_pdf(
+#             sheet_id=sheet_id,
+#             output_dir=output_dir,
+#             charts_dir=charts_dir,
+#             convert_to_pdf=convert_to_pdf,
+#             pdf_method=pdf_method
+#         )
+        
+#         # Update result with paths
+#         result['html_path'] = html_path
+#         result['pdf_path'] = pdf_path
+        
+#         if html_path:
+#             print(f"\n✅ Success! HTML report generated at: {html_path}")
+#             result['success'] = True
+#             result['message'] += f"HTML report: {html_path}\n"
+            
+#         if pdf_path:
+#             print(f"✅ Success! PDF report generated at: {pdf_path}")
+#             result['message'] += f"PDF report: {pdf_path}\n"
+            
+#         print(f"\n📊 Charts generated in: {charts_dir}")
+#         print("\n🌐 Open the HTML file in your web browser to view the complete report")
+#         if pdf_path:
+#             print("📄 Open the PDF file for a print-ready version")
+        
+#         # Check for generated chart files
+#         chart_files = [
+#             os.path.join(charts_dir, "ankle_radar_chart.png"),
+#             os.path.join(charts_dir, "knee_radar_chart.png"), 
+#             os.path.join(charts_dir, "hip_radar_chart.png"),
+#             os.path.join(charts_dir, "shoulder_radar_chart.png")
+#         ]
+        
+#         existing_charts = []
+#         print("\nGenerated files:")
+#         if html_path and os.path.exists(html_path):
+#             print(f"  📄 {html_path}")
+#         if pdf_path and os.path.exists(pdf_path):
+#             print(f"  📄 {pdf_path}")
+        
+#         for chart_file in chart_files:
+#             if os.path.exists(chart_file):
+#                 print(f"  📈 {chart_file}")
+#                 existing_charts.append(chart_file)
+        
+#         result['chart_files'] = existing_charts
+#         result['message'] += f"Charts: {len(existing_charts)} generated\n"
+        
+#         if not result['success']:
+#             result['message'] = "Failed to generate report"
+            
+#     except Exception as e:
+#         error_msg = f"❌ Error generating report: {e}"
+#         print(error_msg)
+#         print("Make sure you have:")
+#         print("  1. Valid Google Sheets credentials (credentials.json)")
+#         print("  2. All required dependencies installed (jinja2, matplotlib, etc.)")
+#         print("  3. The HTML template file (biomechanical_report_template.html)")
+        
+#         result['success'] = False
+#         result['message'] = str(e)
+    
+#     return result
 def generate_report_for_sheet(sheet_id, output_dir="./reports/", charts_dir="./charts/", 
-                             convert_to_pdf=True, pdf_method="playwright"):
-    """
-    Generate biomechanical assessment report for a specific sheet ID
-    
-    Args:
-        sheet_id: Google Sheets ID to generate report for
-        output_dir: Directory for output files (default: "./reports/")
-        charts_dir: Directory for radar charts (default: "./charts/")
-        convert_to_pdf: Whether to convert HTML to PDF (default: True)
-        pdf_method: Method for PDF conversion - "weasyprint", "pdfkit", or "playwright" (default: "playwright")
-    
-    Returns:
-        dict: Dictionary containing paths and status information
-        {
-            'success': bool,
-            'html_path': str or None,
-            'pdf_path': str or None,
-            'chart_files': list,
-            'message': str
-        }
-    """
-    
-    # Create output directories
-    os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(charts_dir, exist_ok=True)
-    
-    result = {
-        'success': False,
-        'html_path': None,
-        'pdf_path': None,
-        'chart_files': [],
-        'message': ''
-    }
-    
-    try:
-        print(f"Starting biomechanical assessment report generation for sheet: {sheet_id}")
-        
-        # Generate both HTML and PDF reports
-        html_path, pdf_path = generate_biomechanical_report_with_pdf(
-            sheet_id=sheet_id,
-            output_dir=output_dir,
-            charts_dir=charts_dir,
-            convert_to_pdf=convert_to_pdf,
-            pdf_method=pdf_method
-        )
-        
-        # Update result with paths
-        result['html_path'] = html_path
-        result['pdf_path'] = pdf_path
-        
-        if html_path:
-            print(f"\n✅ Success! HTML report generated at: {html_path}")
-            result['success'] = True
-            result['message'] += f"HTML report: {html_path}\n"
-            
-        if pdf_path:
-            print(f"✅ Success! PDF report generated at: {pdf_path}")
-            result['message'] += f"PDF report: {pdf_path}\n"
-            
-        print(f"\n📊 Charts generated in: {charts_dir}")
-        print("\n🌐 Open the HTML file in your web browser to view the complete report")
-        if pdf_path:
-            print("📄 Open the PDF file for a print-ready version")
-        
-        # Check for generated chart files
-        chart_files = [
-            os.path.join(charts_dir, "ankle_radar_chart.png"),
-            os.path.join(charts_dir, "knee_radar_chart.png"), 
-            os.path.join(charts_dir, "hip_radar_chart.png"),
-            os.path.join(charts_dir, "shoulder_radar_chart.png")
-        ]
-        
-        existing_charts = []
-        print("\nGenerated files:")
-        if html_path and os.path.exists(html_path):
-            print(f"  📄 {html_path}")
-        if pdf_path and os.path.exists(pdf_path):
-            print(f"  📄 {pdf_path}")
-        
-        for chart_file in chart_files:
-            if os.path.exists(chart_file):
-                print(f"  📈 {chart_file}")
-                existing_charts.append(chart_file)
-        
-        result['chart_files'] = existing_charts
-        result['message'] += f"Charts: {len(existing_charts)} generated\n"
-        
-        if not result['success']:
-            result['message'] = "Failed to generate report"
-            
-    except Exception as e:
-        error_msg = f"❌ Error generating report: {e}"
-        print(error_msg)
-        print("Make sure you have:")
-        print("  1. Valid Google Sheets credentials (credentials.json)")
-        print("  2. All required dependencies installed (jinja2, matplotlib, etc.)")
-        print("  3. The HTML template file (biomechanical_report_template.html)")
-        
-        result['success'] = False
-        result['message'] = str(e)
-    
-    return result
-def generate_report_for_sheet(sheet_id, output_dir="./reports/", charts_dir="./charts/", 
-                             convert_to_pdf=True, pdf_method="playwright"):
+                             convert_to_pdf=True, pdf_method="playwright",use_cache=True):
     """
     Generate biomechanical assessment report for a specific sheet ID
     
@@ -507,7 +508,8 @@ def generate_report_for_sheet(sheet_id, output_dir="./reports/", charts_dir="./c
             output_dir=output_dir,
             charts_dir=charts_dir,
             convert_to_pdf=convert_to_pdf,
-            pdf_method=pdf_method
+            pdf_method=pdf_method,
+            use_cache=use_cache
         )
         
         print(f"\n📋 Report generation completed:")
@@ -630,7 +632,7 @@ def generate_report_for_sheet(sheet_id, output_dir="./reports/", charts_dir="./c
     return result
     
 def generate_multiple_reports(sheet_ids, output_base_dir="./reports/", charts_base_dir="./charts/",
-                            convert_to_pdf=True, pdf_method="playwright"):
+                            convert_to_pdf=True, pdf_method="playwright", use_cached=True):
     """
     Generate reports for multiple sheet IDs
     
@@ -670,7 +672,8 @@ def generate_multiple_reports(sheet_ids, output_base_dir="./reports/", charts_ba
             output_dir=sheet_output_dir,
             charts_dir=sheet_charts_dir,
             convert_to_pdf=convert_to_pdf,
-            pdf_method=pdf_method
+            pdf_method=pdf_method,
+            use_cache=use_cached
         )
         
         results[sheet_name] = result
@@ -712,7 +715,8 @@ def main():
         output_dir="./reports/",
         charts_dir="./charts/",
         convert_to_pdf=True,
-        pdf_method="playwright"
+        pdf_method="playwright",
+        use_cache=True
     )
 
     if result['success']:

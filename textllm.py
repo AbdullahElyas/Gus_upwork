@@ -1,4 +1,4 @@
-import ollama
+
 
 
 # sheet_id = "1Z6kHJWq9fvvcKukcNVlC2yJksCCnXS9JoMM8RQsFjwY"

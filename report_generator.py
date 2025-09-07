@@ -294,6 +294,14 @@ class BiomechanicalReportGenerator:
         self.first_worksheet = first_worksheet
         self.third_worksheet = third_worksheet
         self.mass = 1
+        Name_Gender_info = first_worksheet.row_values(1)
+        try:
+            self.Name = Name_Gender_info[4]
+            self.Gender = Name_Gender_info[2]
+        except IndexError:
+            self.Name = ""
+            self.Gender = ""
+
         # Load environment variables from .env file
         load_dotenv()
         openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -1007,7 +1015,7 @@ class BiomechanicalReportGenerator:
             
         return charts
 
-    def get_assessment_texts(self, sheet_id: str) -> Dict[str, str]:
+    def get_assessment_texts(self, sheet_id: str, use_cache: bool = True) -> Dict[str, str]:
         """Get assessment texts from LLM functions, with caching"""
 
         assessments = {}
@@ -1015,15 +1023,16 @@ class BiomechanicalReportGenerator:
         os.makedirs(cache_dir, exist_ok=True)
         cache_path = os.path.join(cache_dir, f"{sheet_id}_assessments.json")
 
-        # Try to load from cache
-        if os.path.exists(cache_path):
+    # Try to load from cache if use_cache is True
+        if use_cache and os.path.exists(cache_path):
             try:
-                with open(cache_path, "r", encoding="utf-8") as f:
-                    cached = json.load(f)
-                if isinstance(cached, dict):
-                    return cached
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    assessments = json.load(f)
+                    print(f"Loaded assessments from cache: {cache_path}")
+                    return assessments
             except Exception as e:
-                print(f"Error loading cached assessments: {e}")
+                print(f"Error loading from cache: {e}")
+                # Continue with generation if cache loading fails
 
         # If not cached, generate assessments
         try:
@@ -1099,7 +1108,7 @@ class BiomechanicalReportGenerator:
         return assessments
 
     def generate_report(self, sheet_id: str, output_path: str = "biomechanical_report.html", 
-                       charts_dir: str = "./charts/") -> str:
+                       charts_dir: str = "./charts/", use_cache: bool = True) -> str:
         """Generate the complete biomechanical assessment report"""
         
         print("Extracting data from sheet...")
@@ -1121,12 +1130,13 @@ class BiomechanicalReportGenerator:
         print("Getting assessment texts...")
         
         # Get assessment texts
-        assessments = self.get_assessment_texts(sheet_id)
+        assessments = self.get_assessment_texts(sheet_id, use_cache)
         
         print("Rendering HTML report...")
         
         # Prepare template data
         template_data = {
+            'name': self.Name,
             'ankle_data': ankle_data,
             'knee_data': knee_data,
             'hip_data': hip_data,
@@ -1159,7 +1169,8 @@ class BiomechanicalReportGenerator:
 def generate_biomechanical_report(sheet_id: str, 
                                 output_file: str = "biomechanical_report.html",
                                 template_dir: str = "./",
-                                charts_dir: str = "./charts/"):
+                                charts_dir: str = "./charts/",
+                                use_cache: bool = True) -> str:
     """
     Convenience function to generate a complete biomechanical assessment report
     
@@ -1173,7 +1184,7 @@ def generate_biomechanical_report(sheet_id: str,
         Path to the generated HTML report
     """
     generator = BiomechanicalReportGenerator(template_dir, sheet_id)
-    return generator.generate_report(sheet_id, output_file, charts_dir)
+    return generator.generate_report(sheet_id, output_file, charts_dir,use_cache)
 
 # Main execution example
 if __name__ == "__main__":

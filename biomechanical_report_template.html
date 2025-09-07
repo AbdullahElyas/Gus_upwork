@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Biomechanical Assessment Report</title>
+    <title>Biomechanical Assessment Report{% if name %} - {{ name }}{% endif %}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -217,8 +217,27 @@
     <h1 style="margin: 0; font-size: 1.5em; color: #2C3E50; letter-spacing: 2px; font-weight: bold;">
         BRICK PERFORMANCE<br>
         <span style="font-size: 1.2em; font-weight: normal;">BIOMECHANICAL ASSESSMENT</span>
-    </h1>
-</div>
+    </div>
+    {% if name %}
+    <div style="
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 13px;
+        padding: 10px 20px;
+        background: linear-gradient(90deg, #34495E 0%, #e8f4f8 100%);
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+        max-width: 350px;
+        font-size: 1.1em;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    ">
+        <span style="font-weight: bold; letter-spacing: 1px; margin-right: 10px;">Name:</span>
+        <span style="color: #FFF9C4; font-weight: 600;">{{ name }}</span>
+    </div>
+    {% endif %}
+
 <!-- Data Tables Section -->
 <div class="assessment-section">
     <!-- Range of Motion Section -->
@@ -1086,26 +1105,26 @@
 
 
 
-<div style="background: #f8f9fa; margin: 20px -27px 0 -27px; padding: 18px 27px; border-top: 2px solid #34495E; font-family: Arial, sans-serif;">
-  <div style="text-align: center; max-width: 500px; margin: auto;">
-    <p style="font-size: 11px; color: #2C3E50; margin: 0 0 10px 0; line-height: 1.4; font-weight: 600;">
-      Please book in a call so we can talk through your findings and get you back to pain free performance.
-    </p>
-    <div style="font-size: 10px; color: #34495E; line-height: 1.5;">
-      <div style="margin-bottom: 4px;">
-        <strong>Email:</strong> 
-        <a href="mailto:info@brickperformance.co.uk" style="color: #3498DB; text-decoration: none;">
-          info@brickperformance.co.uk
-        </a>
-      </div>
-      <div>
-        <strong>Website:</strong> 
-        <a href="https://www.brickperformance.co.uk" style="color: #3498DB; text-decoration: none;" target="_blank">
-          www.brickperformance.co.uk
-        </a>
-      </div>
+<div style="background: #f8f9fa; margin: 20px -27px 0 -27px; padding: 18px 27px; border-top: 2px solid #34495E; font-family: Arial, sans-serif; page-break-inside: avoid;">
+    <div style="text-align: center; max-width: 500px; margin: auto;">
+        <p style="font-size: 11px; color: #2C3E50; margin: 0 0 10px 0; line-height: 1.4; font-weight: 600;">
+            Please book in a call so we can talk through your findings and get you back to pain free performance.
+        </p>
+        <div style="font-size: 10px; color: #34495E; line-height: 1.5;">
+            <div style="margin-bottom: 4px;">
+                <strong>Email:</strong> 
+                <a href="mailto:info@brickperformance.co.uk" style="color: #3498DB; text-decoration: none;">
+                    info@brickperformance.co.uk
+                </a>
+            </div>
+            <div>
+                <strong>Website:</strong> 
+                <a href="https://www.brickperformance.co.uk" style="color: #3498DB; text-decoration: none;" target="_blank">
+                    www.brickperformance.co.uk
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
