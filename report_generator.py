@@ -458,45 +458,46 @@ class BiomechanicalReportGenerator:
                 plantarflexion_force_left_float = safe_force(plantarflexion_force_left_val)*9.81
                 plantarflexion_force_right_float = safe_force(plantarflexion_force_right_val)*9.81
 
+
                 return AnkleData(
                     # Range data (calculated from percentage, rounded to whole number)
-                    dorsiflexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range'])))),
-                    dorsiflexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range'])))),
-                    plantarflexion_range_left=str(round(float(self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range'])))),
-                    plantarflexion_range_right=str(round(float(self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range'])))),
-                    
+                    dorsiflexion_range_left=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range'])))),
+                    dorsiflexion_range_right=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range'])))),
+                    plantarflexion_range_left=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range'])))),
+                    plantarflexion_range_right=str(round(self.safe_float_convert(self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range'])))),
+
                     # Range percentages and asymmetry
-                    dorsiflexion_left_percent=str(round(float(metrics[0]))),
-                    dorsiflexion_right_percent=str(round(float(metrics[1]))),
+                    dorsiflexion_left_percent=str(round(self.safe_float_convert(metrics[0]))),
+                    dorsiflexion_right_percent=str(round(self.safe_float_convert(metrics[1]))),
                     dorsiflexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[0], gs['dorsiflexion_range']),
                         self.calculate_range_from_percentage(metrics[1], gs['dorsiflexion_range'])
                     ),
-                    plantarflexion_left_percent=str(round(float(metrics[2]))),
-                    plantarflexion_right_percent=str(round(float(metrics[3]))),
+                    plantarflexion_left_percent=str(round(self.safe_float_convert(metrics[2]))),
+                    plantarflexion_right_percent=str(round(self.safe_float_convert(metrics[3]))),
                     plantarflexion_asymmetry=self.calculate_asymmetry(
                         self.calculate_range_from_percentage(metrics[2], gs['plantarflexion_range']),
                         self.calculate_range_from_percentage(metrics[3], gs['plantarflexion_range'])
                     ),
-                    
+
                     # Force data (raw float values, rounded to whole number)
-                    dorsiflexion_force_left=str(round(dorsiflexion_force_left_float)),
-                    dorsiflexion_force_right=str(round(dorsiflexion_force_right_float)),
-                    plantarflexion_force_left=str(round(plantarflexion_force_left_float)),
-                    plantarflexion_force_right=str(round(plantarflexion_force_right_float)),
+                    dorsiflexion_force_left=str(round(self.safe_float_convert(dorsiflexion_force_left_float))),
+                    dorsiflexion_force_right=str(round(self.safe_float_convert(dorsiflexion_force_right_float))),
+                    plantarflexion_force_left=str(round(self.safe_float_convert(plantarflexion_force_left_float))),
+                    plantarflexion_force_right=str(round(self.safe_float_convert(plantarflexion_force_right_float))),
 
                     # Force percentages and asymmetry
-                    dorsiflexion_force_left_percent=str(round(float(metrics[4]))),
-                    dorsiflexion_force_right_percent=str(round(float(metrics[5]))),
+                    dorsiflexion_force_left_percent=str(round(self.safe_float_convert(metrics[4]))),
+                    dorsiflexion_force_right_percent=str(round(self.safe_float_convert(metrics[5]))),
                     dorsiflexion_force_asymmetry=self.calculate_asymmetry(
-                        dorsiflexion_force_left_float,
-                        dorsiflexion_force_right_float
+                        self.safe_float_convert(dorsiflexion_force_left_float),
+                        self.safe_float_convert(dorsiflexion_force_right_float)
                     ),
-                    plantarflexion_force_left_percent=str(round(float(metrics[6]))),
-                    plantarflexion_force_right_percent=str(round(float(metrics[7]))),
+                    plantarflexion_force_left_percent=str(round(self.safe_float_convert(metrics[6]))),
+                    plantarflexion_force_right_percent=str(round(self.safe_float_convert(metrics[7]))),
                     plantarflexion_force_asymmetry=self.calculate_asymmetry(
-                        plantarflexion_force_left_float,
-                        plantarflexion_force_right_float
+                        self.safe_float_convert(plantarflexion_force_left_float),
+                        self.safe_float_convert(plantarflexion_force_right_float)
                     )
                 )
         except Exception as e:
