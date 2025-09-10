@@ -59,3 +59,13 @@ credentials.json
 *.pem
 biomechanical_assessment_report.html
 
+# Generated content
+/charts/*
+!/charts/.gitkeep
+/reports/*
+!/reports/.gitkeep
+/reports/charts/*
+!/reports/charts/.gitkeep
+/cache/*
+!/cache/.gitkeep
+
