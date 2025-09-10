@@ -58,8 +58,4 @@ credentials.json
 *.key
 *.pem
 biomechanical_assessment_report.html
-/charts
-/charts
-/reports
-/cache
-/charts
+
