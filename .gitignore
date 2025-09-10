@@ -62,10 +62,11 @@ biomechanical_assessment_report.html
 # Generated content
 /charts/*
 !/charts/.gitkeep
-/reports/*
-!/reports/.gitkeep
 /reports/charts/*
 !/reports/charts/.gitkeep
+/reports/*
+!/reports/.gitkeep
+!/reports/charts
 /cache/*
 !/cache/.gitkeep
 
