@@ -608,51 +608,7 @@
 </div>
 {% endif %}
 
-{% if ankle_data and (ankle_data.dorsiflexion_force_left_percent|float > 0 or ankle_data.plantarflexion_force_left_percent|float > 0) %}
-<div class="table-container">
-    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
-        Ankle
-    </h3>
-    <table>
-        <tr class="force-header">
-            <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
-            <th>Left %</th>
-            <th>Right %</th>
-            <th>Asymmetry %</th>
-        </tr>
-        {% if ankle_data.dorsiflexion_force_left_percent|float > 0 and ankle_data.dorsiflexion_force_right_percent|float > 0 %}
-        <tr>
-            <td>Dorsiflexion Force</td>
-            <td class="{% if ankle_data.dorsiflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                {{ ankle_data.dorsiflexion_force_left }}
-            </td>
-            <td class="{% if ankle_data.dorsiflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                {{ ankle_data.dorsiflexion_force_right }}
-            </td>
-            <td class="{% if ankle_data.dorsiflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_left_percent }}%</td>
-            <td class="{% if ankle_data.dorsiflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.dorsiflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.dorsiflexion_force_right_percent }}%</td>
-            <td class="{% if ankle_data.dorsiflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.dorsiflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.dorsiflexion_force_asymmetry }}%</td>
-        </tr>
-        {% endif %}
-        {% if ankle_data.plantarflexion_force_left_percent|float > 0 and ankle_data.plantarflexion_force_right_percent|float > 0 %}
-        <tr>
-            <td>Plantarflexion Force</td>
-            <td class="{% if ankle_data.plantarflexion_force_left == 'unavailable data' %}unavailable{% endif %}">
-                {{ ankle_data.plantarflexion_force_left }}
-            </td>
-            <td class="{% if ankle_data.plantarflexion_force_right == 'unavailable data' %}unavailable{% endif %}">
-                {{ ankle_data.plantarflexion_force_right }}
-            </td>
-            <td class="{% if ankle_data.plantarflexion_force_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_left_percent }}%</td>
-            <td class="{% if ankle_data.plantarflexion_force_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_force_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_force_right_percent }}%</td>
-            <td class="{% if ankle_data.plantarflexion_force_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.plantarflexion_force_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.plantarflexion_force_asymmetry }}%</td>
-        </tr>
-        {% endif %}
-    </table>
-</div>
-{% endif %}
+
         </div>
 
         <!-- Force Production Section -->

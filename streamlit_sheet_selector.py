@@ -2,159 +2,12 @@ import streamlit as st
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from sheetid_fetch import get_sheet_ids_from_folder, save_sheet_ids_to_file, read_sheet_ids_from_file
-from example_report import generate_report_for_sheet  # Import the report generation function
+from example_report import generate_report_for_sheet
 import os
 import sys
 from io import StringIO
 import contextlib
 import json
-
-def show_assessment_editor(sheet_id, sheet_name):
-    """Show assessment editor UI and handle state management"""
-    st.markdown("---")
-    st.subheader("📝 Assessment Texts")
-    
-    # Ensure we have a place for edited assessments
-    if "edited_assessments" not in st.session_state:
-        st.session_state.edited_assessments = {}
-    
-    # Cache file path
-    cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
-    
-    # Load cached data if we haven't already
-    if sheet_id not in st.session_state.edited_assessments:
-        if os.path.exists(cache_file):
-            try:
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    st.session_state.edited_assessments[sheet_id] = json.load(f)
-                    st.success("✅ Loaded assessment data from cache")
-            except Exception as e:
-                st.error(f"Error loading assessment data: {str(e)}")
-                st.session_state.edited_assessments[sheet_id] = {}
-        else:
-            st.warning("No cached assessments found. Generate a report first.")
-            st.session_state.edited_assessments[sheet_id] = {}
-    
-    # Now access the data (or empty dict if nothing loaded)
-    assessments = st.session_state.edited_assessments.get(sheet_id, {})
-    
-    if assessments:
-        # For stability, use fixed tab names
-        tab_names = ["posture", "core", "ankle", "knee", "hip", "shoulder", "conclusion"]
-        tab_labels = ["📊 Posture", "🏋️ Core", "🦶 Ankle", "🦵 Knee", "🍑 Hip", "💪 Shoulder", "📋 Conclusion"]
-        
-        # Create tabs
-        assessment_tabs = st.tabs(tab_labels)
-        
-        # Define a common function for updating edited text
-        def handle_edit(tab_idx, field_name):
-            text = assessments.get(field_name, "")
-            if text:
-                # Display text in a human-readable format
-                display_text = text.replace('<br>', '\n')
-                edited = st.text_area(
-                    f"Edit {tab_labels[tab_idx].split(' ')[1]} Assessment",
-                    value=display_text,
-                    height=300,
-                    key=f"edit_{field_name}_{sheet_id}"
-                )
-                if edited != display_text:
-                    # Store edited text back to session state
-                    assessments[field_name] = edited.replace('\n', '<br>')
-                    st.session_state.edited_assessments[sheet_id] = assessments
-                    # Add a visual confirmation
-                    st.success("Changes detected! Click 'Save Edited Assessments' below to save.")
-            else:
-                st.info(f"No {tab_labels[tab_idx].split(' ')[1]} assessment available")
-        
-        # Handle each tab
-        with assessment_tabs[0]:
-            st.markdown("### Posture Assessment")
-            handle_edit(0, "posture")
-            
-        with assessment_tabs[1]:
-            st.markdown("### Core Function Assessment")
-            handle_edit(1, "core")
-            
-        with assessment_tabs[2]:
-            st.markdown("### Ankle Assessment")
-            handle_edit(2, "ankle")
-            
-        with assessment_tabs[3]:
-            st.markdown("### Knee Assessment")
-            handle_edit(3, "knee")
-            
-        with assessment_tabs[4]:
-            st.markdown("### Hip Assessment")
-            handle_edit(4, "hip")
-            
-        with assessment_tabs[5]:
-            st.markdown("### Shoulder Assessment")
-            handle_edit(5, "shoulder")
-            
-        with assessment_tabs[6]:
-            st.markdown("### Overall Conclusion")
-            handle_edit(6, "overall_conclusion")
-        
-        # Add a save button outside the tabs
-        st.markdown("### Save Changes")
-        
-        # Add save button outside the tabs - more reliable than in the tab container
-        save_col1, save_col2 = st.columns([1, 3])
-        with save_col1:
-            # Properly define the button using the standard st.button pattern
-            save_button = st.button(
-                "💾 Save Edited Assessments", 
-                key=f"save_assessments_{sheet_id}",
-                help="Save edited assessment texts to cache file"
-            )
-            
-            # Check if button was clicked
-            if save_button:
-                try:
-                    # Ensure directory exists
-                    os.makedirs("./cache", exist_ok=True)
-                    
-                    # Write the data
-                    with open(cache_file, 'w', encoding='utf-8') as f:
-                        json.dump(assessments, f, ensure_ascii=False, indent=2)
-                    
-                    # Verify it saved
-                    if os.path.exists(cache_file):
-                        st.success("✅ Successfully saved edited assessments!")
-                        st.balloons()
-                    else:
-                        st.error("Failed to save assessments - file not created")
-                except Exception as e:
-                    st.error(f"Error saving assessments: {str(e)}")
-        
-        with save_col2:
-            st.info("💡 Click to save any edited assessment texts back to cache. This will affect future reports.")
-    else:
-        st.warning("No assessment data available for editing. Generate a report first.")
-        
-def save_assessment_to_cache(sheet_id, assessments):
-    """Save assessment texts to the cache file"""
-    cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
-    try:
-        # Make sure the cache directory exists
-        os.makedirs("./cache", exist_ok=True)
-        
-        # Make sure we have valid data to save
-        if not isinstance(assessments, dict):
-            return False
-            
-        # Save the data
-        with open(cache_file, 'w', encoding='utf-8') as f:
-            json.dump(assessments, f, ensure_ascii=False, indent=2)
-            
-        # Verify the file was created
-        if os.path.exists(cache_file):
-            return True
-        return False
-    except Exception as e:
-        print(f"Error saving assessments: {e}")
-        return False
 
 def setup_drive_service():
     """Set up Google Drive service with credentials."""
@@ -188,6 +41,43 @@ def capture_output():
     finally:
         sys.stdout = old_stdout
         sys.stderr = old_stderr
+
+def save_assessment_to_cache(sheet_id, assessments):
+    """Save assessment texts to the cache file"""
+    try:
+        # Make sure the cache directory exists
+        os.makedirs("./cache", exist_ok=True)
+        
+        # Define cache file path
+        cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
+        
+        # Debug output
+        print(f"Saving to: {cache_file}")
+        print(f"Data type: {type(assessments)}")
+        print(f"Keys: {list(assessments.keys()) if isinstance(assessments, dict) else 'Not a dict'}")
+        
+        # Make sure we have valid data to save
+        if not isinstance(assessments, dict):
+            print("Error: assessments is not a dictionary")
+            return False
+            
+        # Save the data with proper formatting
+        with open(cache_file, 'w', encoding='utf-8') as f:
+            json.dump(assessments, f, ensure_ascii=False, indent=2)
+        
+        # Verify file was created and has content
+        if os.path.exists(cache_file) and os.path.getsize(cache_file) > 0:
+            print(f"Successfully saved to {cache_file}")
+            return True
+        else:
+            print(f"File creation verification failed for {cache_file}")
+            return False
+            
+    except Exception as e:
+        print(f"Error saving assessments: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 def main():
     st.set_page_config(
@@ -253,8 +143,6 @@ def main():
         st.session_state.report_results = {}
     if 'edited_assessments' not in st.session_state:
         st.session_state.edited_assessments = {}
-
-# Then make these fixes to your Assessment Editing Section
     
     # Buttons for actions
     col1, col2, col3 = st.sidebar.columns(3)
@@ -269,7 +157,7 @@ def main():
         load_button = st.button("📂 Load", help="Load sheet list from file")
     
     # Main content area
-    col_left, col_right = st.columns([1, 1])
+    col_left, col_right = st.columns([1, 2])
     
     with col_left:
         st.subheader("Available Sheets")
@@ -342,11 +230,9 @@ def main():
             selected_sheet = None
     
     with col_right:
-        st.subheader("Selected Sheet Details")
-        
         if selected_sheet:
             # Display selected sheet information
-            st.success(f"📄 **Sheet Selected:** {selected_sheet['name']}")
+            st.subheader(f"📄 {selected_sheet['name']}")
             
             # Sheet ID display with copy button
             st.markdown("**Sheet ID:**")
@@ -358,7 +244,6 @@ def main():
                 with col_copy:
                     if st.button("📋 Copy", key="copy_id"):
                         st.write("ID copied to clipboard!")
-                        # Note: Actual clipboard copying requires additional setup
             
             # Report Generation Section
             st.markdown("---")
@@ -370,45 +255,34 @@ def main():
                 value=True,
                 help="Use cached assessment data if available. Uncheck to force regeneration."
             )
+            
             # Generate Report Button
             generate_button = st.button(
                 "📄 Generate Biomechanical Report",
                 type="primary",
                 help=f"Generate report for {selected_sheet['name']}"
             )
+
+            # Report status messages container - positioned right after the button
+            report_status = st.empty()
             
+            # REPORT GENERATION PROCESS
             if generate_button:
                 # Create unique output directories for this sheet
                 sheet_output_dir = os.path.join(output_dir, selected_sheet['name'])
                 sheet_charts_dir = os.path.join(charts_dir, selected_sheet['name'])
                 
-                # Show the directories that will be used
-                st.info(f"📁 Output: `{sheet_output_dir}`")
-                st.info(f"📈 Charts: `{sheet_charts_dir}`")
-                
                 with st.spinner(f"Generating report for {selected_sheet['name']}..."):
                     try:
-                        # Capture console output for debugging
-                        with capture_output() as (stdout_capture, stderr_capture):
-                            # Call the report generation function
-                            result = generate_report_for_sheet(
-                                sheet_id=selected_sheet['id'],
-                                output_dir=sheet_output_dir,
-                                charts_dir=sheet_charts_dir,
-                                convert_to_pdf=convert_to_pdf,
-                                pdf_method=pdf_method,
-                                use_cache=use_cached
-                                
-                            )
+                        result = generate_report_for_sheet(
+                            sheet_id=selected_sheet['id'],
+                            output_dir=sheet_output_dir,
+                            charts_dir=sheet_charts_dir,
+                            convert_to_pdf=convert_to_pdf,
+                            pdf_method=pdf_method,
+                            use_cache=use_cached
+                        )
                         
-                        # Get captured output
-                        stdout_text = stdout_capture.getvalue()
-                        stderr_text = stderr_capture.getvalue()
-                        
-                        # Store result in session state
-                        st.session_state.report_results[selected_sheet['name']] = result
-                        
-                        # Display results
                         if result['success']:
                             st.success("✅ Report generated successfully!")
                             
@@ -417,92 +291,162 @@ def main():
                                 html_exists = os.path.exists(result['html_path'])
                                 status_icon = "✅" if html_exists else "❌"
                                 st.markdown(f"**📄 HTML Report:** {status_icon} `{result['html_path']}`")
-                                if html_exists:
-                                    html_size = os.path.getsize(result['html_path'])
-                                    st.write(f"   📏 Size: {html_size} bytes")
                             
                             if result['pdf_path']:
                                 pdf_exists = os.path.exists(result['pdf_path'])
                                 status_icon = "✅" if pdf_exists else "❌"
                                 st.markdown(f"**📄 PDF Report:** {status_icon} `{result['pdf_path']}`")
-                                if pdf_exists:
-                                    pdf_size = os.path.getsize(result['pdf_path'])
-                                    st.write(f"   📏 Size: {pdf_size} bytes")
-                                elif convert_to_pdf:
-                                    st.warning("⚠️ PDF was supposed to be generated but file not found!")
                             
                             if result['chart_files']:
                                 st.markdown(f"**📈 Charts Generated:** {len(result['chart_files'])} files")
-                                with st.expander("View Chart Files"):
-                                    for chart in result['chart_files']:
-                                        chart_exists = os.path.exists(chart)
-                                        status_icon = "✅" if chart_exists else "❌"
-                                        st.write(f"{status_icon} {chart}")
 
-                                                        # Assessment Editing Section
-
-                            show_assessment_editor(selected_sheet['id'], selected_sheet['name'])
+                            st.info("Click 'Update Assessments' to load the newly generated assessment texts")
                         else:
                             st.error(f"❌ Report generation failed: {result['message']}")
-                        
-                        # Show debug output if enabled
-                        if debug_mode and (stdout_text or stderr_text):
-                            with st.expander("🐛 Debug Output"):
-                                if stdout_text:
-                                    st.text_area("Console Output:", stdout_text, height=200)
-                                if stderr_text:
-                                    st.text_area("Error Output:", stderr_text, height=200)
-                        
-                        # Always show PDF-specific debug info if PDF generation was requested
-                        if convert_to_pdf and not result.get('pdf_path'):
-                            st.warning("🔍 PDF Debug Information:")
-                            st.write(f"PDF Method: {pdf_method}")
-                            st.write(f"Expected PDF path: {os.path.join(sheet_output_dir, 'biomechanical_assessment_report.pdf')}")
-                            
-                            if stdout_text:
-                                pdf_lines = [line for line in stdout_text.split('\n') if 'pdf' in line.lower() or 'error' in line.lower()]
-                                if pdf_lines:
-                                    st.code('\n'.join(pdf_lines))
                             
                     except Exception as e:
                         st.error(f"❌ Error generating report: {e}")
-                        import traceback
-                        st.code(traceback.format_exc())
                         st.session_state.report_results[selected_sheet['name']] = {
                             'success': False,
                             'message': str(e)
                         }
             
-            # Display previous report results if available
-            if selected_sheet['name'] in st.session_state.report_results:
-                st.markdown("---")
-                st.markdown("**📋 Previous Report Results**")
-                
-                result = st.session_state.report_results[selected_sheet['name']]
-                
-                if result['success']:
-                    st.success("✅ Last generation was successful")
-                    
-                    # Show file links if they exist
-                    if result.get('html_path'):
-                        html_exists = os.path.exists(result['html_path'])
-                        status_icon = "✅" if html_exists else "❌"
-                        st.markdown(f"📄 HTML: {status_icon} `{result['html_path']}`")
-                    
-                    if result.get('pdf_path'):
-                        pdf_exists = os.path.exists(result['pdf_path'])
-                        status_icon = "✅" if pdf_exists else "❌"
-                        st.markdown(f"📄 PDF: {status_icon} `{result['pdf_path']}`")
-                        
-                    if result.get('chart_files'):
-                        with st.expander(f"📈 Charts ({len(result['chart_files'])})"):
-                            for chart in result['chart_files']:
-                                if os.path.exists(chart):
-                                    st.write(f"✅ {chart}")
-                                else:
-                                    st.write(f"❌ {chart} (file not found)")
+            # ASSESSMENT TABS SECTION - ALWAYS SHOWN
+            st.markdown("---")
+            st.subheader("📝 Assessment Texts")
+            
+            # Add Update Assessments button
+            update_col1, update_col2 = st.columns([1, 3])
+            with update_col1:
+                update_button = st.button(
+                    "🔄 Update Assessments",
+                    key="update_assessments",
+                    help="Load latest assessment texts from cache"
+                )
+            with update_col2:
+                st.info("Click to load the latest assessment texts from cache")
+
+            # Initialize assessment data structure in session state if needed
+            sheet_id = selected_sheet['id']
+            if sheet_id not in st.session_state.edited_assessments:
+                st.session_state.edited_assessments[sheet_id] = {}
+            
+            # Update assessments from cache only when update button is clicked
+            if update_button:
+                cache_file = os.path.join("./cache", f"{sheet_id}_assessments.json")
+                if os.path.exists(cache_file):
+                    try:
+                        with open(cache_file, 'r', encoding='utf-8') as f:
+                            st.session_state.edited_assessments[sheet_id] = json.load(f)
+                            st.success("✅ Successfully loaded assessment texts from cache")
+                    except Exception as e:
+                        st.error(f"Error loading assessment data: {str(e)}")
                 else:
-                    st.error(f"❌ Last generation failed: {result.get('message', 'Unknown error')}")
+                    st.warning("No cached assessments found. Generate a report first.")
+            
+            # Get the current assessment data (might be empty)
+            current_assessments = st.session_state.edited_assessments.get(sheet_id, {})
+
+            # Create tabs that are ALWAYS displayed
+            tab_labels = ["📊 Posture", "🏋️ Core", "🦶 Ankle", "🦵 Knee", "🍑 Hip", "💪 Shoulder", "📋 Conclusion"]
+            tab_keys = ["posture", "core", "ankle", "knee", "hip", "shoulder", "overall_conclusion"]
+            
+            tabs = st.tabs(tab_labels)
+            
+            # Render each tab with its content (empty or filled)
+            for i, (tab, key) in enumerate(zip(tabs, tab_keys)):
+                with tab:
+                    st.markdown(f"### {tab_labels[i].split(' ')[1]} Assessment")
+                    
+                    # Get text if available, otherwise empty
+                    text = current_assessments.get(key, "")
+                    display_text = text.replace('<br>', '\n') if text else ""
+                    
+                    # Always show editable text area
+                    edited_text = st.text_area(
+                        f"Edit {tab_labels[i].split(' ')[1]} Assessment",
+                        value=display_text,
+                        height=300,
+                        key=f"edit_{key}_{sheet_id}"
+                    )
+                    
+                    # Update session state if text changed
+                    if edited_text != display_text:
+                        # Store with HTML line breaks
+                        current_assessments[key] = edited_text.replace('\n', '<br>')
+                        st.session_state.edited_assessments[sheet_id] = current_assessments
+                        st.info("Changes detected! Click 'Save Edited Assessments' below to save.")
+            
+            # SAVE BUTTON - ALWAYS SHOWN
+            st.markdown("### Save Changes")
+            save_col1, save_col2 = st.columns([1, 3])
+            
+            with save_col1:
+                if st.button(
+                    "💾 Save Edited Assessments", 
+                    key=f"save_assessments_{sheet_id}", 
+                    help="Save edited assessment texts to cache file",
+                    type="primary"
+                ):
+                    # Direct save approach
+                    current_data = st.session_state.edited_assessments.get(sheet_id, {})
+                    if current_data:
+                        try:
+                            success = save_assessment_to_cache(sheet_id, current_data)
+                            if success:
+                                st.success("✅ Successfully saved edited assessments!")
+                                st.balloons()
+                            else:
+                                st.error("❌ Failed to save assessments")
+                        except Exception as e:
+                            st.error(f"Error saving: {str(e)}")
+                    else:
+                        st.warning("No assessment data to save")
+            
+            with save_col2:
+                st.info("💡 Click to save any edited assessment texts back to cache. This will affect future reports.")
+            
+            # DEBUG TOOLS
+            with st.expander("🔍 Debug Tools"):
+                st.write("Debugging tools for assessment editor:")
+                
+                # Button to print debug info about current assessments
+                if st.button("🔍 Debug Assessment Data", key=f"debug_{sheet_id}"):
+                    st.write("Current Assessment Data:")
+                    st.write(f"Sheet ID: {sheet_id}")
+                    st.write(f"Session state has key: {sheet_id in st.session_state.edited_assessments}")
+                    
+                    if sheet_id in st.session_state.edited_assessments:
+                        data = st.session_state.edited_assessments[sheet_id]
+                        st.write(f"Data type: {type(data)}")
+                        st.write(f"Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+                        st.json(data)
+                    else:
+                        st.write("No data found for this sheet ID in session state")
+                
+                # Button to force create a test file
+                if st.button("🔧 Test File Creation", key=f"test_file_{sheet_id}"):
+                    try:
+                        test_file = os.path.join("./cache", "test_write.txt")
+                        os.makedirs("./cache", exist_ok=True)
+                        with open(test_file, 'w') as f:
+                            f.write("Test file creation succeeded")
+                        
+                        if os.path.exists(test_file):
+                            st.success(f"✅ Successfully created test file: {test_file}")
+                        else:
+                            st.error(f"❌ Failed to create test file: {test_file}")
+                    except Exception as e:
+                        st.error(f"❌ Error creating test file: {str(e)}")
+                
+                # Button to clear session state
+                if st.button("🗑️ Clear Session State", key=f"clear_session_{sheet_id}"):
+                    if sheet_id in st.session_state.edited_assessments:
+                        del st.session_state.edited_assessments[sheet_id]
+                        st.success(f"✅ Cleared session state for sheet ID: {sheet_id}")
+                        st.rerun()  # Changed from st.experimental_rerun()
+                    else:
+                        st.info(f"No session state found for sheet ID: {sheet_id}")
             
             # Additional information
             st.markdown("---")
@@ -511,50 +455,9 @@ def main():
             # Sheet URL (for reference)
             sheet_url = f"https://docs.google.com/spreadsheets/d/{selected_sheet['id']}/edit"
             st.markdown(f"🔗 [Open in Google Sheets]({sheet_url})")
-            
-            # JSON format for API usage
-            with st.expander("📋 JSON Format (for API usage)"):
-                st.json({
-                    "name": selected_sheet['name'],
-                    "id": selected_sheet['id'],
-                    "url": sheet_url
-                })
-            
-            # Raw data display
-            with st.expander("🔍 Raw Sheet Data"):
-                st.write(selected_sheet)
                 
         else:
             st.info("👈 Select a sheet from the list to view its details.")
-    
-    # Footer with report summary
-    if st.session_state.report_results:
-        st.markdown("---")
-        st.subheader("📊 Report Generation Summary")
-        
-        successful_reports = sum(1 for r in st.session_state.report_results.values() if r['success'])
-        total_reports = len(st.session_state.report_results)
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Reports", total_reports)
-        with col2:
-            st.metric("Successful", successful_reports)
-        with col3:
-            st.metric("Failed", total_reports - successful_reports)
-        
-        # Show detailed results
-        with st.expander("📋 Detailed Results"):
-            for sheet_name, result in st.session_state.report_results.items():
-                status = "✅" if result['success'] else "❌"
-                st.write(f"{status} **{sheet_name}**")
-                if result['success']:
-                    if result.get('html_path'):
-                        st.write(f"   📄 HTML: {result['html_path']}")
-                    if result.get('pdf_path'):
-                        st.write(f"   📄 PDF: {result['pdf_path']}")
-                else:
-                    st.write(f"   ❌ Error: {result.get('message', 'Unknown error')}")
     
     # Footer
     st.markdown("---")
@@ -564,6 +467,7 @@ def main():
         "</div>",
         unsafe_allow_html=True
     )
+
 
 if __name__ == "__main__":
     main()
