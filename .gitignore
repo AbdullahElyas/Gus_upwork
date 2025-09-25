@@ -70,3 +70,6 @@ biomechanical_assessment_report.html
 /cache/*
 !/cache/.gitkeep
 
+# Shell scripts
+setup_run.sh
+

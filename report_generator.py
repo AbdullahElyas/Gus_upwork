@@ -381,7 +381,7 @@ class BiomechanicalReportGenerator:
                 return "0"
             # Calculate the range value from the percentage
             range_value = (perc / 100) * gs
-            return f"{range_value:.1f}"
+            return f"{range_value:0.2f}"
         except:
             return "0"
 
@@ -414,7 +414,7 @@ class BiomechanicalReportGenerator:
                 return "0"
             
             asymmetry = ((max_val - min_val) / max_val) * 100
-            return f"{asymmetry:.1f}"
+            return f"{asymmetry:0.2f}"
         except:
             return "0"
 
