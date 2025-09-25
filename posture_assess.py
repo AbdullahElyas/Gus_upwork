@@ -6,41 +6,23 @@ import re
 from graphplot import create_radar_chart
 
 
-def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_third):
-#     scopes = [
-#     'https://www.googleapis.com/auth/spreadsheets',
-#     'https://www.googleapis.com/auth/drive'
-# ]
-
-    # creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
-    # client = gspread.authorize(creds)
-
-    # # Open the Google Sheet
-    # sheet = client.open_by_key(sheet_id)
-
-    # # read the values from 7th row in the second sheet
-    # worksheet = sheet.get_worksheet(1)
+def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, worksheet_third):
     values = worksheet.row_values(7)
-
-    # get the numeric value from the sixth column of values list
+    # FHP remains as float
     FHP = float(values[5]) if len(values) > 5 and values[5] else 0
 
-    # read the values from 19th row in the second sheet
     values_19 = worksheet.row_values(19)
+    # TC as whole number
+    TC = int(round(float(values_19[5]))) if len(values_19) > 5 and values_19[5] else 0
 
-    # get the numeric value from the sixth column of values list
-    TC = float(values_19[5]) if len(values_19) > 5 and values_19[5] else 0
-
-    # read the values from 21th row in the second sheet 
     values_21 = worksheet.row_values(21)
-    # get the numeric value from the sixth column of values list
-    LC = float(values_21[5]) if len(values_21) > 5 and values_21[5] else 0
+    # LC as whole number
+    LC = int(round(float(values_21[5]))) if len(values_21) > 5 and values_21[5] else 0
 
-    # read the values from 9th row and 4th column in the second sheet
     values_9 = worksheet.row_values(9)
     if len(values_9) > 3 and values_9[3]:
         try:
-            Pelvis = float(values_9[3])
+            Pelvis = int(round(float(values_9[3])))
         except ValueError:
             print(f"Invalid Pelvis value in row 9, column 4 for sheet ID {sheet_id}. Using default value 0.")
             Pelvis = 0
@@ -48,11 +30,9 @@ def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_
         print(f"No Pelvis value found in row 9, column 4 for sheet ID {sheet_id}. Using default value 0.")
         Pelvis = 0
 
-    # read the values from 9th row 6th column and 8th column in the second sheet
-    values_9 = worksheet.row_values(9)
     if len(values_9) > 5 and values_9[5]:
         try:
-            Pelvis_Left = float(values_9[5])
+            Pelvis_Left = int(round(float(values_9[5])))
         except ValueError:
             print(f"Invalid Pelvis value in row 9, column 6 for sheet ID {sheet_id}. Using default value 0.")
             Pelvis_Left = 0
@@ -62,7 +42,7 @@ def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_
 
     if len(values_9) > 7 and values_9[7]:
         try:
-            Pelvis_Right = float(values_9[7])
+            Pelvis_Right = int(round(float(values_9[7])))
         except ValueError:
             print(f"Invalid Pelvis value in row 9, column 8 for sheet ID {sheet_id}. Using default value 0.")
             Pelvis_Right = 0
@@ -70,24 +50,20 @@ def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_
         print(f"No Pelvis value found in row 9, column 8 for sheet ID {sheet_id}. Using default value 0.")
         Pelvis_Right = 0
 
-    # Get the gender of the client from 1st row and 3rd column in the first sheet
-    # worksheet_first = sheet.get_worksheet(0)
     values_first = worksheet_first.row_values(1)
     if len(values_first) > 2 and values_first[2]:
         Gender = values_first[2]
     else:
         print(f"No Gender value found in row 1, column 3 for sheet ID {sheet_id}. Using default value 'Unknown'.")
         Gender = 'Male'
-    
-    # Mean_pelvis should be lesser of Pelvis_Left and Pelvis_Right
+
+    # Mean_pelvis as whole number
     Mean_pelvis = min(Pelvis_Left, Pelvis_Right)
-  
-    # read row 49 from sheet 3 and get the numeric value from the 4th column 6th 8th and 10th column
-    
+
     values_49 = worksheet_third.row_values(49)
     if len(values_49) > 3 and values_49[3]:
         try:
-            Rotaion_Ribcage_Left = float(values_49[3])
+            Rotaion_Ribcage_Left = int(round(float(values_49[3])))
         except ValueError:
             print(f"Invalid Rotaion_Ribcage value in row 49, column 4 for sheet ID {sheet_id}. Using default value 0.")
             Rotaion_Ribcage_Left = 0
@@ -96,19 +72,18 @@ def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_
         Rotaion_Ribcage_Left = 0
     if len(values_49) > 7 and values_49[7]:
         try:
-            Rotaion_Ribcage_Right = float(values_49[7])
+            Rotaion_Ribcage_Right = int(round(float(values_49[7])))
         except ValueError:
             print(f"Invalid Rotaion_Ribcage value in row 49, column 8 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Right = 0   
+            Rotaion_Ribcage_Right = 0
     else:
         print(f"No Rotaion_Ribcage value found in row 49, column 8 for sheet ID {sheet_id}. Using default value 0.")
         Rotaion_Ribcage_Right = 0
 
-    # Now do for ribcage_flexion in row 51 similarly
     values_51 = worksheet_third.row_values(51)
     if len(values_51) > 3 and values_51[3]:
         try:
-            Rotaion_Ribcage_Flexion_Left = float(values_51[3])
+            Rotaion_Ribcage_Flexion_Left = int(round(float(values_51[3])))
         except ValueError:
             print(f"Invalid Rotaion_Ribcage value in row 51, column 4 for sheet ID {sheet_id}. Using default value 0.")
             Rotaion_Ribcage_Flexion_Left = 0
@@ -117,10 +92,10 @@ def extract_sheet_metrics_posture(sheet_id, worksheet,worksheet_first,worksheet_
         Rotaion_Ribcage_Flexion_Left = 0
     if len(values_51) > 7 and values_51[7]:
         try:
-            Rotaion_Ribcage_Flexion_Right = float(values_51[7])
+            Rotaion_Ribcage_Flexion_Right = int(round(float(values_51[7])))
         except ValueError:
             print(f"Invalid Rotaion_Ribcage value in row 51, column 8 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Flexion_Right = 0   
+            Rotaion_Ribcage_Flexion_Right = 0
     else:
         print(f"No Rotaion_Ribcage value found in row 51, column 8 for sheet ID {sheet_id}. Using default value 0.")
         Rotaion_Ribcage_Flexion_Right = 0
