@@ -787,6 +787,7 @@ class BiomechanicalReportGenerator:
         """Extract shoulder data from the sheet with calculations"""
         try:
             metrics = extract_sheet_metrics_shoulder(sheet_id, self.data_overview_sheet)
+            metrics_raw = range_force_metrics.extract_range_force_shoulder(sheet_id, self.data_overview_sheet)
             if metrics and len(metrics) >= 16:
                 # Raw data extraction
                 raw_data = {
@@ -810,6 +811,28 @@ class BiomechanicalReportGenerator:
                     'y_iso_right': str(self.safe_float_convert(metrics[17])),
                     't_iso_left': str(self.safe_float_convert(metrics[18])),
                     't_iso_right': str(self.safe_float_convert(metrics[19]))
+                }
+                raw_data_force_ranges = {
+                    'ext_rotation_range_left': str(self.safe_float_convert(metrics_raw[0])),
+                    'ext_rotation_range_right': str(self.safe_float_convert(metrics_raw[1])),
+                    'int_rotation_range_left': str(self.safe_float_convert(metrics_raw[2])),
+                    'int_rotation_range_right': str(self.safe_float_convert(metrics_raw[3])),
+                    'flexion_range_left': str(self.safe_float_convert(metrics_raw[4])),
+                    'flexion_range_right': str(self.safe_float_convert(metrics_raw[5])),
+                    'extension_range_left': str(self.safe_float_convert(metrics_raw[6])),
+                    'extension_range_right': str(self.safe_float_convert(metrics_raw[7])),
+                    'ext_rotation_force_left': str(self.safe_float_convert(metrics_raw[8]) * 9.81),
+                    'ext_rotation_force_right': str(self.safe_float_convert(metrics_raw[9]) * 9.81),
+                    'int_rotation_force_left': str(self.safe_float_convert(metrics_raw[10]) * 9.81),
+                    'int_rotation_force_right': str(self.safe_float_convert(metrics_raw[11]) * 9.81),
+                    'flexion_force_left': str(self.safe_float_convert(metrics_raw[12]) * 9.81),
+                    'flexion_force_right': str(self.safe_float_convert(metrics_raw[13]) * 9.81),
+                    'i_iso_left': str(self.safe_float_convert(metrics_raw[14]) * 9.81),
+                    'i_iso_right': str(self.safe_float_convert(metrics_raw[15]) * 9.81),
+                    'y_iso_left': str(self.safe_float_convert(metrics_raw[16]) * 9.81),
+                    'y_iso_right': str(self.safe_float_convert(metrics_raw[17]) * 9.81),
+                    't_iso_left': str(self.safe_float_convert(metrics_raw[18]) * 9.81),
+                    't_iso_right': str(self.safe_float_convert(metrics_raw[19]) * 9.81)
                 }
                 
                 gs = self.gold_standards['shoulder']
@@ -883,39 +906,56 @@ class BiomechanicalReportGenerator:
                     extension_right_percent=safe_str_round(raw_data['extension_range_right']),
                     extension_asymmetry=safe_asym(raw_data['extension_range_left'], raw_data['extension_range_right'], gs['extension_range']),
                     
-                    # Force data (calculated from percentage, rounded to whole number)
-                    ext_rotation_force_left=safe_calc_force(raw_data['ext_rotation_force_left'], gs['ext_rotation_force']),
-                    ext_rotation_force_right=safe_calc_force(raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
-                    int_rotation_force_left=safe_calc_force(raw_data['int_rotation_force_left'], gs['int_rotation_force']),
-                    int_rotation_force_right=safe_calc_force(raw_data['int_rotation_force_right'], gs['int_rotation_force']),
-                    flexion_force_left=safe_calc_force(raw_data['flexion_force_left'], gs['flexion_force']),
-                    flexion_force_right=safe_calc_force(raw_data['flexion_force_right'], gs['flexion_force']),
-                    i_iso_left=safe_calc_force(raw_data['i_iso_left'], gs['i_iso']),
-                    i_iso_right=safe_calc_force(raw_data['i_iso_right'], gs['i_iso']),
-                    y_iso_left=safe_calc_force(raw_data['y_iso_left'], gs['y_iso']),
-                    y_iso_right=safe_calc_force(raw_data['y_iso_right'], gs['y_iso']),
-                    t_iso_left=safe_calc_force(raw_data['t_iso_left'], gs['t_iso']),
-                    t_iso_right=safe_calc_force(raw_data['t_iso_right'], gs['t_iso']),
-                    
+                    # Force data (rounded to whole number, directly from raw_data_force_ranges)
+                    ext_rotation_force_left=safe_str_round(raw_data_force_ranges['ext_rotation_force_left']),
+                    ext_rotation_force_right=safe_str_round(raw_data_force_ranges['ext_rotation_force_right']),
+                    int_rotation_force_left=safe_str_round(raw_data_force_ranges['int_rotation_force_left']),
+                    int_rotation_force_right=safe_str_round(raw_data_force_ranges['int_rotation_force_right']),
+                    flexion_force_left=safe_str_round(raw_data_force_ranges['flexion_force_left']),
+                    flexion_force_right=safe_str_round(raw_data_force_ranges['flexion_force_right']),
+                    i_iso_left=safe_str_round(raw_data_force_ranges['i_iso_left']),
+                    i_iso_right=safe_str_round(raw_data_force_ranges['i_iso_right']),
+                    y_iso_left=safe_str_round(raw_data_force_ranges['y_iso_left']),
+                    y_iso_right=safe_str_round(raw_data_force_ranges['y_iso_right']),
+                    t_iso_left=safe_str_round(raw_data_force_ranges['t_iso_left']),
+                    t_iso_right=safe_str_round(raw_data_force_ranges['t_iso_right']),
                     # Force percentages and asymmetry
                     ext_rotation_force_left_percent=safe_str_round(raw_data['ext_rotation_force_left']),
                     ext_rotation_force_right_percent=safe_str_round(raw_data['ext_rotation_force_right']),
-                    ext_rotation_force_asymmetry=safe_force_asym(raw_data['ext_rotation_force_left'], raw_data['ext_rotation_force_right'], gs['ext_rotation_force']),
+                    ext_rotation_force_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['ext_rotation_force_left'],
+                        raw_data_force_ranges['ext_rotation_force_right']
+                    ),
                     int_rotation_force_left_percent=safe_str_round(raw_data['int_rotation_force_left']),
                     int_rotation_force_right_percent=safe_str_round(raw_data['int_rotation_force_right']),
-                    int_rotation_force_asymmetry=safe_force_asym(raw_data['int_rotation_force_left'], raw_data['int_rotation_force_right'], gs['int_rotation_force']),
+                    int_rotation_force_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['int_rotation_force_left'],
+                        raw_data_force_ranges['int_rotation_force_right']
+                    ),
                     flexion_force_left_percent=safe_str_round(raw_data['flexion_force_left']),
                     flexion_force_right_percent=safe_str_round(raw_data['flexion_force_right']),
-                    flexion_force_asymmetry=safe_force_asym(raw_data['flexion_force_left'], raw_data['flexion_force_right'], gs['flexion_force']),
+                    flexion_force_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['flexion_force_left'],
+                        raw_data_force_ranges['flexion_force_right']
+                    ),
                     i_iso_left_percent=safe_str_round(raw_data['i_iso_left']),
                     i_iso_right_percent=safe_str_round(raw_data['i_iso_right']),
-                    i_iso_asymmetry=safe_force_asym(raw_data['i_iso_left'], raw_data['i_iso_right'], gs['i_iso']),
+                    i_iso_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['i_iso_left'],
+                        raw_data_force_ranges['i_iso_right']
+                    ),
                     y_iso_left_percent=safe_str_round(raw_data['y_iso_left']),
                     y_iso_right_percent=safe_str_round(raw_data['y_iso_right']),
-                    y_iso_asymmetry=safe_force_asym(raw_data['y_iso_left'], raw_data['y_iso_right'], gs['y_iso']),
+                    y_iso_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['y_iso_left'],
+                        raw_data_force_ranges['y_iso_right']
+                    ),
                     t_iso_left_percent=safe_str_round(raw_data['t_iso_left']),
                     t_iso_right_percent=safe_str_round(raw_data['t_iso_right']),
-                    t_iso_asymmetry=safe_force_asym(raw_data['t_iso_left'], raw_data['t_iso_right'], gs['t_iso'])
+                    t_iso_asymmetry=self.calculate_asymmetry(
+                        raw_data_force_ranges['t_iso_left'],
+                        raw_data_force_ranges['t_iso_right']
+                    )
                 )
         except Exception as e:
             print(f"Error extracting shoulder data: {e}")

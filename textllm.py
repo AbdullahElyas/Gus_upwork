@@ -425,16 +425,16 @@ Input: Knee Flexion
 Range Left: lack range 19.0% below gold standard
 Range Right: lack range 18.0% below gold standard
 Range Comparison: Right 1.2% stronger than left
-Strength Left: poor strength 46.0% below gold standard
-Strength Right: poor strength 43.0% below gold standard
+Strength Left: poor strength 
+Strength Right: poor strength 
 Strength Comparison: Right 5.6% stronger than left
 Knee Extension
 Range Left: good range 3.0% above gold standard
 Range Right: good range 3.0% above gold standard
 Range Comparison: Left and right equal
-Strength Left: lack strength 24.0% below gold standard
-Strength Right: lack strength 16.0% below gold standard
-Strength Comparison: Right 10.5% stronger than left
+Strength Left: lack strength 
+Strength Right: lack strength 
+Strength Comparison: Right  
 Overall Notes:
 Range deficits: Left → Flexion; Right → Flexion
 Strength deficits: Left → Flexion, Extension; Right → Flexion, Extension

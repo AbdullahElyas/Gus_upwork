@@ -1153,31 +1153,28 @@ def categorize_percentage_knee(value_str, measurement_type):
             return "unknown"
         
         percentage = float(value_str)
-        
-        # Calculate difference from 100 (gold standard)
         difference = percentage - 100
-        
-        if percentage > 100:
-            if measurement_type == 'range':
+
+        if measurement_type == 'range':
+            # Range is compared to gold standard (100%)
+            if percentage > 100:
                 return f"good range {abs(difference):.1f}% above gold standard"
-            else:  # strength
-                return f"good strength {abs(difference):.1f}% above gold standard"
-        elif 85 < percentage <= 100:
-            if measurement_type == 'range':
+            elif 85 < percentage <= 100:
                 return f"sufficient range {abs(difference):.1f}% below gold standard"
-            else:  # strength
-                return f"sufficient strength {abs(difference):.1f}% below gold standard"
-        elif 75 <= percentage <= 85:
-            if measurement_type == 'range':
+            elif 75 <= percentage <= 85:
                 return f"lack range {abs(difference):.1f}% below gold standard"
-            else:  # strength
-                return f"lack strength {abs(difference):.1f}% below gold standard"
-        else:  # percentage < 75
-            if measurement_type == 'range':
+            else:  # percentage < 75
                 return f"poor range {abs(difference):.1f}% below gold standard"
-            else:  # strength
-                return f"poor strength {abs(difference):.1f}% below gold standard"
-            
+        else:  # strength/force
+            # Strength is compared to population percentile
+            if percentage > 100:
+                return f"good strength "
+            elif 85 < percentage <= 100:
+                return f"sufficient strength "
+            elif 75 <= percentage <= 85:
+                return f"lack strength "
+            else:  # percentage < 75
+                return f"poor strength "
     except (ValueError, TypeError):
         return "unknown"
     
@@ -2144,7 +2141,7 @@ def evaluate_hamstring_quad_ratio(knee_flexion_force_left, knee_extension_force_
             ratio = adjusted_flexion / adjusted_extension
             
             # Classify ratio
-            if ratio < 0.55:
+            if ratio < 0.57:
                 ratio_class = "Poor"
             elif 0.55 <= ratio <= 0.75:
                 ratio_class = "Good"
