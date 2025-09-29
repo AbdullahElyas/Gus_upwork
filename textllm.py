@@ -53,7 +53,10 @@ YOU MUST FOLLOW THIS EXACT FORMAT. NO CREATIVE VARIATIONS ALLOWED."""
         result = response.choices[0].message.content.strip()
         
         # Combine with the original text structure
-        final_text = f"{text1}\n\n{result}\n\n{text2}\n\n{text3}"
+        if text2.strip():
+            final_text = f"{text1}\n\n{result}\n\n{text2}\n\n{text3}"
+        else:
+            final_text = f"{text1}\n\n{result}\n\n{text3}"      
         return final_text
         
     except Exception as e:
@@ -417,7 +420,7 @@ H:Q RATIO CLASSIFICATIONS:
 - Good: 0.60-0.75
 - High: >0.75
 
-KEY TERMS: distal hamstring, distal quadriceps, hamstring-to-quadriceps ratio, flexion/extension mechanisms, peak force, bilateral comparison, asymmetry, joint stress, overcoming isometrics, high stability movements.
+KEY TERMS:  hamstring-to-quadriceps ratio, flexion/extension mechanisms, peak force, bilateral comparison, asymmetry, joint stress, overcoming isometrics, high stability movements.
 
 
 STRICT TEMPLATE EXAMPLE - FOLLOW THIS EXACT FORMAT:
@@ -444,7 +447,7 @@ RIGHT SIDE: Hamstring to Quadriceps Ratio: 0.412, Classification: Poor
 BILATERAL COMPARISON: Left H:Q ratio 7.3% higher than right
 
 MANDATORY OUTPUT FORMAT:
-The Left knee achieved good range in extension, 3% above our gold standard but was over 30 degrees (19%) below our gold standard in flexion (distal hamstring). Your left knee was surprisingly weak in flexion (distal hamstring) and your hamstring to quadriceps ratio poor. It is important to note that your left knee extension was 9% weaker than the right.
+The Left knee achieved good range in extension, 3% above our gold standard but was over 30 degrees (19%) below our gold standard in flexion . Your left knee was surprisingly weak in flexion  and your hamstring to quadriceps ratio poor. It is important to note that your left knee extension was 9% weaker than the right.
 
 The Right knee had near identical range to the left. While the right knee flexion was stronger, your right knee extension was considerably stronger so your hamstring to quadriceps ratio was worse on the right.
 

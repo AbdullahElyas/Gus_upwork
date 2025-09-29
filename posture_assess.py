@@ -59,46 +59,79 @@ def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, workshee
 
     # Mean_pelvis as whole number
     Mean_pelvis = min(Pelvis_Left, Pelvis_Right)
+    # Search for the index containing the string "Ribcage"
+    Ribcage_String = "RIBCAGE"
+    Rotation_Seated = "ROTATION (SEATED)"
+    Lateral_Flexion = "LATERAL FLEXION (SEATED)"
+    ribcage_row_index = None
+    rotation_seated_index = None
+    lateral_flexion_index = None
+    all_rows = worksheet_third.get_all_values()
 
-    values_49 = worksheet_third.row_values(49)
-    if len(values_49) > 3 and values_49[3]:
-        try:
-            Rotaion_Ribcage_Left = int(round(float(values_49[3])))
-        except ValueError:
-            print(f"Invalid Rotaion_Ribcage value in row 49, column 4 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Left = 0
-    else:
-        print(f"No Rotaion_Ribcage value found in row 49, column 4 for sheet ID {sheet_id}. Using default value 0.")
-        Rotaion_Ribcage_Left = 0
-    if len(values_49) > 7 and values_49[7]:
-        try:
-            Rotaion_Ribcage_Right = int(round(float(values_49[7])))
-        except ValueError:
-            print(f"Invalid Rotaion_Ribcage value in row 49, column 8 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Right = 0
-    else:
-        print(f"No Rotaion_Ribcage value found in row 49, column 8 for sheet ID {sheet_id}. Using default value 0.")
-        Rotaion_Ribcage_Right = 0
+    # Helper to find row index containing a string (case-insensitive)
+    def find_row_index(rows, search_str):
+        search_str = search_str.strip().upper()
+        for idx, row in enumerate(rows):
+            if any(search_str in str(cell).strip().upper() for cell in row):
+                return idx
+        return None
 
-    values_51 = worksheet_third.row_values(51)
-    if len(values_51) > 3 and values_51[3]:
-        try:
-            Rotaion_Ribcage_Flexion_Left = int(round(float(values_51[3])))
-        except ValueError:
-            print(f"Invalid Rotaion_Ribcage value in row 51, column 4 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Flexion_Left = 0
+    ribcage_row_index = find_row_index(all_rows, Ribcage_String)
+    if ribcage_row_index is not None:
+        rotation_seated_index = find_row_index(all_rows[ribcage_row_index:], Rotation_Seated)
+        lateral_flexion_index = find_row_index(all_rows[ribcage_row_index:], Lateral_Flexion)
+        if rotation_seated_index is not None:
+            rotation_seated_index += ribcage_row_index+1
+        if lateral_flexion_index is not None:
+            lateral_flexion_index += ribcage_row_index+1
     else:
-        print(f"No Rotaion_Ribcage value found in row 51, column 4 for sheet ID {sheet_id}. Using default value 0.")
-        Rotaion_Ribcage_Flexion_Left = 0
-    if len(values_51) > 7 and values_51[7]:
-        try:
-            Rotaion_Ribcage_Flexion_Right = int(round(float(values_51[7])))
-        except ValueError:
-            print(f"Invalid Rotaion_Ribcage value in row 51, column 8 for sheet ID {sheet_id}. Using default value 0.")
-            Rotaion_Ribcage_Flexion_Right = 0
+        print(f"'{Ribcage_String}' not found in worksheet_third for sheet ID {sheet_id}. Using default values.")
+    
+    # Initialize all outputs to 0 by default
+    Rotaion_Ribcage_Left = 0
+    Rotaion_Ribcage_Right = 0
+    Rotaion_Ribcage_Flexion_Left = 0
+    Rotaion_Ribcage_Flexion_Right = 0
+
+    # Extract Rotation (Seated)
+    if rotation_seated_index is not None:
+        values_Ribcage_Seated = worksheet_third.row_values(rotation_seated_index)
+        if len(values_Ribcage_Seated) > 3 and values_Ribcage_Seated[3]:
+            try:
+                Rotaion_Ribcage_Left = int(round(float(values_Ribcage_Seated[3])))
+            except ValueError:
+                print(f"Invalid Rotaion_Ribcage value in row {rotation_seated_index+1}, column 4 for sheet ID {sheet_id}. Using default value 0.")
+        else:
+            print(f"No Rotaion_Ribcage value found in row {rotation_seated_index+1}, column 4 for sheet ID {sheet_id}. Using default value 0.")
+        if len(values_Ribcage_Seated) > 7 and values_Ribcage_Seated[7]:
+            try:
+                Rotaion_Ribcage_Right = int(round(float(values_Ribcage_Seated[7])))
+            except ValueError:
+                print(f"Invalid Rotaion_Ribcage value in row {rotation_seated_index+1}, column 8 for sheet ID {sheet_id}. Using default value 0.")
+        else:
+            print(f"No Rotaion_Ribcage value found in row {rotation_seated_index+1}, column 8 for sheet ID {sheet_id}. Using default value 0.")
     else:
-        print(f"No Rotaion_Ribcage value found in row 51, column 8 for sheet ID {sheet_id}. Using default value 0.")
-        Rotaion_Ribcage_Flexion_Right = 0
+        print(f"'{Rotation_Seated}' not found after '{Ribcage_String}' in worksheet_third for sheet ID {sheet_id}. Using default values.")
+
+    # Extract Lateral Flexion (Seated)
+    if lateral_flexion_index is not None:
+        values_lateral_flexion_seated = worksheet_third.row_values(lateral_flexion_index)
+        if len(values_lateral_flexion_seated) > 3 and values_lateral_flexion_seated[3]:
+            try:
+                Rotaion_Ribcage_Flexion_Left = int(round(float(values_lateral_flexion_seated[3])))
+            except ValueError:
+                print(f"Invalid Rotaion_Ribcage_Flexion value in row {lateral_flexion_index+1}, column 4 for sheet ID {sheet_id}. Using default value 0.")
+        else:
+            print(f"No Rotaion_Ribcage_Flexion value found in row {lateral_flexion_index+1}, column 4 for sheet ID {sheet_id}. Using default value 0.")
+        if len(values_lateral_flexion_seated) > 7 and values_lateral_flexion_seated[7]:
+            try:
+                Rotaion_Ribcage_Flexion_Right = int(round(float(values_lateral_flexion_seated[7])))
+            except ValueError:
+                print(f"Invalid Rotaion_Ribcage_Flexion value in row {lateral_flexion_index+1}, column 8 for sheet ID {sheet_id}. Using default value 0.")
+        else:
+            print(f"No Rotaion_Ribcage_Flexion value found in row {lateral_flexion_index+1}, column 8 for sheet ID {sheet_id}. Using default value 0.")
+    else:
+        print(f"'{Lateral_Flexion}' not found after '{Ribcage_String}' in worksheet_third for sheet ID {sheet_id}. Using default values.")
 
 
     posture_assessment_1 = ""
@@ -201,7 +234,10 @@ def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
     template1 = f"""From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement.
 Your forward head posture was measured at {FHP}cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was {tc_status}, you measured {TC} degrees, normal is considered 30-35. We saw {"a reduced curvature" if LC < 30 else "a neutral curvature" if 30 <= LC <= 35 else "an increased curvature"} in your lumbar spine, you measured {LC} degrees with normal being considered 30-35."""
     # You were able to rotate your spine 46 degrees to the left and 50 degrees to the right, and could laterally flex (side bend) 38 degrees to the left and 37 degrees to the right. 
-    template2 = f"""You were able to rotate your spine {Rotaion_Ribcage_Left} degrees to the left and {Rotaion_Ribcage_Right} degrees to the right, and could laterally flex (side bend) {Rotaion_Ribcage_Flexion_Left} degrees to the left and {Rotaion_Ribcage_Flexion_Right} degrees to the right."""
+    if any(x == 0 for x in [Rotaion_Ribcage_Left, Rotaion_Ribcage_Right, Rotaion_Ribcage_Flexion_Left, Rotaion_Ribcage_Flexion_Right]):
+        template2 = ""
+    else:
+        template2 = f"""You were able to rotate your spine {Rotaion_Ribcage_Left} degrees to the left and {Rotaion_Ribcage_Right} degrees to the right, and could laterally flex (side bend) {Rotaion_Ribcage_Flexion_Left} degrees to the left and {Rotaion_Ribcage_Flexion_Right} degrees to the right."""
 
     # The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were 6 (left) and 6 (right), normal is 7-10 degrees for females. The lumbar spine directly articulates with the sacrum and its joints with the pelvis. 
     template3 = f"""The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were {Pelvis_Left} (left) and {Pelvis_Right} (right), normal is {'4-7 degrees for males' if Gender == 'Male' else '7-10 degrees for females'}{text_pelvis} """
