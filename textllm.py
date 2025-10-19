@@ -179,9 +179,10 @@ def test_biomech_foot(sheet_id,data_overview_sheet,second_worksheet, openai_clie
 3. Foot and Ankle summary: Overall assessment starting with symmetry discussion, followed by key findings and recommendations (4-5 sentences)
 
 Key assessment principles:
-- Centre of mass over 2nd metatarsal = neutral position
-- Everted position = centre of mass lateral to 2nd metatarsal (1st metatarsal or beyond)
-- If notes mention "between 1st and 2nd" or "besides 2nd towards 1st" = everted position
+- Centre of mass over 2nd metatarsal = Neutral position
+- Everted position = Centre of mass medial to 2nd metatarsal (towards 1st metatarsal or beyond)
+- If notes mention "between 1st and 2nd" or "beside 2nd towards 1st" = Everted position
+- Inverted position = Centre of mass lateral to 2nd metatarsal (towards 5th metatarsal or beyond)
 - Poor range/strength requires specific training recommendations
 - Emphasize midfoot articulation and fascial control
 - Include subconscious movement recommendations for tissue lengthening
