@@ -4,6 +4,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
 from graphplot import create_radar_chart
+from range_force_metrics import extract_range_force_knee
 
 
 def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, worksheet_third):
@@ -2294,22 +2295,34 @@ def TextGen_Knee_HQ_Ratio(sheet_id,data_overview_sheet):
     Generate H:Q ratio analysis for knee assessment
     """
     # Get knee metrics
+    # get ranges and percentage-based forces from existing extractor
     (
-    knee_flexion_range_left,
-    knee_flexion_range_right,
-    knee_extension_range_left,
-    knee_extension_range_right,
-    knee_flexion_force_left,
-    knee_flexion_force_right,
-    knee_extension_force_left,
-    knee_extension_force_right,
-    knee_flexion_force_left_original,
-    knee_flexion_force_right_original,
-    knee_extension_force_left_original,
-    knee_extension_force_right_original,
-    knee_hamstring_quad_ratio_left,
-    knee_hamstring_quad_ratio_right
-    ) = extract_sheet_metrics_knee(sheet_id,data_overview_sheet)
+        knee_flexion_range_left,
+        knee_flexion_range_right,
+        knee_extension_range_left,
+        knee_extension_range_right,
+        knee_flexion_force_left,
+        knee_flexion_force_right,
+        knee_extension_force_left,
+        knee_extension_force_right,
+        knee_flexion_force_left_original,  # placeholder, will be overwritten
+        knee_flexion_force_right_original, # placeholder, will be overwritten
+        knee_extension_force_left_original,# placeholder, will be overwritten
+        knee_extension_force_right_original,# placeholder, will be overwritten
+        knee_hamstring_quad_ratio_left,
+        knee_hamstring_quad_ratio_right
+    ) = extract_sheet_metrics_knee(sheet_id, data_overview_sheet)
+
+    # replace the "original" force values by reading raw/original forces via range_force_metrics
+    (   flexion_range_left,
+        flexion_range_right,
+        extension_range_left,
+        extension_range_right,
+        knee_flexion_force_left_original,
+        knee_flexion_force_right_original,
+        knee_extension_force_left_original,
+        knee_extension_force_right_original
+    ) = extract_range_force_knee(sheet_id, data_overview_sheet)
 
     # Calculate H:Q ratios
     hq_results = evaluate_hamstring_quad_ratio(
@@ -3366,6 +3379,7 @@ def extract_hip_report_text(sheet_id):
         
         from google.oauth2.service_account import Credentials
         import gspread
+        
         
         creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
         client = gspread.authorize(creds)

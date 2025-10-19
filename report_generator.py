@@ -508,7 +508,7 @@ class BiomechanicalReportGenerator:
         """Extract knee data from the sheet with calculations"""
         try:
             metrics = extract_sheet_metrics_knee(sheet_id, self.data_overview_sheet)
-            metrics_raw = range_force_metrics.extract_range_force_knee(sheet_id, self.data_overview_sheet, self.second_worksheet)
+            metrics_raw = range_force_metrics.extract_range_force_knee(sheet_id, self.data_overview_sheet)
             if metrics and len(metrics) >= 14:
                 # Helper to normalize values
                 def normalize(val):
@@ -576,8 +576,15 @@ class BiomechanicalReportGenerator:
                     flexion_force_right=str(round(self.safe_float_convert(flexion_force_right_float))),
                     extension_force_left=str(round(self.safe_float_convert(extension_force_left_float))),
                     extension_force_right=str(round(self.safe_float_convert(extension_force_right_float))),
-                    hamstring_quad_ratio_left=str(round(self.safe_float_convert(metrics[12]))),
-                    hamstring_quad_ratio_right=str(round(self.safe_float_convert(metrics[13]))),
+                    # Hamstring-quad ratios computed from raw metrics_raw: left = metrics_raw[4]/metrics_raw[6], right = metrics_raw[5]/metrics_raw[7]
+                    hamstring_quad_ratio_left=str(round(
+                        (self.safe_float_convert(metrics_raw[4]) / self.safe_float_convert(metrics_raw[6]))
+                        if self.safe_float_convert(metrics_raw[6]) != 0 else 0
+                    )),
+                    hamstring_quad_ratio_right=str(round(
+                        (self.safe_float_convert(metrics_raw[5]) / self.safe_float_convert(metrics_raw[7]))
+                        if self.safe_float_convert(metrics_raw[7]) != 0 else 0
+                    )),
                     
                     # Force percentages and asymmetry
                     flexion_force_left_percent=str(round(self.safe_float_convert(metrics[4]))),
@@ -592,11 +599,19 @@ class BiomechanicalReportGenerator:
                         extension_force_left_float,
                         extension_force_right_float
                     ),
-                    hq_ratio_left_percent=str(round(self.safe_float_convert(metrics[12]))),
-                    hq_ratio_right_percent=str(round(self.safe_float_convert(metrics[13]))),
+                    hq_ratio_left_percent=str(round(
+                        (self.safe_float_convert(metrics_raw[4]) / self.safe_float_convert(metrics_raw[6]))
+                        if self.safe_float_convert(metrics_raw[6]) != 0 else 0
+                    )),
+                    hq_ratio_right_percent=str(round(
+                        (self.safe_float_convert(metrics_raw[5]) / self.safe_float_convert(metrics_raw[7]))
+                        if self.safe_float_convert(metrics_raw[7]) != 0 else 0
+                    )),
                     hq_ratio_asymmetry=self.calculate_asymmetry(
-                        self.calculate_range_from_percentage(metrics[12], gs['hq_ratio']),
-                        self.calculate_range_from_percentage(metrics[13], gs['hq_ratio'])
+                        (self.safe_float_convert(metrics_raw[4]) / self.safe_float_convert(metrics_raw[6]))
+                        if self.safe_float_convert(metrics_raw[6]) != 0 else 0,
+                        (self.safe_float_convert(metrics_raw[5]) / self.safe_float_convert(metrics_raw[7]))
+                        if self.safe_float_convert(metrics_raw[7]) != 0 else 0
                     )
                 )
         except Exception as e:

@@ -112,7 +112,7 @@ def extract_range_force_footankle(sheet_id, data_overview_sheet, second_workshee
     )
 
 
-def extract_range_force_knee(sheet_id, data_overview_sheet, second_worksheet):
+def extract_range_force_knee(sheet_id, data_overview_sheet):
     # Extract data from the worksheet
     all_values = data_overview_sheet.get_all_values()
     
