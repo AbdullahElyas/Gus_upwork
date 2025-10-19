@@ -16,7 +16,7 @@ STRICT RULES:
 1. Always start with "These readings indicate"
 2. Use ONLY the vocabulary and phrasing from examples
 3. Increased or decreased lumber curvature means worse force absorption
-4. Always write in English spelling(Not American English)
+4. Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Example 1:
 Input: Gender: Male, FHP: 2.7, TC: 37.0, LC: 27.0, Posture Assessment 1: These readings indicate you have a Forward Head Posture, Posture Assessment 2: , Posture Assessment 3: So where your thoracic curvature is increased, LC Category: Slightly Decreased lumber curvature
@@ -115,7 +115,7 @@ IMPORTANT INSTRUCTIONS:
 - Adapt your language based on which tests were actually performed
 - Focus only on the available data and provide relevant assessments
 - Write report in 2nd person language
-- Always write in English spelling(Not American English)
+- Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Your responses should:
 1. Start with explaining that core function assessments examine TVA strength, coordination, and multifidus activation
@@ -186,7 +186,7 @@ Key assessment principles:
 - Emphasize midfoot articulation and fascial control
 - Include subconscious movement recommendations for tissue lengthening
 
-Note: Always write in English spelling(Not American English)
+Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Example:
 Input: Left Foot Position: neutral position, between 1st and 2nd metatarsal, Pronation: foot can pronate, Left : {'pronation': 'can pronate', 'supination': 'can supinate'}, Left Foot: Dorsiflexion - range and strength are both good; Plantarflexion - good range but poor strength. Right Foot Position: neutral position, besides 2nd towards 1st, Pronation: foot can pronate, Right : {'pronation': 'can pronate', 'supination': 'can supinate'}, Right Foot: Dorsiflexion - range and strength are both good; Plantarflexion - good range but poor strength Symmetry is there.
@@ -269,7 +269,7 @@ Required structure: 1) Left hip analysis 2) Right hip analysis 3) Hip summary wi
 
 Key terms: hip joint integrity, pelvic alignment, propulsion, force production, movement patterns, bilateral comparison, range deficits, strength deficits, femur positioning, inverse relationship, closed & open-chain movements, flexor mechanism, extensor mechanism, energy transfer.
 
-Note: Always write in English spelling(Not American English)
+Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 Example:
 Input: Hip Flexion: Range above gold standard left/sufficient but below gold standard right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
 Hip Extension: Range sufficient but below gold standard bilaterally, Strength large deficit bilaterally
@@ -360,7 +360,7 @@ Hip summary: The notable reduction in hip extension range of motion on the left 
 Large asymmetries and inverse relationship in rotation affect hip joint integrity. Internal rotation in closed & open-chain movements plays important roles in squatting and functional activities. Having range and strength here is vital for maintaining hip joint stability. The flexor mechanism also plays a role in force transmission from hip muscles to the lower limb and ground. Optimising rotation mechanics will allow for more efficient energy transfer during both closed and open-chain movements. It's necessary to reduce the current asymmetry present at the hip.
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
-Note: Always write in English spelling(Not American English)"""
+Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
         # Generate response using OpenAI GPT-4o-mini
         if concise_input and concise_input.strip():
@@ -454,7 +454,7 @@ The Right knee had near identical range to the left. While the right knee flexio
 Knee summary: There is some good range available at the knee in extension but there needs to be a large focus on flexion. We would like to improve the flexion peak force in order to increase your hamstring to quadriceps ratio as well as building some tolerance in left knee extension.
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
-Note: Always write in English spelling(Not American English)"""
+Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
         # Generate response using OpenAI GPT-4o-mini
         if knee_input and knee_input.strip():
@@ -520,6 +520,7 @@ OUTPUT RULES:
 - Use descriptive terms like "slightly higher", "notably stronger", "significantly weaker", "much greater"
 - Describe asymmetries qualitatively: "stronger", "weaker", "greater", "reduced"
 - Focus on functional descriptions rather than numerical values
+- Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Example:
 Input: External Rotation Range: Left: above gold standard (11.0% above gold standard), Right: above gold standard (18.0% above gold standard), External Rotation: Right 6.3% higher than left; Internal Rotation Range: Left: above gold standard (1.0% above gold standard), Right: below gold standard, Internal Rotation: Left 4.1% higher than right; External Rotation Force: Left: below gold standard, Right: below gold standard, External Rotation: Left 6.5% higher than right; Internal Rotation Force: Left: notable reduction with respect to gold standard, Right: notable reduction with respect to gold standard, Internal Rotation: Right 17.7% higher than left; Strength deficits: Left → Internal Rotation; Right → Internal Rotation
@@ -605,7 +606,7 @@ IMPORTANT INSTRUCTIONS:
 - Adapt the conclusion length based on available data
 - Maintain professional biomechanical terminology
 - Focus only on the assessments that are actually present
-- Always write in English spelling(Not American English)
+- Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.
 
 KEY TERMINOLOGY:
 - Posture: thoracic kyphosis, rib cage depression, externally rotated position, internal/external rotation, correctives, gait consequences
