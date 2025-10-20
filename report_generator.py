@@ -270,6 +270,7 @@ class BiomechanicalReportGenerator:
         self.Conclusion_Ankle = ""
         self.Conclusion_Shoulder = ""
         self.Conclusion = ""
+        self.gravity = 1.0  
         # self.FOLDER_ID = '1Tp9NL94dqQVD8XiZVjNH4_yT4CGhFER4'  # Not the link! Just the ID
         # try:
         #     self.SheetID = get_sheet_ids_from_folder(self.FOLDER_ID, drive_service)
@@ -386,13 +387,13 @@ class BiomechanicalReportGenerator:
             return "0"
 
     def calculate_force_from_percentage(self, percentage, gold_standard):
-        """Calculate force from percentage of gold standard using value * gs * 9.81 / 100"""
+        """Calculate force from percentage of gold standard using value * gs *self.gravity / 100"""
         try:
             perc = self.safe_float_convert(percentage)
             gs = self.safe_float_convert(gold_standard)
             if perc == 0 or gs == 0:
                 return "0"
-            force_value = perc * gs * self.mass * 9.81 / 100
+            force_value = perc * gs * self.mass *self.gravity / 100
             return f"{force_value:.2f}"
         except:
             return "0"
@@ -453,10 +454,10 @@ class BiomechanicalReportGenerator:
                         pass
                     return 0.0
 
-                dorsiflexion_force_left_float = safe_force(dorsiflexion_force_left_val)*9.81
-                dorsiflexion_force_right_float = safe_force(dorsiflexion_force_right_val)*9.81
-                plantarflexion_force_left_float = safe_force(plantarflexion_force_left_val)*9.81
-                plantarflexion_force_right_float = safe_force(plantarflexion_force_right_val)*9.81
+                dorsiflexion_force_left_float = safe_force(dorsiflexion_force_left_val)*self.gravity
+                dorsiflexion_force_right_float = safe_force(dorsiflexion_force_right_val)*self.gravity
+                plantarflexion_force_left_float = safe_force(plantarflexion_force_left_val)*self.gravity
+                plantarflexion_force_right_float = safe_force(plantarflexion_force_right_val)*self.gravity
 
 
                 return AnkleData(
@@ -545,10 +546,10 @@ class BiomechanicalReportGenerator:
                         pass
                     return 0.0
 
-                flexion_force_left_float = safe_force(flexion_force_left_val)*9.81
-                flexion_force_right_float = safe_force(flexion_force_right_val)*9.81
-                extension_force_left_float = safe_force(extension_force_left_val)*9.81
-                extension_force_right_float = safe_force(extension_force_right_val)*9.81
+                flexion_force_left_float = safe_force(flexion_force_left_val)*self.gravity
+                flexion_force_right_float = safe_force(flexion_force_right_val)*self.gravity
+                extension_force_left_float = safe_force(extension_force_left_val)*self.gravity
+                extension_force_right_float = safe_force(extension_force_right_val)*self.gravity
 
                 return KneeData(
                     # Range data (calculated from percentage, rounded to whole number)
@@ -676,18 +677,18 @@ class BiomechanicalReportGenerator:
                         pass
                     return 0.0
 
-                flexion_force_left_float = safe_force(flexion_force_left_val)*9.81
-                flexion_force_right_float = safe_force(flexion_force_right_val)*9.81
-                extension_force_left_float = safe_force(extension_force_left_val)*9.81
-                extension_force_right_float = safe_force(extension_force_right_val)*9.81
-                abduction_force_left_float = safe_force(abduction_force_left_val)*9.81
-                abduction_force_right_float = safe_force(abduction_force_right_val)*9.81
-                adduction_force_left_float = safe_force(adduction_force_left_val)*9.81
-                adduction_force_right_float = safe_force(adduction_force_right_val)*9.81
-                ext_rotation_force_left_float = safe_force(ext_rotation_force_left_val)*9.81
-                ext_rotation_force_right_float = safe_force(ext_rotation_force_right_val)*9.81
-                int_rotation_force_left_float = safe_force(int_rotation_force_left_val)*9.81
-                int_rotation_force_right_float = safe_force(int_rotation_force_right_val)*9.81
+                flexion_force_left_float = safe_force(flexion_force_left_val)*self.gravity
+                flexion_force_right_float = safe_force(flexion_force_right_val)*self.gravity
+                extension_force_left_float = safe_force(extension_force_left_val)*self.gravity
+                extension_force_right_float = safe_force(extension_force_right_val)*self.gravity
+                abduction_force_left_float = safe_force(abduction_force_left_val)*self.gravity
+                abduction_force_right_float = safe_force(abduction_force_right_val)*self.gravity
+                adduction_force_left_float = safe_force(adduction_force_left_val)*self.gravity
+                adduction_force_right_float = safe_force(adduction_force_right_val)*self.gravity
+                ext_rotation_force_left_float = safe_force(ext_rotation_force_left_val)*self.gravity
+                ext_rotation_force_right_float = safe_force(ext_rotation_force_right_val)*self.gravity
+                int_rotation_force_left_float = safe_force(int_rotation_force_left_val)*self.gravity
+                int_rotation_force_right_float = safe_force(int_rotation_force_right_val)*self.gravity
 
                 return HipData(
                     # Range data (calculated from percentage)
@@ -836,18 +837,18 @@ class BiomechanicalReportGenerator:
                     'flexion_range_right': str(self.safe_float_convert(metrics_raw[5])),
                     'extension_range_left': str(self.safe_float_convert(metrics_raw[6])),
                     'extension_range_right': str(self.safe_float_convert(metrics_raw[7])),
-                    'ext_rotation_force_left': str(self.safe_float_convert(metrics_raw[8]) * 9.81),
-                    'ext_rotation_force_right': str(self.safe_float_convert(metrics_raw[9]) * 9.81),
-                    'int_rotation_force_left': str(self.safe_float_convert(metrics_raw[10]) * 9.81),
-                    'int_rotation_force_right': str(self.safe_float_convert(metrics_raw[11]) * 9.81),
-                    'flexion_force_left': str(self.safe_float_convert(metrics_raw[12]) * 9.81),
-                    'flexion_force_right': str(self.safe_float_convert(metrics_raw[13]) * 9.81),
-                    'i_iso_left': str(self.safe_float_convert(metrics_raw[14]) * 9.81),
-                    'i_iso_right': str(self.safe_float_convert(metrics_raw[15]) * 9.81),
-                    'y_iso_left': str(self.safe_float_convert(metrics_raw[16]) * 9.81),
-                    'y_iso_right': str(self.safe_float_convert(metrics_raw[17]) * 9.81),
-                    't_iso_left': str(self.safe_float_convert(metrics_raw[18]) * 9.81),
-                    't_iso_right': str(self.safe_float_convert(metrics_raw[19]) * 9.81)
+                    'ext_rotation_force_left': str(self.safe_float_convert(metrics_raw[8]) *self.gravity),
+                    'ext_rotation_force_right': str(self.safe_float_convert(metrics_raw[9]) *self.gravity),
+                    'int_rotation_force_left': str(self.safe_float_convert(metrics_raw[10]) *self.gravity),
+                    'int_rotation_force_right': str(self.safe_float_convert(metrics_raw[11]) *self.gravity),
+                    'flexion_force_left': str(self.safe_float_convert(metrics_raw[12]) *self.gravity),
+                    'flexion_force_right': str(self.safe_float_convert(metrics_raw[13]) *self.gravity),
+                    'i_iso_left': str(self.safe_float_convert(metrics_raw[14]) *self.gravity),
+                    'i_iso_right': str(self.safe_float_convert(metrics_raw[15]) *self.gravity),
+                    'y_iso_left': str(self.safe_float_convert(metrics_raw[16]) *self.gravity),
+                    'y_iso_right': str(self.safe_float_convert(metrics_raw[17]) *self.gravity),
+                    't_iso_left': str(self.safe_float_convert(metrics_raw[18]) *self.gravity),
+                    't_iso_right': str(self.safe_float_convert(metrics_raw[19]) *self.gravity)
                 }
                 
                 gs = self.gold_standards['shoulder']
