@@ -656,6 +656,107 @@ REMEMBER: Only include paragraphs for assessment sections that are actually prov
         
     except Exception as e:
         return f"Error processing biomechanical conclusion: {e}"
+    
+# ...existing imports and functions...
+
+def test_biomech_priority_list(
+    posture_text: str,
+    ankle_text: str,
+    knee_text: str,
+    hip_text: str,
+    shoulder_text: str,
+    openai_client
+) -> str:
+    """
+    Generate a compact Priority List based on the same inputs used for the conclusion.
+    Includes only assessments that are present, uses British English, and short, numbered lines.
+    """
+    try:
+        # Build available sections and input parts (only if present)
+        input_parts = []
+        available_sections = []
+
+        if hip_text and hip_text.strip():
+            input_parts.append(f"Hip Assessment Summary:\n{hip_text}")
+            available_sections.append("hip")
+
+        if shoulder_text and shoulder_text.strip():
+            input_parts.append(f"Shoulder Assessment Summary:\n{shoulder_text}")
+            available_sections.append("shoulder")
+
+        if ankle_text and ankle_text.strip():
+            input_parts.append(f"Foot/Ankle Assessment Summary:\n{ankle_text}")
+            available_sections.append("foot")
+
+        if knee_text and knee_text.strip():
+            input_parts.append(f"Knee Assessment Summary:\n{knee_text}")
+            available_sections.append("knee")
+
+
+        if posture_text and posture_text.strip():
+            input_parts.append(f"Posture Assessment Summary:\n{posture_text}")
+            available_sections.append("posture")
+
+        input_string = "\n\n".join(input_parts)
+
+        # If nothing to generate from
+        if not input_string.strip():
+            return f"Priority List:\n"
+
+        # System prompt to enforce exact structure and British English
+        system_prompt = f"""You are a biomechanical assessment expert.
+            Create a compact priority list using ONLY the sections provided.
+            ALWAYS use British English.
+            Adhere strictly to this output template and rules:
+
+            TEMPLATE:
+            Priority List:
+            1st) <Short priority for the highest-impact available section>
+            2nd) <Short priority for the next available section>
+            3rd) <Short priority for the next available section>
+            4th) <Short priority for the next available section>
+            5th) <Short priority for the next available section>
+            6th) <Short priority for the next available section>
+
+            EXAMPLE (follow format, wording, length and tone closely):
+            Input sections: {', '.join(available_sections)}
+            Example Output:
+            Priority List:
+            1st) Address limitations at the hip in range of motion, then force.
+            2nd) Increase shoulder internal rotation range and increase your rotator cuff and rhomboid strength.
+            3rd) Increase your ability to pressurise correctly through the foot.
+            4th) Increase right knee flexion force.
+            5th) Increase lower core function.
+
+            RULES:
+            - Use short, direct sentences (like the example).
+            - Start each line with an ordinal: 1st), 2nd), 3rd), 4th), 5th), 6th).
+            - Include only the sections that are actually provided: {', '.join(available_sections)}.
+            - Each line must map to one section (hip, shoulder, foot, knee, core function, posture).
+            - Do NOT create a line for any missing section.
+            - If fewer than 6 sections are available, output fewer lines (no placeholders).
+            - Use verbs like Address, Increase, Improve, Build, Enhance.
+            - Avoid numbers/percentages from assessments.
+            - Keep to British English spelling (pressurise, emphasising, stabiliser, programme, etc.).
+            - Keep priorities relevant to each section's likely needs (hip: range then force; shoulder: internal rotation then rotator cuff and rhomboids; foot: pressurise through mid-foot; knee: flexion force/H:Q; core function: lower core bracing/coordination; posture: forward head/thoracic).
+            - Match the example's tone, brevity and approximate word-count per line.
+            - No extra commentary, headings, or paragraphs — only the numbered lines shown.
+
+            REMEMBER: Follow the example format, wording, number of words and tone closely."""      
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": input_string}
+            ],
+            temperature=0.1,
+            max_tokens=300,
+            top_p=0.6
+        )
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        return f"Priority List:\nError generating priority list: {e}"
 
 # ...existing code...
 # final_text = test_biomech_posture(sheet_id)

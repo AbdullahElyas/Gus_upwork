@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Biomechanical Assessment Report{% if name %} - {{ name }}{% endif %}</title>
+
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -236,6 +238,36 @@
         <span style="font-weight: bold; letter-spacing: 1px; margin-right: 10px;">Name:</span>
         <span style="color: #FFF9C4; font-weight: 600;">{{ name }}</span>
     </div>
+    {% endif %}
+    {% if priority_list %}
+    <style>
+      .priority-list {
+        margin: 16px 0;
+        padding: 12px;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #e1e7ea;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        max-width: 680px;
+        font-size: 11px;
+        color: #2C3E50;
+        line-height: 1.4;
+      }
+      .priority-list p {
+        margin: 0;
+        padding: 0;
+      }
+      .priority-list ul {
+        margin: 6px 0 0 18px;
+        padding: 0;
+      }
+      .priority-list li {
+        margin-bottom: 6px;
+      }
+    </style>
+    <section class="priority-list" role="region" aria-label="Priority List">
+      <p>{{ priority_list | safe }}</p>
+    </section>
     {% endif %}
 
 <!-- Data Tables Section -->

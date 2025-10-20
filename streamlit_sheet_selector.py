@@ -348,27 +348,31 @@ def main():
             current_assessments = st.session_state.edited_assessments.get(sheet_id, {})
 
             # Create tabs that are ALWAYS displayed
-            tab_labels = ["📊 Posture", "🏋️ Core", "🦶 Ankle", "🦵 Knee", "🍑 Hip", "💪 Shoulder", "📋 Conclusion"]
-            tab_keys = ["posture", "core", "ankle", "knee", "hip", "shoulder", "overall_conclusion"]
+            tab_labels = ["🧭 Priority List", "📊 Posture", "🏋️ Core", "🦶 Ankle", "🦵 Knee", "🍑 Hip", "💪 Shoulder", "📋 Conclusion"]
+            tab_keys   = ["priority_list",   "posture",     "core",     "ankle",     "knee",     "hip",     "shoulder",     "overall_conclusion"]
             
             tabs = st.tabs(tab_labels)
             
             # Render each tab with its content (empty or filled)
             for i, (tab, key) in enumerate(zip(tabs, tab_keys)):
                 with tab:
-                    st.markdown(f"### {tab_labels[i].split(' ')[1]} Assessment")
+                    if key == "priority_list":
+                     # Special heading for Priority List
+                        st.markdown("### Priority List")
+                    else:
+                        st.markdown(f"### {tab_labels[i].split(' ')[1]} Assessment")
                     
                     # Get text if available, otherwise empty
                     text = current_assessments.get(key, "")
                     display_text = text.replace('<br>', '\n') if text else ""
                     
-                    # Always show editable text area
+                   # Editable text area (same UX as other tabs)
                     edited_text = st.text_area(
-                        f"Edit {tab_labels[i].split(' ')[1]} Assessment",
-                        value=display_text,
-                        height=300,
-                        key=f"edit_{key}_{sheet_id}"
-                    )
+                    f"Edit {('Priority List' if key == 'priority_list' else tab_labels[i].split(' ')[1] + ' Assessment')}",
+                    value=display_text,
+                    height=300,
+                    key=f"edit_{key}_{sheet_id}"
+                )
                     
                     # Update session state if text changed
                     if edited_text != display_text:

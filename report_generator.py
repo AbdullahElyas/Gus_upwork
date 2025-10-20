@@ -20,7 +20,8 @@ from textllm import (
     test_biomech_hip,
     test_biomech_knee,
     test_biomech_shoulder,
-    test_biomech_hip_concise
+    test_biomech_hip_concise,
+    test_biomech_priority_list
 )
 
 # Import your existing functions
@@ -246,10 +247,11 @@ class ThoracicData:
 
 
 class BiomechanicalReportGenerator:
-    def __init__(self, template_dir: str = "./", sheet_id: str = ""):
+    def __init__(self, template_dir: str = "./", sheet_id: str = "", priority_list: str = ""):
         """Initialize the report generator with template directory"""
         self.env = Environment(loader=FileSystemLoader(template_dir))
         self.template = self.env.get_template('biomechanical_report_template.html')
+        self.PriorityList = priority_list or ""  # manual override if provided
         # get the worksheets
         scopes = [
     'https://www.googleapis.com/auth/spreadsheets',
@@ -270,7 +272,8 @@ class BiomechanicalReportGenerator:
         self.Conclusion_Ankle = ""
         self.Conclusion_Shoulder = ""
         self.Conclusion = ""
-        self.gravity = 1.0  
+        self.gravity = 1.0
+        self.PriorityList = ""  
         # self.FOLDER_ID = '1Tp9NL94dqQVD8XiZVjNH4_yT4CGhFER4'  # Not the link! Just the ID
         # try:
         #     self.SheetID = get_sheet_ids_from_folder(self.FOLDER_ID, drive_service)
@@ -1155,6 +1158,20 @@ class BiomechanicalReportGenerator:
         except Exception as e:
             print(f"Error getting overall conclusion: {e}")
 
+        try:
+            Priority_List = test_biomech_priority_list(
+                self.Conclusion_Posture,
+                self.Conclusion_Hip,
+                self.Conclusion_Knee,
+                self.Conclusion_Ankle,
+                self.Conclusion_Shoulder,
+                self.openai_client
+            )
+            if Priority_List and len(Priority_List) >= 4:
+                assessments['priority_list'] = Priority_List.replace('\n', '<br>')
+        except Exception as e:
+            print(f"Error getting priority list: {e}")
+
         # Save to cache
         try:
             with open(cache_path, "w", encoding="utf-8") as f:
@@ -1206,10 +1223,12 @@ class BiomechanicalReportGenerator:
             'hip_assessment': assessments.get('hip'),
             'shoulder_assessment': assessments.get('shoulder'),
             'overall_conclusion': assessments.get('overall_conclusion'),
+            'priority_list': assessments.get('priority_list'),
             'ankle_chart': charts.get('ankle'),
             'knee_chart': charts.get('knee'),
             'hip_chart': charts.get('hip'),
             'shoulder_chart': charts.get('shoulder')
+            
         }
         
         # Render the template
