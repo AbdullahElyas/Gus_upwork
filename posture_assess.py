@@ -1203,15 +1203,19 @@ def categorize_percentage_knee(value_str, measurement_type):
             else:  # percentage < 75
                 return f"poor range {abs(difference):.1f}% below gold standard"
         else:  # strength/force
-            # Strength is compared to population percentile
-            if percentage > 100:
-                return f"good strength "
-            elif 85 < percentage <= 100:
-                return f"sufficient strength "
-            elif 75 <= percentage <= 85:
-                return f"lack strength "
-            else:  # percentage < 75
-                return f"poor strength "
+            # Strength is compared to population percentile (updated thresholds)
+            try:
+                pct = percentage
+                if pct > 65:
+                    return "good strength"
+                elif 50 <= pct <= 65:
+                    return "sufficient strength"
+                elif 35 <= pct < 50:
+                    return "lack strength"
+                else:  # pct < 35
+                    return "poor strength"
+            except Exception:
+                return "unknown"
     except (ValueError, TypeError):
         return "unknown"
     
@@ -1396,6 +1400,17 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
     knee_hamstring_quad_ratio_left,
     knee_hamstring_quad_ratio_right
     ) = extract_sheet_metrics_knee(sheet_id,data_overview_sheet)
+    # extract data using from range_force_metrics import extract_range_force_knee
+    (
+        flexion_range_left_original,
+        flexion_range_right_original,
+        extension_range_left_original,
+        extension_range_right_original,
+        flexion_force_left_original,
+        flexion_force_right_original,
+        extension_force_left_original,
+        extension_force_right_original
+    ) = extract_range_force_knee(sheet_id, data_overview_sheet)
 
     # Categorize all measurements with specific types
     movements = {
@@ -1407,7 +1422,11 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
             'range_left_val': knee_flexion_range_left,
             'range_right_val': knee_flexion_range_right,
             'strength_left_val': knee_flexion_force_left,
-            'strength_right_val': knee_flexion_force_right
+            'strength_right_val': knee_flexion_force_right,
+            'range_left_original': flexion_range_left_original,
+            'range_right_original': flexion_range_right_original,
+            'strength_left_original': flexion_force_left_original,
+            'strength_right_original': flexion_force_right_original
         },
         'Knee Extension': {
             'range_left': categorize_percentage_knee(knee_extension_range_left, 'range'),
@@ -1417,7 +1436,11 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
             'range_left_val': knee_extension_range_left,
             'range_right_val': knee_extension_range_right,
             'strength_left_val': knee_extension_force_left,
-            'strength_right_val': knee_extension_force_right
+            'strength_right_val': knee_extension_force_right,
+            'range_left_original': extension_range_left_original,
+            'range_right_original': extension_range_right_original,
+            'strength_left_original': extension_force_left_original,
+            'strength_right_original': extension_force_right_original
         }
     }
     
@@ -1430,11 +1453,11 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
             if left_num is not None and right_num is not None:
                 if left_num > right_num:
                     difference = left_num - right_num
-                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
+                    percentage_diff = (difference / left_num * 100) if right_num != 0 else 0
                     return f"Left {percentage_diff:.1f}% stronger than right"
                 elif right_num > left_num:
                     difference = right_num - left_num
-                    percentage_diff = (difference / left_num * 100) if left_num != 0 else 0
+                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
                     return f"Right {percentage_diff:.1f}% stronger than left"
                 else:
                     return "Left and right equal"
@@ -1463,7 +1486,7 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
         input_lines.append(f"Range Right: {data['range_right']}")
         
         # Range comparison
-        range_comparison = calculate_side_comparison(data['range_left_val'], data['range_right_val'], "range")
+        range_comparison = calculate_side_comparison(data['range_left_original'], data['range_right_original'], "range")
         input_lines.append(f"Range Comparison: {range_comparison}")
         input_lines.append("")
         
@@ -1472,7 +1495,7 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
         input_lines.append(f"Strength Right: {data['strength_right']}")
         
         # Strength comparison
-        strength_comparison = calculate_side_comparison(data['strength_left_val'], data['strength_right_val'], "strength")
+        strength_comparison = calculate_side_comparison(data['strength_left_original'], data['strength_right_original'], "strength")
         input_lines.append(f"Strength Comparison: {strength_comparison}")
         input_lines.append("")
         
@@ -2785,7 +2808,7 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
         shoulder_t_iso_left_final,
         shoulder_t_iso_right_final
     ]
-    if all(val == "unavailable data" or val is None or val == "" for val in all_metrics):
+    if all(val == "unavailable data" or val is None or val == "" or val == "0" for val in all_metrics):
         return None, None
 
     # Build the new format

@@ -1143,6 +1143,13 @@ class BiomechanicalReportGenerator:
                 self.Conclusion_Shoulder += "\nShoulder Assessment Conclusion: " + shoulder_conclusion
         except Exception as e:
             print(f"Error getting shoulder assessment: {e}")
+        # print the *_conclusion variables to a file for debugging
+        with open("conclusions_debug.txt", "w", encoding="utf-8") as f:
+            f.write("Posture Conclusion:\n" + self.Conclusion_Posture + "\n")
+            f.write("Hip Conclusion:\n" + self.Conclusion_Hip + "\n")
+            f.write("Knee Conclusion:\n" + self.Conclusion_Knee + "\n")
+            f.write("Ankle Conclusion:\n" + self.Conclusion_Ankle + "\n")
+            f.write("Shoulder Conclusion:\n" + self.Conclusion_Shoulder + "\n")
 
         try:
             Conclusion_Input = test_biomech_conclusion(
