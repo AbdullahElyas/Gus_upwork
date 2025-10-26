@@ -1803,12 +1803,12 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
         input_lines.append(f"Strength: {strength_text}")
         
         # Range asymmetry
-        range_asymmetry = calculate_side_comparison(data['range_left_val_original'], data['range_right_val_original'], 'range')
+        range_asymmetry = calculate_side_comparison(data['range_left_original'], data['range_right_original'], 'range')
         if range_asymmetry:
             input_lines.append(f"Range Asymmetry: {range_asymmetry}")
         
         # Strength asymmetry
-        strength_asymmetry = calculate_side_comparison(data['strength_left_val_original'], data['strength_right_val_original'], 'strength')
+        strength_asymmetry = calculate_side_comparison(data['strength_left_original'], data['strength_right_original'], 'strength')
         if strength_asymmetry:
             input_lines.append(f"Strength Asymmetry: {strength_asymmetry}")
         

@@ -319,13 +319,13 @@ class BiomechanicalReportGenerator:
         self.gold_standards = {
             'ankle': {
                 'dorsiflexion_range': 30,
-                'plantarflexion_range': 165,
+                'plantarflexion_range': 75,
                 'dorsiflexion_force': 0.92,
                 'plantarflexion_force': 2.52
             },
             'knee': {
-                'flexion_range': 160,
-                'extension_range': 170,
+                'flexion_range': 70,
+                'extension_range': 80,
                 'flexion_force': 0.31,
                 'extension_force': 0.71,
                 'hq_ratio': 0.60
@@ -347,7 +347,7 @@ class BiomechanicalReportGenerator:
             'shoulder': {
                 'ext_rotation_range': 90,
                 'int_rotation_range': 70,
-                'flexion_range': 180,
+                'flexion_range': 90,
                 'extension_range': 60,
                 'ext_rotation_force': 0.27,
                 'int_rotation_force': 0.22,

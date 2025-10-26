@@ -744,7 +744,7 @@ def test_biomech_priority_list(
 
             REMEMBER: Follow the example format, wording, number of words and tone closely."""      
         response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": input_string}
