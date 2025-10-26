@@ -1,38 +1,43 @@
 Posture Conclusion:
 
-Posture Assessment: These readings indicate you have a Flat Back Posture
+Posture Assessment: These readings indicate you have a Sway Back Posture
 Hip Conclusion:
 
 Hip Assessment Conclusion: Hip Assessment Summary:
 
 Range Deficits:
-Left → Internal Rotation
-Right → Extension, Internal Rotation
+Left → Flexion, Extension, Adduction, Internal Rotation
+Right → Flexion, Extension, Adduction, Internal Rotation
 
 Strength Deficits:
 Left → Flexion, Abduction
 Right → Flexion, Abduction
 
-Largest range variation: Hip Internal/External Rotation (Right) → 67.2% difference
+Largest range variation: Hip Internal/External Rotation (Left) → 56.5% difference
 Inverse relationship in ROM highlights femur positioning changes
 Knee Conclusion:
 
 Knee Assessment Conclusion: Knee Assessment Summary:
 
 Range Deficits:
-Left → Flexion
-Right → Flexion
+Left → Flexion, Extension
+Right → Flexion, Extension
 
 Strength Deficits:
-Left → Flexion, Extension
 Right → Flexion
 
 Ankle Conclusion:
 
-Ankle Assessment Conclusion: The Left foot: Your left foot is positioned in a neutral alignment, allowing for effective pronation and supination capabilities. However, both dorsiflexion and plantarflexion exhibit poor range and strength, indicating a need for targeted intervention. The lack of strength in these movements suggests that the stabilising musculature may be underdeveloped, which could affect overall foot function. Prioritising isometric exercises will be essential to build strength and enhance control and awareness of foot movements.
+Ankle Assessment Conclusion: The Left foot: Your left foot is positioned in a slightly everted alignment, with the centre of mass medial to the 2nd metatarsal. Notably, your foot cannot pronate effectively, which may limit your ability to adapt to various surfaces. In terms of movement capabilities, dorsiflexion presents with poor range despite good strength, while plantarflexion demonstrates both good range and strength. To enhance your overall function, it is essential to prioritise building strength through overcoming isometrics, alongside increasing control and awareness of foot positioning.
 
-The Right foot: Similarly, your right foot is also in a neutral position and can pronate, but it demonstrates a limitation in supination capabilities. While dorsiflexion shows poor range and strength akin to the left foot, plantarflexion presents a contrasting profile with poor range but good strength. This discrepancy highlights an asymmetry between the two feet, particularly in the ability to supinate and the strength dynamics of plantarflexion.
+The Right foot: The right foot mirrors the left in its slightly everted position, with the centre of mass also medial to the 2nd metatarsal. Similar to the left, this foot cannot pronate effectively, indicating a consistent limitation in both feet. However, the right foot exhibits poor range in both dorsiflexion and plantarflexion, despite maintaining good strength, which highlights a need for targeted interventions.
 
-Foot and Ankle summary: The asymmetry between your feet is evident, with the left foot exhibiting balanced pronation and supination capabilities but lacking in strength and range, while the right foot shows a notable limitation in supination. It is crucial to address these imbalances through a focused rehabilitation programme that includes isometric strengthening exercises for both dorsiflexion and plantarflexion. Additionally, incorporating dynamic movements that promote awareness and control of the foot's position will enhance overall function. Emphasising midfoot articulation and fascial control will be vital in restoring symmetry and improving performance.
+Foot and Ankle summary: There is a noticeable asymmetry between your feet, with both presenting slight eversion and limitations in pronation. While both feet demonstrate good strength, the poor range in dorsiflexion and plantarflexion on the right foot is particularly concerning. To address these issues, it is recommended to incorporate specific isometric strengthening exercises and focus on improving range of motion through dynamic stretching and controlled movements. Additionally, enhancing proprioception and awareness of foot positioning will be crucial in achieving better overall foot function and symmetry.
 Shoulder Conclusion:
+
+Shoulder Assessment Conclusion: Shoulder Assessment Summary:
+
+Deficits (<85% GS):
+Left: Internal Rotation, Extension, Shoulder "I", Shoulder "T"
+Right: Internal Rotation, Extension, Shoulder "I", Shoulder "T"
 

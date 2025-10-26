@@ -226,10 +226,12 @@ def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
     else:
         text_pelvis = '.'
 
-    if TC <= 32.5:
-        tc_status = "below our gold standard range"
-    elif 32.5 < TC:
+    if 30 <= TC <= 35:
+        tc_status = "within gold standard range"
+    elif TC > 35:
         tc_status = "above our gold standard range"
+    else:
+        tc_status = "below our gold standard range"
   
 
     template1 = f"""From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement.
@@ -2807,10 +2809,10 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
             if abs(left_num - right_num) < 0.1:  # Essentially equal
                 return "Equal bilateral"
             elif left_num > right_num:
-                percentage_diff = ((left_num - right_num) / right_num * 100)
+                percentage_diff = ((left_num - right_num) / left_num * 100)
                 return f"Left > Right (+{percentage_diff:.1f}%)"
             else:
-                percentage_diff = ((right_num - left_num) / left_num * 100)
+                percentage_diff = ((right_num - left_num) / right_num * 100)
                 return f"Right > Left (+{percentage_diff:.1f}%)"
                 
         except (ValueError, TypeError, ZeroDivisionError):

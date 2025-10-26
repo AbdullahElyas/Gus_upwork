@@ -535,7 +535,7 @@ Shoulder Summary: Your transverse plane range is biased towards external rotatio
         # Generate response using OpenAI GPT-4o-mini
         if shoulder_input and shoulder_input.strip():
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",
                 messages=[
                     {
                         "role": "system",
