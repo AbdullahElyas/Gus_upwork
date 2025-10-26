@@ -324,7 +324,7 @@
             <td class="{% if ankle_data.plantarflexion_range_right == 'unavailable data' %}unavailable{% endif %}">
                 {{ ankle_data.plantarflexion_range_right }}°
             </td>
-            <td class="gold-standard">165°</td>
+            <td class="gold-standard">75°</td>
             <td class="{% if ankle_data.plantarflexion_left_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_left_percent }}%</td>
             <td class="{% if ankle_data.plantarflexion_right_percent|float >= 85 %}asymmetry-low{% elif ankle_data.plantarflexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ ankle_data.plantarflexion_right_percent }}%</td>
             <td class="{% if ankle_data.plantarflexion_asymmetry|float > 20 %}asymmetry-high{% elif ankle_data.plantarflexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ ankle_data.plantarflexion_asymmetry }}%</td>
@@ -357,7 +357,7 @@
             <td class="{% if knee_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
                 {{ knee_data.flexion_range_right }}°
             </td>
-            <td class="gold-standard">160°</td>
+            <td class="gold-standard">70°</td>
             <td class="{% if knee_data.flexion_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_left_percent }}%</td>
             <td class="{% if knee_data.flexion_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.flexion_right_percent }}%</td>
             <td class="{% if knee_data.flexion_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.flexion_asymmetry }}%</td>
@@ -372,7 +372,7 @@
             <td class="{% if knee_data.extension_range_right == 'unavailable data' %}unavailable{% endif %}">
                 {{ knee_data.extension_range_right }}°
             </td>
-            <td class="gold-standard">170°</td>
+            <td class="gold-standard">80°</td>
             <td class="{% if knee_data.extension_left_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_left_percent }}%</td>
             <td class="{% if knee_data.extension_right_percent|float >= 85 %}asymmetry-low{% elif knee_data.extension_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ knee_data.extension_right_percent }}%</td>
             <td class="{% if knee_data.extension_asymmetry|float > 20 %}asymmetry-high{% elif knee_data.extension_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ knee_data.extension_asymmetry }}%</td>
@@ -585,7 +585,7 @@
             <td class="{% if shoulder_data.flexion_range_right == 'unavailable data' %}unavailable{% endif %}">
                 {{ shoulder_data.flexion_range_right }}°
             </td>
-            <td class="gold-standard">180°</td>
+            <td class="gold-standard">90°</td>
             <td class="{% if shoulder_data.flexion_left_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.flexion_left_percent }}%</td>
             <td class="{% if shoulder_data.flexion_right_percent|float >= 85 %}asymmetry-low{% elif shoulder_data.flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ shoulder_data.flexion_right_percent }}%</td>
             <td class="{% if shoulder_data.flexion_asymmetry|float > 20 %}asymmetry-high{% elif shoulder_data.flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ shoulder_data.flexion_asymmetry }}%</td>
@@ -980,7 +980,7 @@
 {% endif %}
 
 <!-- Individual Assessment Sections -->
-{% if ankle_assessment or ankle_chart %}
+{% if ankle_assessment %}
 <div class="assessment-section">
     <h2>Ankle Assessment</h2>
     <div class="graph-text text-right">
@@ -1003,7 +1003,7 @@
 <div class="section-divider"></div>
 {% endif %}
 
-{% if knee_assessment or knee_chart %}
+{% if knee_assessment %}
 <div class="assessment-section">
     <h2>Knee Assessment</h2>
     <div class="graph-text text-left">
@@ -1026,7 +1026,7 @@
 <div class="section-divider"></div>
 {% endif %}
 
-{% if hip_assessment or hip_chart %}
+{% if hip_assessment %}
 <div class="assessment-section">
     <h2>Hip Assessment</h2>
     <div class="graph-text text-right">
@@ -1049,7 +1049,7 @@
 <div class="section-divider"></div>
 {% endif %}
 
-{% if shoulder_assessment or shoulder_chart %}
+{% if shoulder_assessment %}
 <div class="assessment-section">
     <h2>Shoulder Assessment</h2>
     <div class="graph-text text-left">
