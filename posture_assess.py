@@ -4,7 +4,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
 from graphplot import create_radar_chart
-from range_force_metrics import extract_range_force_knee
+from range_force_metrics import extract_range_force_hip, extract_range_force_knee
 
 
 def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, worksheet_third):
@@ -1181,6 +1181,7 @@ def extract_sheet_metrics_hip(sheet_id, data_overview_sheet):
 # extract_sheet_metrics_hip(sheet_id)
 
 def categorize_percentage_knee(value_str, measurement_type):
+
     """
     Categorize knee measurements with separate handling for range and strength
     measurement_type should be either 'range' or 'strength'
@@ -1218,7 +1219,26 @@ def categorize_percentage_knee(value_str, measurement_type):
                 return "unknown"
     except (ValueError, TypeError):
         return "unknown"
-    
+def calculate_side_comparison(left_val, right_val, measurement_type):
+        try:
+            left_num = float(left_val) if left_val is not None else None
+            right_num = float(right_val) if right_val is not None else None
+
+            if left_num is not None and right_num is not None:
+                if left_num > right_num:
+                    difference = left_num - right_num
+                    percentage_diff = (difference / left_num * 100) if right_num != 0 else 0
+                    return f"Left {percentage_diff:.1f}% stronger than right"
+                elif right_num > left_num:
+                    difference = right_num - left_num
+                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
+                    return f"Right {percentage_diff:.1f}% stronger than left"
+                else:
+                    return "Left and right equal"
+            else:
+                return "Cannot compare - missing data"
+        except (TypeError, ValueError):
+            return "Cannot compare - invalid data"   
 
 
 def extract_sheet_metrics_knee(sheet_id, data_overview_sheet):
@@ -1445,26 +1465,7 @@ def TextGen_Knee_Concise(sheet_id,data_overview_sheet):
     }
     
     # Function to calculate left vs right percentage comparison
-    def calculate_side_comparison(left_val, right_val, measurement_type):
-        try:
-            left_num = float(left_val) if left_val is not None else None
-            right_num = float(right_val) if right_val is not None else None
-
-            if left_num is not None and right_num is not None:
-                if left_num > right_num:
-                    difference = left_num - right_num
-                    percentage_diff = (difference / left_num * 100) if right_num != 0 else 0
-                    return f"Left {percentage_diff:.1f}% stronger than right"
-                elif right_num > left_num:
-                    difference = right_num - left_num
-                    percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
-                    return f"Right {percentage_diff:.1f}% stronger than left"
-                else:
-                    return "Left and right equal"
-            else:
-                return "Cannot compare - missing data"
-        except (TypeError, ValueError):
-            return "Cannot compare - invalid data"
+    
         
     hq_results,hq_report = TextGen_Knee_HQ_Ratio(sheet_id,data_overview_sheet)
     
@@ -1590,87 +1591,161 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
     hip_int_rotation_force_right
     ) = extract_sheet_metrics_hip(sheet_id,data_overview_sheet)
 
+    # extract data using from range_force_metrics import extract_range_force_knee
+    (
+     hip_flexion_range_left_original,
+    hip_flexion_range_right_original,
+    hip_extension_range_left_original,
+    hip_extension_range_right_original,
+    hip_abduction_range_left_original,
+    hip_abduction_range_right_original,
+    hip_adduction_range_left_original,
+    hip_adduction_range_right_original,
+    hip_ext_rotation_range_left_original,
+    hip_ext_rotation_range_right_original,
+    hip_int_rotation_range_left_original,
+    hip_int_rotation_range_right_original,
+    hip_flexion_force_left_original,
+    hip_flexion_force_right_original,
+    hip_extension_force_left_original,
+    hip_extension_force_right_original,
+    hip_abduction_force_left_original,
+    hip_abduction_force_right_original,
+    hip_adduction_force_left_original,
+    hip_adduction_force_right_original,
+    hip_ext_rotation_force_left_original,
+    hip_ext_rotation_force_right_original,
+    hip_int_rotation_force_left_original,
+    hip_int_rotation_force_right_original
+    ) = extract_range_force_hip(sheet_id, data_overview_sheet)
+
+
+
+
     # Function to convert string to float and categorize based on percentage
-    def categorize_percentage_concise(value_str):
+ # ...existing code...
+    def categorize_percentage_concise(value_str, measurement_type: str = 'range'):
+        """
+        Categorise values similar to categorize_percentage_knee.
+        measurement_type: 'range' or 'strength'.
+        For strength, do not reference gold standard.
+        """
         try:
             if value_str is None or value_str == '':
                 return "unknown"
-            
+        
             percentage = float(value_str)
-            
-            if percentage < 75:
-                return "large deficit"
-            elif 75 <= percentage <= 85:
-                return "deficit"
-            elif 85 < percentage <= 100:
-                return "sufficient but below gold standard"
-            else:  # percentage > 100
-                return "above our gold standard"
-                
+
+            if measurement_type == 'range':
+                # Compare to gold standard (100%)
+                if percentage > 100:
+                    return "good range"
+                elif 85 < percentage <= 100:
+                    return "sufficient range"
+                elif 75 <= percentage <= 85:
+                    return "lack range"
+                else:  # < 75
+                    return "poor range"
+            else:
+                # Strength uses population percentiles (no 'gold standard' wording)
+                pct = percentage
+                if pct > 65:
+                    return "good strength"
+                elif 50 <= pct <= 65:
+                    return "sufficient strength"
+                elif 35 <= pct < 50:
+                    return "lack strength"
+                else:
+                    return "poor strength"
         except (ValueError, TypeError):
             return "unknown"
+
     
     # Categorize all measurements
     movements = {
         'Hip Flexion': {
-            'range_left': categorize_percentage_concise(hip_flexion_range_left),
-            'range_right': categorize_percentage_concise(hip_flexion_range_right),
-            'strength_left': categorize_percentage_concise(hip_flexion_force_left),
-            'strength_right': categorize_percentage_concise(hip_flexion_force_right),
+            'range_left': categorize_percentage_concise(hip_flexion_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_flexion_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_flexion_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_flexion_force_right,'strength'),
             'range_left_val': hip_flexion_range_left,
             'range_right_val': hip_flexion_range_right,
             'strength_left_val': hip_flexion_force_left,
-            'strength_right_val': hip_flexion_force_right
+            'strength_right_val': hip_flexion_force_right,
+            'range_left_original': hip_flexion_range_left_original,
+            'range_right_original': hip_flexion_range_right_original,
+            'strength_left_original': hip_flexion_force_left_original,
+            'strength_right_original': hip_flexion_force_right_original
         },
         'Hip Extension': {
-            'range_left': categorize_percentage_concise(hip_extension_range_left),
-            'range_right': categorize_percentage_concise(hip_extension_range_right),
-            'strength_left': categorize_percentage_concise(hip_extension_force_left),
-            'strength_right': categorize_percentage_concise(hip_extension_force_right),
+            'range_left': categorize_percentage_concise(hip_extension_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_extension_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_extension_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_extension_force_right,'strength'),
             'range_left_val': hip_extension_range_left,
             'range_right_val': hip_extension_range_right,
             'strength_left_val': hip_extension_force_left,
-            'strength_right_val': hip_extension_force_right
+            'strength_right_val': hip_extension_force_right,
+            'range_left_original': hip_extension_range_left_original,
+            'range_right_original': hip_extension_range_right_original,
+            'strength_left_original': hip_extension_force_left_original,
+            'strength_right_original': hip_extension_force_right_original
         },
         'Hip Abduction': {
-            'range_left': categorize_percentage_concise(hip_abduction_range_left),
-            'range_right': categorize_percentage_concise(hip_abduction_range_right),
-            'strength_left': categorize_percentage_concise(hip_abduction_force_left),
-            'strength_right': categorize_percentage_concise(hip_abduction_force_right),
+            'range_left': categorize_percentage_concise(hip_abduction_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_abduction_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_abduction_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_abduction_force_right,'strength'),
             'range_left_val': hip_abduction_range_left,
             'range_right_val': hip_abduction_range_right,
             'strength_left_val': hip_abduction_force_left,
-            'strength_right_val': hip_abduction_force_right
+            'strength_right_val': hip_abduction_force_right,
+            'range_left_original': hip_abduction_range_left_original,
+            'range_right_original': hip_abduction_range_right_original,
+            'strength_left_original': hip_abduction_force_left_original,
+            'strength_right_original': hip_abduction_force_right_original
         },
         'Hip Adduction': {
-            'range_left': categorize_percentage_concise(hip_adduction_range_left),
-            'range_right': categorize_percentage_concise(hip_adduction_range_right),
-            'strength_left': categorize_percentage_concise(hip_adduction_force_left),
-            'strength_right': categorize_percentage_concise(hip_adduction_force_right),
+            'range_left': categorize_percentage_concise(hip_adduction_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_adduction_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_adduction_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_adduction_force_right,'strength'),
             'range_left_val': hip_adduction_range_left,
             'range_right_val': hip_adduction_range_right,
             'strength_left_val': hip_adduction_force_left,
-            'strength_right_val': hip_adduction_force_right
+            'strength_right_val': hip_adduction_force_right,
+            'range_left_original': hip_adduction_range_left_original,
+            'range_right_original': hip_adduction_range_right_original,
+            'strength_left_original': hip_adduction_force_left_original,
+            'strength_right_original': hip_adduction_force_right_original
         },
         'Hip External Rotation': {
-            'range_left': categorize_percentage_concise(hip_ext_rotation_range_left),
-            'range_right': categorize_percentage_concise(hip_ext_rotation_range_right),
-            'strength_left': categorize_percentage_concise(hip_ext_rotation_force_left),
-            'strength_right': categorize_percentage_concise(hip_ext_rotation_force_right),
+            'range_left': categorize_percentage_concise(hip_ext_rotation_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_ext_rotation_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_ext_rotation_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_ext_rotation_force_right,'strength'),
             'range_left_val': hip_ext_rotation_range_left,
             'range_right_val': hip_ext_rotation_range_right,
             'strength_left_val': hip_ext_rotation_force_left,
-            'strength_right_val': hip_ext_rotation_force_right
+            'strength_right_val': hip_ext_rotation_force_right,
+            'range_left_original': hip_ext_rotation_range_left_original,
+            'range_right_original': hip_ext_rotation_range_right_original,
+            'strength_left_original': hip_ext_rotation_force_left_original,
+            'strength_right_original': hip_ext_rotation_force_right_original
         },
         'Hip Internal Rotation': {
-            'range_left': categorize_percentage_concise(hip_int_rotation_range_left),
-            'range_right': categorize_percentage_concise(hip_int_rotation_range_right),
-            'strength_left': categorize_percentage_concise(hip_int_rotation_force_left),
-            'strength_right': categorize_percentage_concise(hip_int_rotation_force_right),
+            'range_left': categorize_percentage_concise(hip_int_rotation_range_left,'range'),
+            'range_right': categorize_percentage_concise(hip_int_rotation_range_right,'range'),
+            'strength_left': categorize_percentage_concise(hip_int_rotation_force_left,'strength'),
+            'strength_right': categorize_percentage_concise(hip_int_rotation_force_right,'strength'),
             'range_left_val': hip_int_rotation_range_left,
             'range_right_val': hip_int_rotation_range_right,
             'strength_left_val': hip_int_rotation_force_left,
-            'strength_right_val': hip_int_rotation_force_right
+            'strength_right_val': hip_int_rotation_force_right,
+            'range_left_original': hip_int_rotation_range_left_original,
+            'range_right_original': hip_int_rotation_range_right_original,
+            'strength_left_original': hip_int_rotation_force_left_original,
+            'strength_right_original': hip_int_rotation_force_right_original
         }
     }
     
@@ -1728,30 +1803,30 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
         input_lines.append(f"Strength: {strength_text}")
         
         # Range asymmetry
-        range_asymmetry = calculate_asymmetry_concise(data['range_left_val'], data['range_right_val'])
+        range_asymmetry = calculate_side_comparison(data['range_left_val_original'], data['range_right_val_original'], 'range')
         if range_asymmetry:
-            input_lines.append(f"Asymmetry: {range_asymmetry}")
+            input_lines.append(f"Range Asymmetry: {range_asymmetry}")
         
         # Strength asymmetry
-        strength_asymmetry = calculate_asymmetry_concise(data['strength_left_val'], data['strength_right_val'])
-        if strength_asymmetry and not range_asymmetry:
-            input_lines.append(f"Asymmetry: {strength_asymmetry}")
+        strength_asymmetry = calculate_side_comparison(data['strength_left_val_original'], data['strength_right_val_original'], 'strength')
+        if strength_asymmetry:
+            input_lines.append(f"Strength Asymmetry: {strength_asymmetry}")
         
         input_lines.append("")
         
         # Track deficits for summary (include both large deficit and deficit)
-        if data['range_left'] in ['large deficit', 'deficit']:
+        if data['range_left'] in ['lack range', 'poor range', 'large deficit', 'deficit']:
             range_deficits_left.append(movement_name.replace('Hip ', ''))
-        if data['range_right'] in ['large deficit', 'deficit']:
+        if data['range_right'] in ['lack range', 'poor range', 'large deficit', 'deficit']:
             range_deficits_right.append(movement_name.replace('Hip ', ''))
-        if data['strength_left'] in ['large deficit', 'deficit']:
+        if data['strength_left'] in ['lack strength', 'poor strength', 'large deficit', 'deficit']:
             strength_deficits_left.append(movement_name.replace('Hip ', ''))
-        if data['strength_right'] in ['large deficit', 'deficit']:
+        if data['strength_right'] in ['lack strength', 'poor strength', 'large deficit', 'deficit']:
             strength_deficits_right.append(movement_name.replace('Hip ', ''))
     
     # Calculate opposing movement asymmetries
     def calc_opposing_asymmetry(left_val, right_val, movement_name, side):
-        asym = calculate_asymmetry_concise(left_val, right_val)
+        asym = calculate_side_comparison(left_val, right_val,'range')
         if asym:
             # Extract percentage
             import re

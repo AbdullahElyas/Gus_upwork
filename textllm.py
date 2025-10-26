@@ -366,7 +366,7 @@ Note: Always write in English spelling(Not American English). For example use em
         # Generate response using OpenAI GPT-4o-mini
         if concise_input and concise_input.strip():
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",
                 messages=[
                     {
                         "role": "system",

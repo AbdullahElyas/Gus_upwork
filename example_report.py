@@ -707,7 +707,7 @@ def generate_multiple_reports(sheet_ids, output_base_dir="./reports/", charts_ba
 
 def main():
     # Your Google Sheets ID
-    sheet_id = "1mgCxOcMNLRh1UxAW9Y6ERVEVwE9b8j6vrcZ2lXHDmF4"
+    sheet_id = "1wxQPAbUd19wieYNocYMr4wfr3el8gbL6j60yckQVieg"
 
     # Generate report for the specified sheet
     result = generate_report_for_sheet(
