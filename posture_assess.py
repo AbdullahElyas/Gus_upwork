@@ -877,7 +877,7 @@ def TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet):
         else:
             range_status = "Unknown"
 
-        if force_num is not None and force_num < 75:
+        if force_num is not None and force_num < 65:
             force_status = "Poor"
         elif force_num is not None:
             force_status = "Good"
