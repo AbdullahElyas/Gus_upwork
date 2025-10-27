@@ -932,11 +932,10 @@ class BiomechanicalReportGenerator:
                     except Exception:
                         return "0"
 
-                def safe_asym(left, right, gs_val):
+                def safe_asym(left, right):
                     try:
                         return self.calculate_asymmetry(
-                            self.calculate_range_from_percentage(left, gs_val),
-                            self.calculate_range_from_percentage(right, gs_val)
+                            left, right
                         )
                     except Exception:
                         return "0"
@@ -952,29 +951,29 @@ class BiomechanicalReportGenerator:
 
                 return ShoulderData(
                     # Range data (calculated from percentage, rounded to whole number)
-                    ext_rotation_range_left=safe_calc_range(raw_data['ext_rotation_range_left'], gs['ext_rotation_range']),
-                    ext_rotation_range_right=safe_calc_range(raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
-                    int_rotation_range_left=safe_calc_range(raw_data['int_rotation_range_left'], gs['int_rotation_range']),
-                    int_rotation_range_right=safe_calc_range(raw_data['int_rotation_range_right'], gs['int_rotation_range']),
-                    flexion_range_left=safe_calc_range(raw_data['flexion_range_left'], gs['flexion_range']),
-                    flexion_range_right=safe_calc_range(raw_data['flexion_range_right'], gs['flexion_range']),
-                    extension_range_left=safe_calc_range(raw_data['extension_range_left'], gs['extension_range']),
-                    extension_range_right=safe_calc_range(raw_data['extension_range_right'], gs['extension_range']),
-                    
+                    ext_rotation_range_left=raw_data_force_ranges['ext_rotation_range_left'],
+                    ext_rotation_range_right=raw_data_force_ranges['ext_rotation_range_right'],
+                    int_rotation_range_left=raw_data_force_ranges['int_rotation_range_left'],
+                    int_rotation_range_right=raw_data_force_ranges['int_rotation_range_right'],
+                    flexion_range_left=raw_data_force_ranges['flexion_range_left'],
+                    flexion_range_right=raw_data_force_ranges['flexion_range_right'],
+                    extension_range_left=raw_data_force_ranges['extension_range_left'],
+                    extension_range_right=raw_data_force_ranges['extension_range_right'],
+
                     # Range percentages and asymmetry
                     ext_rotation_left_percent=safe_str_round(raw_data['ext_rotation_range_left']),
                     ext_rotation_right_percent=safe_str_round(raw_data['ext_rotation_range_right']),
-                    ext_rotation_asymmetry=safe_asym(raw_data['ext_rotation_range_left'], raw_data['ext_rotation_range_right'], gs['ext_rotation_range']),
+                    ext_rotation_asymmetry=safe_asym(raw_data_force_ranges['ext_rotation_range_left'], raw_data_force_ranges['ext_rotation_range_right']),
                     int_rotation_left_percent=safe_str_round(raw_data['int_rotation_range_left']),
                     int_rotation_right_percent=safe_str_round(raw_data['int_rotation_range_right']),
-                    int_rotation_asymmetry=safe_asym(raw_data['int_rotation_range_left'], raw_data['int_rotation_range_right'], gs['int_rotation_range']),
+                    int_rotation_asymmetry=safe_asym(raw_data['int_rotation_range_left'], raw_data['int_rotation_range_right']),
                     flexion_left_percent=safe_str_round(raw_data['flexion_range_left']),
                     flexion_right_percent=safe_str_round(raw_data['flexion_range_right']),
-                    flexion_asymmetry=safe_asym(raw_data['flexion_range_left'], raw_data['flexion_range_right'], gs['flexion_range']),
+                    flexion_asymmetry=safe_asym(raw_data['flexion_range_left'], raw_data['flexion_range_right']),
                     extension_left_percent=safe_str_round(raw_data['extension_range_left']),
                     extension_right_percent=safe_str_round(raw_data['extension_range_right']),
-                    extension_asymmetry=safe_asym(raw_data['extension_range_left'], raw_data['extension_range_right'], gs['extension_range']),
-                    
+                    extension_asymmetry=safe_asym(raw_data_force_ranges['extension_range_left'], raw_data_force_ranges['extension_range_right']),
+
                     # Force data (rounded to whole number, directly from raw_data_force_ranges)
                     ext_rotation_force_left=safe_str_round(raw_data_force_ranges['ext_rotation_force_left']),
                     ext_rotation_force_right=safe_str_round(raw_data_force_ranges['ext_rotation_force_right']),

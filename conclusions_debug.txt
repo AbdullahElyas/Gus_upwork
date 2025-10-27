@@ -1,19 +1,19 @@
 Posture Conclusion:
 
-Posture Assessment: These readings indicate you have a Sway Back Posture
+Posture Assessment: These readings indicate you have a Forward Head Posture
 Hip Conclusion:
 
 Hip Assessment Conclusion: Hip Assessment Summary:
 
 Range Deficits:
-Left → Flexion, Extension, Adduction, Internal Rotation
-Right → Flexion, Extension, Adduction, Internal Rotation
+Left → Flexion, Adduction, Internal Rotation
+Right → Extension, Abduction, Adduction, Internal Rotation
 
 Strength Deficits:
-Left → Flexion, Abduction
-Right → Flexion, Abduction
+Left → Flexion
+Right → Flexion
 
-Largest range variation: Hip Internal/External Rotation (Left) → 56.5% difference
+Largest range variation: Hip Internal/External Rotation (Right) → 54.9% difference
 Inverse relationship in ROM highlights femur positioning changes
 Knee Conclusion:
 
@@ -28,16 +28,16 @@ Right → Flexion
 
 Ankle Conclusion:
 
-Ankle Assessment Conclusion: The Left foot: Your left foot is positioned in a slightly everted alignment, with the centre of mass medial to the 2nd metatarsal. Notably, your foot cannot pronate effectively, which may limit your ability to adapt to various surfaces. In terms of movement capabilities, dorsiflexion presents with poor range despite good strength, while plantarflexion demonstrates both good range and strength. To enhance your overall function, it is essential to prioritise building strength through overcoming isometrics, alongside increasing control and awareness of foot positioning.
+Ankle Assessment Conclusion: The Left foot: Your left foot was assessed to be in a slightly everted position, with the centre of mass positioned between the 1st and 2nd metatarsal. While you demonstrated the ability to pronate effectively, there was noted to be less movement in the left midfoot, which may indicate a restriction in midfoot articulation. Dorsiflexion showed good range, but strength was lacking, particularly in both dorsiflexion and plantarflexion. It is essential to prioritise building strength through overcoming isometrics, alongside enhancing control and proprioceptive awareness.
 
-The Right foot: The right foot mirrors the left in its slightly everted position, with the centre of mass also medial to the 2nd metatarsal. Similar to the left, this foot cannot pronate effectively, indicating a consistent limitation in both feet. However, the right foot exhibits poor range in both dorsiflexion and plantarflexion, despite maintaining good strength, which highlights a need for targeted interventions.
+The Right foot: The right foot presented similarly to the left, also in a slightly everted position with the centre of mass between the 1st and 2nd metatarsal. The movement capabilities mirrored those of the left foot, with the ability to pronate and supinate, but like the left, there was a noted deficiency in strength during both dorsiflexion and plantarflexion. 
 
-Foot and Ankle summary: There is a noticeable asymmetry between your feet, with both presenting slight eversion and limitations in pronation. While both feet demonstrate good strength, the poor range in dorsiflexion and plantarflexion on the right foot is particularly concerning. To address these issues, it is recommended to incorporate specific isometric strengthening exercises and focus on improving range of motion through dynamic stretching and controlled movements. Additionally, enhancing proprioception and awareness of foot positioning will be crucial in achieving better overall foot function and symmetry.
+Foot and Ankle summary: There is a clear asymmetry between the two feet, despite their similar everted positioning. Both feet exhibit good range of motion but require focused strength training, particularly in the plantar flexors and dorsiflexors. To address the midfoot articulation limitations, it is recommended to incorporate specific isometric exercises to enhance strength and control. Additionally, introducing dynamic movements that promote subconscious awareness of foot positioning during gait will be beneficial in improving overall foot function and stability.
 Shoulder Conclusion:
 
 Shoulder Assessment Conclusion: Shoulder Assessment Summary:
 
-Deficits (<85% GS):
-Left: Internal Rotation, Extension, Shoulder "I", Shoulder "T"
-Right: Internal Rotation, Extension, Shoulder "I", Shoulder "T"
+Deficits:
+Left: range, range, range, range, Shoulder "I", Shoulder "T"
+Right: range, range, range, range, Shoulder "I", Shoulder "T"
 

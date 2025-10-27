@@ -4,7 +4,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
 from graphplot import create_radar_chart
-from range_force_metrics import extract_range_force_hip, extract_range_force_knee
+from range_force_metrics import extract_range_force_hip, extract_range_force_knee, extract_range_force_shoulder
 
 
 def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, worksheet_third):
@@ -2775,7 +2775,29 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
         shoulder_t_iso_right_final
     ) = extract_sheet_metrics_shoulder(sheet_id, data_overview_sheet)
 
-    def format_shoulder_value(value_str):
+    (
+        shoulder_ext_rotation_range_left_original,
+        shoulder_ext_rotation_range_right_original,
+        shoulder_int_rotation_range_left_original,
+        shoulder_int_rotation_range_right_original,
+        shoulder_flexion_range_left_original,
+        shoulder_flexion_range_right_original,
+        shoulder_extension_range_left_original,
+        shoulder_extension_range_right_original,
+        shoulder_ext_rotation_force_left_original,
+        shoulder_ext_rotation_force_right_original,
+        shoulder_int_rotation_force_left_original,
+        shoulder_int_rotation_force_right_original,
+        shoulder_flexion_force_left_original,
+        shoulder_flexion_force_right_original,
+        shoulder_i_iso_left_final_original,
+        shoulder_i_iso_right_final_original,
+        shoulder_y_iso_left_final_original,
+        shoulder_y_iso_right_final_original,
+        shoulder_t_iso_left_final_original,
+        shoulder_t_iso_right_final_original) = extract_range_force_shoulder(sheet_id, data_overview_sheet)
+
+    def format_shoulder_value(value_str, movement_type='range'):
         """Format shoulder value with new compact notation"""
         try:
             if value_str is None or value_str == '' or value_str == 'unavailable data':
@@ -2783,15 +2805,37 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
             
             percentage = float(value_str)
             
-            if percentage > 100:
-                above_percentage = percentage - 100
-                return f"above gold standard (+{above_percentage:.1f}%)"
-            elif percentage >= 85:
-                reduction_percentage = 100 - percentage
-                return f"good, below gold standard ({reduction_percentage:.1f}%)"
+            # Use different wording and thresholds for range vs strength
+            mt = movement_type.strip().lower() if movement_type else 'range'
+            if mt == 'range':
+                if percentage > 100:
+                    return "great range"
+                elif 85 <= percentage <= 100:
+                    return "sufficient range"
+                elif 70 <= percentage < 85:
+                    return "limited range"
+                else:
+                    return "poor range"
+            elif mt in ('strength', 'force', 'iso'):
+                # Strength/force uses population-percentile style thresholds
+                if percentage > 65:
+                    return "great strength"
+                elif 50 <= percentage <= 65:
+                    return "sufficient strength"
+                elif 35 <= percentage < 50:
+                    return "limited strength"
+                else:
+                    return "poor strength"
             else:
-                reduction_percentage = 100 - percentage
-                return f"notable reduction (-{reduction_percentage:.1f}%)"
+                # Fallback to range-style wording
+                if percentage > 100:
+                    return "great range"
+                elif 85 <= percentage <= 100:
+                    return "sufficient range"
+                elif 70 <= percentage < 85:
+                    return "limited range"
+                else:
+                    return "poor range"
                 
         except (ValueError, TypeError):
             return None
@@ -2898,9 +2942,9 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
     right_deficits = []
     
     # Helper function to add movement section
-    def add_movement_section(name, left_val, right_val, force_name=None):
-        left_formatted = format_shoulder_value(left_val)
-        right_formatted = format_shoulder_value(right_val)
+    def add_movement_section(name, left_val, right_val, force_name=None, movement_type='range', left_val_original=None, right_val_original=None):
+        left_formatted = format_shoulder_value(left_val,movement_type)
+        right_formatted = format_shoulder_value(right_val,movement_type)
         
         if left_formatted is None and right_formatted is None:
             return
@@ -2911,9 +2955,14 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
             lines.append(f"  Left: {left_formatted}")
             # Track deficits
             try:
-                if float(left_val) < 85:
-                    deficit_name = force_name if force_name else name
-                    left_deficits.append(deficit_name)
+                if movement_type == 'range':
+                    if float(left_val) < 85:
+                        deficit_name = force_name if force_name else name
+                        left_deficits.append(deficit_name)
+                else:
+                    if float(left_val) < 65:
+                        deficit_name = force_name if force_name else name
+                        left_deficits.append(deficit_name)
             except (ValueError, TypeError):
                 pass
         
@@ -2921,13 +2970,18 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
             lines.append(f"  Right: {right_formatted}")
             # Track deficits
             try:
-                if float(right_val) < 85:
-                    deficit_name = force_name if force_name else name
-                    right_deficits.append(deficit_name)
+                if movement_type == 'range':
+                    if float(right_val) < 85:
+                        deficit_name = force_name if force_name else name
+                        right_deficits.append(deficit_name)
+                else:
+                    if float(right_val) < 65:
+                        deficit_name = force_name if force_name else name
+                        right_deficits.append(deficit_name)
             except (ValueError, TypeError):
                 pass
-        
-        asymmetry = calculate_asymmetry(left_val, right_val)
+
+        asymmetry = calculate_asymmetry(left_val_original, right_val_original)
         if asymmetry:
             if asymmetry == "Equal bilateral":
                 lines.append(f"  Comparison: {asymmetry}")
@@ -2937,50 +2991,56 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
         lines.append("")
     
     # Add range movements
-    add_movement_section("External Rotation", shoulder_ext_rotation_range_left, shoulder_ext_rotation_range_right)
-    add_movement_section("Internal Rotation", shoulder_int_rotation_range_left, shoulder_int_rotation_range_right)
-    add_movement_section("Flexion", shoulder_flexion_range_left, shoulder_flexion_range_right)
-    add_movement_section("Extension", shoulder_extension_range_left, shoulder_extension_range_right)
-    
+    if (shoulder_ext_rotation_range_left != 'unavailable data' or shoulder_ext_rotation_range_right != 'unavailable data'):
+        add_movement_section("External Rotation", shoulder_ext_rotation_range_left, shoulder_ext_rotation_range_right,'range',shoulder_ext_rotation_range_left_original,shoulder_ext_rotation_range_right_original)
+    if (shoulder_int_rotation_range_left != 'unavailable data' or shoulder_int_rotation_range_right != 'unavailable data'):
+        add_movement_section("Internal Rotation", shoulder_int_rotation_range_left, shoulder_int_rotation_range_right,'range',shoulder_int_rotation_range_left_original,shoulder_int_rotation_range_right_original)
+    if (shoulder_flexion_range_left != 'unavailable data' or shoulder_flexion_range_right != 'unavailable data'):
+        add_movement_section("Flexion", shoulder_flexion_range_left, shoulder_flexion_range_right,'range',shoulder_flexion_range_left_original,shoulder_flexion_range_right_original)
+    if (shoulder_extension_range_left != 'unavailable data' or shoulder_extension_range_right != 'unavailable data'):
+        add_movement_section("Extension", shoulder_extension_range_left, shoulder_extension_range_right,'range',shoulder_extension_range_left_original,shoulder_extension_range_right_original)
+
     # Add force movements (if available)
     if (shoulder_ext_rotation_force_left != 'unavailable data' or shoulder_ext_rotation_force_right != 'unavailable data'):
-        add_movement_section("External Rotation Force", shoulder_ext_rotation_force_left, shoulder_ext_rotation_force_right, "External Rotation")
+        add_movement_section("External Rotation Force", shoulder_ext_rotation_force_left, shoulder_ext_rotation_force_right, "External Rotation Force",'strength',shoulder_ext_rotation_force_left_original,shoulder_ext_rotation_force_right_original)
     
     if (shoulder_int_rotation_force_left != 'unavailable data' or shoulder_int_rotation_force_right != 'unavailable data'):
-        add_movement_section("Internal Rotation Force", shoulder_int_rotation_force_left, shoulder_int_rotation_force_right, "Internal Rotation")
-    
+        add_movement_section("Internal Rotation Force", shoulder_int_rotation_force_left, shoulder_int_rotation_force_right, "Internal Rotation Force",'strength',shoulder_int_rotation_force_left_original,shoulder_int_rotation_force_right_original)
+
     if (shoulder_flexion_force_left != 'unavailable data' or shoulder_flexion_force_right != 'unavailable data'):
-        add_movement_section("Flexion Force", shoulder_flexion_force_left, shoulder_flexion_force_right, "Flexion")
+        add_movement_section("Flexion Force", shoulder_flexion_force_left, shoulder_flexion_force_right, "Flexion Force",'strength',shoulder_flexion_force_left_original,shoulder_flexion_force_right_original)
     
     # Add ISO tests (if available)
     if (shoulder_i_iso_left_final != 'unavailable data' or shoulder_i_iso_right_final != 'unavailable data'):
-        add_movement_section('Shoulder "I" ISO', shoulder_i_iso_left_final, shoulder_i_iso_right_final, 'Shoulder "I"')
+        add_movement_section('Shoulder "I" ISO', shoulder_i_iso_left_final, shoulder_i_iso_right_final, 'Shoulder "I"', 'strength',shoulder_i_iso_left_final_original,shoulder_i_iso_right_final_original)
     
     if (shoulder_y_iso_left_final != 'unavailable data' or shoulder_y_iso_right_final != 'unavailable data'):
-        add_movement_section('Shoulder "Y" ISO', shoulder_y_iso_left_final, shoulder_y_iso_right_final, 'Shoulder "Y"')
-    
+        add_movement_section('Shoulder "Y" ISO', shoulder_y_iso_left_final, shoulder_y_iso_right_final, 'Shoulder "Y"', 'strength',shoulder_y_iso_left_final_original,shoulder_y_iso_right_final_original)
+
     if (shoulder_t_iso_left_final != 'unavailable data' or shoulder_t_iso_right_final != 'unavailable data'):
-        add_movement_section('Shoulder "T" ISO', shoulder_t_iso_left_final, shoulder_t_iso_right_final, 'Shoulder "T"')
-    
+        add_movement_section('Shoulder "T" ISO', shoulder_t_iso_left_final, shoulder_t_iso_right_final, 'Shoulder "T"', 'strength',shoulder_t_iso_left_final_original,shoulder_t_iso_right_final_original)
+
     # Opposing Comparisons
     lines.append("Opposing Comparisons:")
     
     # Flexion vs Extension
-    flex_ext_comparisons = calculate_opposing_asymmetry(
-        shoulder_flexion_range_left, shoulder_flexion_range_right,
-        shoulder_extension_range_left, shoulder_extension_range_right,
-        "Flexion", "Extension"
-    )
-    if flex_ext_comparisons:
-        lines.append("  Flexion vs Extension:")
-        for comp in flex_ext_comparisons:
-            lines.append(f"    {comp}")
-        lines.append("")
+    if (shoulder_flexion_range_left_original != 'unavailable data' or shoulder_flexion_range_right_original != 'unavailable data'):
+        flex_ext_comparisons = calculate_opposing_asymmetry(
+            shoulder_flexion_range_left_original, shoulder_flexion_range_right_original,
+            shoulder_extension_range_left_original, shoulder_extension_range_right_original,
+            "Flexion", "Extension"
+        )
+        if flex_ext_comparisons:
+            lines.append("  Flexion vs Extension:")
+            for comp in flex_ext_comparisons:
+                lines.append(f"    {comp}")
+            lines.append("")
     
     # Rotation comparisons
-    rotation_comparisons = calculate_opposing_asymmetry(
-        shoulder_ext_rotation_range_left, shoulder_ext_rotation_range_right,
-        shoulder_int_rotation_range_left, shoulder_int_rotation_range_right,
+    if (shoulder_ext_rotation_range_left_original != 'unavailable data' or shoulder_int_rotation_range_left_original != 'unavailable data'):
+        rotation_comparisons = calculate_opposing_asymmetry(
+        shoulder_ext_rotation_range_left_original, shoulder_ext_rotation_range_right_original,
+        shoulder_int_rotation_range_left_original, shoulder_int_rotation_range_right_original,
         "External", "Internal"
     )
     if rotation_comparisons:
@@ -3002,7 +3062,7 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
                 lines.append(f"    {comp}")
             lines.append("")
     # Deficits
-    lines.append("Deficits (<85% GS):")
+    lines.append("Deficits:")
     if left_deficits:
         lines.append(f"  Left: {', '.join(left_deficits)}")
     if right_deficits:
@@ -3017,7 +3077,7 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
         Conclusion_shoulder_lines = []
         Conclusion_shoulder_lines.append("Shoulder Assessment Summary:")
         Conclusion_shoulder_lines.append("")
-        Conclusion_shoulder_lines.append("Deficits (<85% GS):")
+        Conclusion_shoulder_lines.append("Deficits:")
         if left_deficits:
             Conclusion_shoulder_lines.append(f"Left: {', '.join(left_deficits)}")
         if right_deficits:
