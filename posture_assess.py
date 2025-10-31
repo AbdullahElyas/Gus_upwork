@@ -839,20 +839,45 @@ def TextGen_FootAnkle(sheet_id, data_overview_sheet, second_worksheet):
         except (TypeError, ValueError):
             return None
         
-
-    # evaluate asymmetry for         dorsiflexion_force_left, dorsiflexion_force_right
+    # evaluate asymmetry for dorsiflexion/plantarflexion range and force
     dorsiflexion_asymmetry_force = assess_asymmetry(dorsiflexion_force_left, dorsiflexion_force_right)
     plantarflexion_asymmetry_force = assess_asymmetry(plantarflexion_force_left, plantarflexion_force_right)
     dorsiflexion_asymmetry_range = assess_asymmetry(dorsiflexion_range_left, dorsiflexion_range_right)
     plantarflexion_asymmetry_range = assess_asymmetry(plantarflexion_range_left, plantarflexion_range_right)
 
-    # if any asymmetry is detected in force or range, flag it
-    asymmetry_foot= "Symmetry is there."
-    if (dorsiflexion_asymmetry_force or plantarflexion_asymmetry_force or
-            dorsiflexion_asymmetry_range or plantarflexion_asymmetry_range):
-        asymmetry_foot = "Asymmetry is there."
+    # Format a human-readable asymmetry summary and store in asymmetry_foot
+    asymm_detected = []
+    asymm_unknown = []
+
+    def _check_and_add(label, result):
+        if result == "Asymmetry is there":
+            asymm_detected.append(label)
+        elif result is None:
+            asymm_unknown.append(label)
+
+    _check_and_add("Dorsiflexion Force", dorsiflexion_asymmetry_force)
+    _check_and_add("Plantarflexion Force", plantarflexion_asymmetry_force)
+    _check_and_add("Dorsiflexion Range", dorsiflexion_asymmetry_range)
+    _check_and_add("Plantarflexion Range", plantarflexion_asymmetry_range)
+
+    if asymm_detected:
+        asymmetry_foot = "Asymmetry detected in: " + "; ".join(asymm_detected) + "."
     else:
-        asymmetry_foot = "Symmetry is there."
+        if asymm_unknown:
+            asymmetry_foot = (
+                "No clear asymmetry detected in measured values. "
+                "The following measures are unknown/unreadable: " + ", ".join(asymm_unknown) + "."
+                )
+        else:
+            asymmetry_foot = "No asymmetry detected for dorsiflexion or plantarflexion range and force."
+
+    # # if any asymmetry is detected in force or range, flag it
+    # asymmetry_foot= "Symmetry is there."
+    # if (dorsiflexion_asymmetry_force or plantarflexion_asymmetry_force or
+    #         dorsiflexion_asymmetry_range or plantarflexion_asymmetry_range):
+    #     asymmetry_foot = "Asymmetry is there."
+    # else:
+    #     asymmetry_foot = "Symmetry is there."
 
         #     dorsiflexion_range_left,
         # dorsiflexion_range_right,
@@ -1230,11 +1255,11 @@ def calculate_side_comparison(left_val, right_val, measurement_type):
                 if left_num > right_num:
                     difference = left_num - right_num
                     percentage_diff = (difference / left_num * 100) if right_num != 0 else 0
-                    return f"Left {percentage_diff:.1f}% stronger than right"
+                    return f"Left > Right  ({percentage_diff:.1f}%)"
                 elif right_num > left_num:
                     difference = right_num - left_num
                     percentage_diff = (difference / right_num * 100) if right_num != 0 else 0
-                    return f"Right {percentage_diff:.1f}% stronger than left"
+                    return f"Right > Left  ({percentage_diff:.1f}%)"
                 else:
                     return "Left and right equal"
             else:
