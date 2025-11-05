@@ -242,7 +242,7 @@
     {% if priority_list %}
     <style>
       .priority-list {
-        margin: 16px 0;
+        margin: 16px auto;
         padding: 12px;
         border-radius: 6px;
         background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
@@ -256,10 +256,12 @@
       .priority-list p {
         margin: 0;
         padding: 0;
+        text-align: center;
       }
       .priority-list ul {
         margin: 6px 0 0 18px;
         padding: 0;
+        text-align: left;
       }
       .priority-list li {
         margin-bottom: 6px;
@@ -382,66 +384,7 @@
 </div>
 {% endif %}
 
-{% if thoracic_data and (thoracic_data.ribcage_rotation_left_percent|float > 0 or thoracic_data.ribcage_flexion_left_percent|float > 0) %}
-<div class="table-container">
-    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
-        Ribcage 
-    </h3>
-    <table>
-        <tr class="range-header">
-            <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
-            <th>Gold Standard</th>
-            <th>Left %</th>
-            <th>Right %</th>
-            <th>Asymmetry %</th>
-        </tr>
-        {% if thoracic_data.ribcage_rotation_left_percent|float > 0 and thoracic_data.ribcage_rotation_right_percent|float > 0 %}
-        <tr>
-            <td>Ribcage Rotation</td>
-            <td class="{% if thoracic_data.ribcage_rotation_left == 'unavailable data' %}unavailable{% endif %}">
-                {{ thoracic_data.ribcage_rotation_left }}°
-            </td>
-            <td class="{% if thoracic_data.ribcage_rotation_right == 'unavailable data' %}unavailable{% endif %}">
-                {{ thoracic_data.ribcage_rotation_right }}°
-            </td>
-            <td class="gold-standard">45°</td>
-            <td class="{% if thoracic_data.ribcage_rotation_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
-                {{ thoracic_data.ribcage_rotation_left_percent }}%
-            </td>
-            <td class="{% if thoracic_data.ribcage_rotation_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
-                {{ thoracic_data.ribcage_rotation_right_percent }}%
-            </td>
-            <td class="{% if thoracic_data.ribcage_rotation_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
-                {{ thoracic_data.ribcage_rotation_asymmetry }}%
-            </td>
-        </tr>
-        {% endif %}
-        {% if thoracic_data.ribcage_flexion_left_percent|float > 0 and thoracic_data.ribcage_flexion_right_percent|float > 0 %}
-        <tr>
-            <td>Ribcage Flexion</td>
-            <td class="{% if thoracic_data.ribcage_flexion_left == 'unavailable data' %}unavailable{% endif %}">
-                {{ thoracic_data.ribcage_flexion_left }}°
-            </td>
-            <td class="{% if thoracic_data.ribcage_flexion_right == 'unavailable data' %}unavailable{% endif %}">
-                {{ thoracic_data.ribcage_flexion_right }}°
-            </td>
-            <td class="gold-standard">30°</td>
-            <td class="{% if thoracic_data.ribcage_flexion_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
-                {{ thoracic_data.ribcage_flexion_left_percent }}%
-            </td>
-            <td class="{% if thoracic_data.ribcage_flexion_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
-                {{ thoracic_data.ribcage_flexion_right_percent }}%
-            </td>
-            <td class="{% if thoracic_data.ribcage_flexion_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
-                {{ thoracic_data.ribcage_flexion_asymmetry }}%
-            </td>
-        </tr>
-        {% endif %}
-    </table>
-</div>
-{% endif %}
+
 
 {% if hip_data and (hip_data.flexion_left_percent|float > 0 or hip_data.extension_left_percent|float > 0 or hip_data.abduction_left_percent|float > 0 or hip_data.adduction_left_percent|float > 0 or hip_data.ext_rotation_left_percent|float > 0 or hip_data.int_rotation_left_percent|float > 0) %}
 <div class="table-container">
@@ -546,6 +489,66 @@
             <td class="{% if hip_data.int_rotation_left_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_left_percent }}%</td>
             <td class="{% if hip_data.int_rotation_right_percent|float >= 85 %}asymmetry-low{% elif hip_data.int_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">{{ hip_data.int_rotation_right_percent }}%</td>
             <td class="{% if hip_data.int_rotation_asymmetry|float > 20 %}asymmetry-high{% elif hip_data.int_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">{{ hip_data.int_rotation_asymmetry }}%</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+{% if thoracic_data and (thoracic_data.ribcage_rotation_left_percent|float > 0 or thoracic_data.ribcage_flexion_left_percent|float > 0) %}
+<div class="table-container">
+    <h3 style="background-color: #e8f4f8; padding: 7px; border-radius: 5px; color: #2C3E50; margin-bottom: 13px;">
+        Ribcage 
+    </h3>
+    <table>
+        <tr class="range-header">
+            <th>Movement</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>Gold Standard</th>
+            <th>Left %</th>
+            <th>Right %</th>
+            <th>Asymmetry %</th>
+        </tr>
+        {% if thoracic_data.ribcage_rotation_left_percent|float > 0 and thoracic_data.ribcage_rotation_right_percent|float > 0 %}
+        <tr>
+            <td>Ribcage Rotation</td>
+            <td class="{% if thoracic_data.ribcage_rotation_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_rotation_left }}°
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_rotation_right }}°
+            </td>
+            <td class="gold-standard">75°</td>
+            <td class="{% if thoracic_data.ribcage_rotation_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_rotation_left_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_rotation_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_rotation_right_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_rotation_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_rotation_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
+                {{ thoracic_data.ribcage_rotation_asymmetry }}%
+            </td>
+        </tr>
+        {% endif %}
+        {% if thoracic_data.ribcage_flexion_left_percent|float > 0 and thoracic_data.ribcage_flexion_right_percent|float > 0 %}
+        <tr>
+            <td>Ribcage Flexion</td>
+            <td class="{% if thoracic_data.ribcage_flexion_left == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_flexion_left }}°
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_right == 'unavailable data' %}unavailable{% endif %}">
+                {{ thoracic_data.ribcage_flexion_right }}°
+            </td>
+            <td class="gold-standard">30°</td>
+            <td class="{% if thoracic_data.ribcage_flexion_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_flexion_left_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_right_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_right_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
+                {{ thoracic_data.ribcage_flexion_right_percent }}%
+            </td>
+            <td class="{% if thoracic_data.ribcage_flexion_asymmetry|float > 20 %}asymmetry-high{% elif thoracic_data.ribcage_flexion_asymmetry|float > 10 %}asymmetry-moderate{% else %}asymmetry-low{% endif %}">
+                {{ thoracic_data.ribcage_flexion_asymmetry }}%
+            </td>
         </tr>
         {% endif %}
     </table>
@@ -668,8 +671,8 @@
             <th>Movement</th>
             <th>Left</th>
             <th>Right</th>
-            <th>Left %</th>
-            <th>Right %</th>
+            <th>Left Percentile</th>
+            <th>Right Percentile</th>
             <th>Asymmetry %</th>
         </tr>
         {% if ankle_data.dorsiflexion_force_left_percent|float > 0 and ankle_data.dorsiflexion_force_right_percent|float > 0 %}
@@ -714,8 +717,8 @@
             <th>Movement</th>
             <th>Left</th>
             <th>Right</th>
-            <th>Left %</th>
-            <th>Right %</th>
+            <th>Left Percentile</th>
+            <th>Right Percentile</th>
             <th>Asymmetry %</th>
         </tr>
         {% if knee_data.flexion_force_left_percent|float > 0 and knee_data.flexion_force_right_percent|float > 0 %}
@@ -761,8 +764,8 @@
             <th>Movement</th>
             <th>Left</th>
             <th>Right</th>
-            <th>Left %</th>
-            <th>Right %</th>
+            <th>Left Percentile</th>
+            <th>Right Percentile</th>
             <th>Asymmetry %</th>
         </tr>
         {% if hip_data.flexion_force_left_percent|float > 0 and hip_data.flexion_force_right_percent|float > 0 %}
@@ -863,8 +866,8 @@
             <th>Movement</th>
             <th>Left</th>
             <th>Right</th>
-            <th>Left %</th>
-            <th>Right %</th>
+            <th>Left Percentile</th>
+            <th>Right Percentile</th>
             <th>Asymmetry %</th>
         </tr>
         {% if shoulder_data.ext_rotation_force_left_percent|float > 0 and shoulder_data.ext_rotation_force_right_percent|float > 0 %}

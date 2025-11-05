@@ -2342,31 +2342,31 @@ def evaluate_hamstring_quad_ratio(knee_flexion_force_left, knee_extension_force_
     left_result = calculate_hq_ratio_single_side(knee_flexion_force_left, knee_extension_force_left, "Left")
     right_result = calculate_hq_ratio_single_side(knee_flexion_force_right, knee_extension_force_right, "Right")
     
-    # Calculate bilateral comparison if both sides are valid
-    bilateral_comparison = ""
-    if left_result['ratio'] is not None and right_result['ratio'] is not None:
-        left_ratio = left_result['ratio']
-        right_ratio = right_result['ratio']
+    # # Calculate bilateral comparison if both sides are valid
+    # bilateral_comparison = ""
+    # if left_result['ratio'] is not None and right_result['ratio'] is not None:
+    #     left_ratio = left_result['ratio']
+    #     right_ratio = right_result['ratio']
         
-        if left_ratio > right_ratio:
-            difference = left_ratio - right_ratio
-            percentage_diff = (difference / right_ratio * 100) if right_ratio != 0 else 0
-            bilateral_comparison = f"Left H:Q ratio {percentage_diff:.1f}% higher than right"
-        elif right_ratio > left_ratio:
-            difference = right_ratio - left_ratio
-            percentage_diff = (difference / left_ratio * 100) if left_ratio != 0 else 0
-            bilateral_comparison = f"Right H:Q ratio {percentage_diff:.1f}% higher than left"
-        else:
-            bilateral_comparison = "Left and right H:Q ratios are equal"
-    else:
-        bilateral_comparison = "Cannot compare - missing or invalid data"
+    #     if left_ratio > right_ratio:
+    #         difference = left_ratio - right_ratio
+    #         percentage_diff = (difference / right_ratio * 100) if right_ratio != 0 else 0
+    #         bilateral_comparison = f"Left H:Q ratio {percentage_diff:.1f}% higher than right"
+    #     elif right_ratio > left_ratio:
+    #         difference = right_ratio - left_ratio
+    #         percentage_diff = (difference / left_ratio * 100) if left_ratio != 0 else 0
+    #         bilateral_comparison = f"Right H:Q ratio {percentage_diff:.1f}% higher than left"
+    #     else:
+    #         bilateral_comparison = "Left and right H:Q ratios are equal"
+    # else:
+    #     bilateral_comparison = "Cannot compare - missing or invalid data"
 
     
     
     return {
         'left': left_result,
         'right': right_result,
-        'bilateral_comparison': bilateral_comparison
+        # 'bilateral_comparison': bilateral_comparison
 
     }
 
@@ -2409,8 +2409,8 @@ def format_hq_ratio_report(hq_results):
     report_lines.append("")
     
     # Bilateral comparison
-    report_lines.append("BILATERAL COMPARISON:")
-    report_lines.append(f"  {hq_results['bilateral_comparison']}")
+    # report_lines.append("BILATERAL COMPARISON:")
+    # report_lines.append(f"  {hq_results['bilateral_comparison']}")
     report_lines.append("")
     
     return "\n".join(report_lines)

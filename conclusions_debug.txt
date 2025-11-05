@@ -1,34 +1,44 @@
 Posture Conclusion:
 
-Posture Assessment: These readings indicate you have a Sway Back Posture
+Posture Assessment: These readings indicate you have a Flat Back Posture
 Hip Conclusion:
 
 Hip Assessment Conclusion: Hip Assessment Summary:
 
 Range Deficits:
-Left → 
-Right → 
+Left → Extension, Adduction, External Rotation
+Right → Extension, Adduction, Internal Rotation
 
 Strength Deficits:
-Left → Flexion
-Right → Flexion, Abduction
+Left → Flexion, Abduction, External Rotation, Internal Rotation
+Right → Flexion, Abduction, External Rotation, Internal Rotation
 
-Largest range variation: Hip Internal/External Rotation (Right) → 31.3% difference
+Largest range variation: Hip Flexion/Extension Range (Right) → 83.1% difference
 Inverse relationship in ROM highlights femur positioning changes
 Knee Conclusion:
 
 Knee Assessment Conclusion: Knee Assessment Summary:
 
 Range Deficits:
+Left → Flexion
+Right → Flexion
 
 Strength Deficits:
+Left → Flexion
+Right → Flexion
 
 Ankle Conclusion:
 
-Ankle Assessment Conclusion: The Left foot: Your left foot was observed in a neutral position, with centre of mass appropriately aligned over the 2nd metatarsal. The foot demonstrated the ability to both pronate and supinate, indicating good dynamic control through the midfoot. Dorsiflexion range was limited, although strength within the available range was good; plantarflexion showed both adequate range and strength. There is a need to prioritise strength development, particularly through overcoming isometric exercises, and to enhance proprioceptive control and awareness of midfoot articulation.
+Ankle Assessment Conclusion: The Left foot: Your left foot presents in a slightly everted position, with the centre of mass just medial to the 2nd metatarsal. Although you have the theoretical capacity to pronate and supinate, functional pronation is currently limited. Dorsiflexion range and strength are both poor, indicating restricted anterior ankle mobility and insufficient force production, while plantarflexion demonstrates good range and strength. There is a need to enhance midfoot articulation and improve fascial control, particularly during dorsiflexion movements. Building proprioceptive awareness and control will be essential for optimising foot function.
 
-The Right foot: The right foot mirrored the left, also presenting in a neutral position with the ability to pronate and supinate. Dorsiflexion range was similarly restricted, but strength was maintained, while plantarflexion exhibited both good range and strength. Movement capabilities and force production were consistent with the left foot.
+The Right foot: The right foot is in a neutral position, with the centre of mass directly over the 2nd metatarsal. Like the left, functional pronation is absent despite the potential for both pronation and supination. Dorsiflexion range and strength are also poor, mirroring the left, but plantarflexion remains strong with good range. The right foot shows slightly better alignment but similar functional deficits.
 
-Foot and Ankle summary: There is a high degree of symmetry between left and right feet in both static position and dynamic movement profiles. Key findings include restricted dorsiflexion range bilaterally, despite preserved strength, and satisfactory plantarflexion mechanics. Emphasis should be placed on improving dorsiflexion range through targeted mobility work and overcoming isometric strengthening. Additionally, incorporating subconscious movement drills—such as dynamic gait retraining and midfoot articulation exercises—will help lengthen tissue and improve fascial control. Regular proprioceptive and control-based activities are recommended to further enhance midfoot stability and awareness.
+Foot and Ankle summary: There is a degree of asymmetry, particularly in the left foot’s slightly everted position compared to the right’s neutral alignment, and in dorsiflexion force production. Both feet exhibit poor dorsiflexion range and strength, which will limit effective gait and dynamic stability, despite good plantarflexion capacity. Key findings include restricted midfoot articulation and insufficient fascial engagement, especially during dorsiflexion. We recommend a targeted strengthening programme focusing on overcoming isometrics for dorsiflexion, alongside exercises to enhance midfoot mobility and subconscious movement patterns such as dynamic balance and gait drills. Emphasising tissue lengthening through controlled, subconscious movement will further support improvements in fascial control and overall foot function.
 Shoulder Conclusion:
+
+Shoulder Assessment Conclusion: Shoulder Assessment Summary:
+
+Deficits:
+Left: range, Shoulder "I", Shoulder "Y", Shoulder "T"
+Right: range, Shoulder "I", Shoulder "Y", Shoulder "T"
 
