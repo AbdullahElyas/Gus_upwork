@@ -951,14 +951,14 @@ class BiomechanicalReportGenerator:
 
                 return ShoulderData(
                     # Range data (calculated from percentage, rounded to whole number)
-                    ext_rotation_range_left=raw_data_force_ranges['ext_rotation_range_left'],
-                    ext_rotation_range_right=raw_data_force_ranges['ext_rotation_range_right'],
-                    int_rotation_range_left=raw_data_force_ranges['int_rotation_range_left'],
-                    int_rotation_range_right=raw_data_force_ranges['int_rotation_range_right'],
-                    flexion_range_left=raw_data_force_ranges['flexion_range_left'],
-                    flexion_range_right=raw_data_force_ranges['flexion_range_right'],
-                    extension_range_left=raw_data_force_ranges['extension_range_left'],
-                    extension_range_right=raw_data_force_ranges['extension_range_right'],
+                    ext_rotation_range_left=safe_str_round(raw_data_force_ranges['ext_rotation_range_left']),
+                    ext_rotation_range_right=safe_str_round(raw_data_force_ranges['ext_rotation_range_right']),
+                    int_rotation_range_left=safe_str_round(raw_data_force_ranges['int_rotation_range_left']),
+                    int_rotation_range_right=safe_str_round(raw_data_force_ranges['int_rotation_range_right']),
+                    flexion_range_left=safe_str_round(raw_data_force_ranges['flexion_range_left']),
+                    flexion_range_right=safe_str_round(raw_data_force_ranges['flexion_range_right']),
+                    extension_range_left=safe_str_round(raw_data_force_ranges['extension_range_left']),
+                    extension_range_right=safe_str_round(raw_data_force_ranges['extension_range_right']),
 
                     # Range percentages and asymmetry
                     ext_rotation_left_percent=safe_str_round(raw_data['ext_rotation_range_left']),
