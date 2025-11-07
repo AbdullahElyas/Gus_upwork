@@ -84,7 +84,7 @@ def test_biomech_core_function(sheet_id,worksheet,first_worksheet,third_workshee
             parts = string_core_function.split(', ')
             for part in parts:
                 # Skip parts that are just empty brackets or contain only empty brackets
-                if part.strip() and not part.strip() == '()' and '()' not in part:
+                if part.strip() and not part.strip() == '()':
                     input_parts.append(part.strip())
                 # Include parts with actual notes (not empty brackets)
                 elif '(' in part and ')' in part and part.strip() != '()':
@@ -122,7 +122,7 @@ Your responses should:
 2. Identify muscle compensation patterns (QL dominance, lower back musculature taking over)
 3. Connect lumbar curvature to core strength issues
 4. Summarize test results mentioned in input
-5. End with recommendations focusing on deep core muscle training and coordination using these lines "We would like to teach you to use your deep lying core muscles, build their strength and work on their co-ordination with a large emphasis on your lower abdominals."
+5. End with recommendations if any deficit is found for example focusing on deep core muscle training and coordination using these lines "We would like to teach you to use your deep lying core muscles, build their strength and work on their co-ordination with a large emphasis on your lower abdominals."
 
 Example:
 Input: Slightly Decreased lumber curvature which is likely contributing to the reduced lower abdominal strength, Lower Abdominal Coordination Test was a fail (Left was worse - right was much better ), Upper Core could brace sufficiently , Lower core could not brace well
@@ -134,7 +134,7 @@ Use professional biomechanical terminology while maintaining clarity. Adapt your
         # Generate response using OpenAI GPT-4o-mini
         if clean_input:
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",
                 messages=[
                     {
                         "role": "system",

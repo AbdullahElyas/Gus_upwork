@@ -491,7 +491,7 @@ def extract_sheet_metrics_corefunction(sheet_id, worksheet,worksheet_first,works
     elif 25 <= LC < 30 and LAST_Strength_result != "Lower Core could brace well":
         LC_Category = "Slightly Decreased lumber curvature  which is likely contributing to the reduced lower abdominal strength"
     elif 30 <= LC < 35 and LAST_Strength_result != "Lower Core could brace well":
-        LC_Category = ""
+        LC_Category = "Normal lumber curvature"
     elif 35 <= LC < 40 and LAST_Strength_result != "Lower Core could brace well":
         LC_Category = "Slightly Increased lumber curvature  which is likely contributing to the reduced lower abdominal strength"
     elif 40 <= LC < 50 and LAST_Strength_result != "Lower Core could brace well":
@@ -3097,7 +3097,7 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
 
     # Add Conclusion_shoulder_lines output
     if not left_deficits and not right_deficits:
-        Conclusion_shoulder_lines = None
+        Conclusion_shoulder_lines = "No  significant deficits identified in range of motion or isometric strength assessments."
     else:
         Conclusion_shoulder_lines = []
         Conclusion_shoulder_lines.append("Shoulder Assessment Summary:")
