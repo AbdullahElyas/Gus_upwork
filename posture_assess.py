@@ -3017,13 +3017,13 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
     
     # Add range movements
     if (shoulder_ext_rotation_range_left != 'unavailable data' or shoulder_ext_rotation_range_right != 'unavailable data'):
-        add_movement_section("External Rotation", shoulder_ext_rotation_range_left, shoulder_ext_rotation_range_right,'range',shoulder_ext_rotation_range_left_original,shoulder_ext_rotation_range_right_original)
+        add_movement_section("External Rotation", shoulder_ext_rotation_range_left, shoulder_ext_rotation_range_right,None,'range',shoulder_ext_rotation_range_left_original,shoulder_ext_rotation_range_right_original)
     if (shoulder_int_rotation_range_left != 'unavailable data' or shoulder_int_rotation_range_right != 'unavailable data'):
-        add_movement_section("Internal Rotation", shoulder_int_rotation_range_left, shoulder_int_rotation_range_right,'range',shoulder_int_rotation_range_left_original,shoulder_int_rotation_range_right_original)
+        add_movement_section("Internal Rotation", shoulder_int_rotation_range_left, shoulder_int_rotation_range_right,None,'range',shoulder_int_rotation_range_left_original,shoulder_int_rotation_range_right_original)
     if (shoulder_flexion_range_left != 'unavailable data' or shoulder_flexion_range_right != 'unavailable data'):
-        add_movement_section("Flexion", shoulder_flexion_range_left, shoulder_flexion_range_right,'range',shoulder_flexion_range_left_original,shoulder_flexion_range_right_original)
+        add_movement_section("Flexion", shoulder_flexion_range_left, shoulder_flexion_range_right,None,'range',shoulder_flexion_range_left_original,shoulder_flexion_range_right_original)
     if (shoulder_extension_range_left != 'unavailable data' or shoulder_extension_range_right != 'unavailable data'):
-        add_movement_section("Extension", shoulder_extension_range_left, shoulder_extension_range_right,'range',shoulder_extension_range_left_original,shoulder_extension_range_right_original)
+        add_movement_section("Extension", shoulder_extension_range_left, shoulder_extension_range_right,None,'range',shoulder_extension_range_left_original,shoulder_extension_range_right_original)
 
     # Add force movements (if available)
     if (shoulder_ext_rotation_force_left != 'unavailable data' or shoulder_ext_rotation_force_right != 'unavailable data'):
