@@ -29,6 +29,7 @@
         h2 {
             font-size: 1.1em;
             page-break-after: avoid;
+            margin-top: 16px;
         }
         
         h3 {
@@ -64,8 +65,8 @@
         }
         
         table {
-            width: 55vw;
-            max-width: 750px;
+            width: 65vw;
+            max-width: 900px;
             border-collapse: collapse;
             margin: 0;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
@@ -217,6 +218,46 @@
         .value-good { color: #27AE60; font-weight: bold; }
         .value-moderate { color: #F39C12; font-weight: bold; }
         .value-poor { color: #E74C3C; font-weight: bold; }
+
+        /* Fixed column widths for all data tables */
+.table-container table {
+  table-layout: fixed;
+}
+
+/* Fixed column widths for all data tables */
+.table-container table {
+  table-layout: fixed;
+}
+
+/* 7-column Range tables */
+.table-container table.range th:nth-child(1),
+.table-container table.range td:nth-child(1) { width: 40%; }  /* Movement - increased */
+.table-container table.range th:nth-child(2),
+.table-container table.range td:nth-child(2),
+.table-container table.range th:nth-child(3),
+.table-container table.range td:nth-child(3) { width: 8%; }   /* Left / Right values */
+.table-container table.range th:nth-child(4),
+.table-container table.range td:nth-child(4) { width: 12%; }  /* Gold Standard */
+.table-container table.range th:nth-child(5),
+.table-container table.range td:nth-child(5),
+.table-container table.range th:nth-child(6),
+.table-container table.range td:nth-child(6) { width: 10%; }  /* Left % / Right % */
+.table-container table.range th:nth-child(7),
+.table-container table.range td:nth-child(7) { width: 16%; }  /* Asymmetry % */
+
+/* 6-column Force tables */
+.table-container table.force th:nth-child(1),
+.table-container table.force td:nth-child(1) { width: 40%; }  /* Movement - matches range */
+.table-container table.force th:nth-child(2),
+.table-container table.force td:nth-child(2),
+.table-container table.force th:nth-child(3),
+.table-container table.force td:nth-child(3) { width: 12%; }  /* Left / Right force */
+.table-container table.force th:nth-child(4),
+.table-container table.force td:nth-child(4),
+.table-container table.force th:nth-child(5),
+.table-container table.force td:nth-child(5) { width: 16%; }  /* Left / Right percentile */
+.table-container table.force th:nth-child(6),
+.table-container table.force td:nth-child(6) { width: 16%; }  /* Asymmetry % */
     </style>
 </head>
 <body>
@@ -300,7 +341,7 @@
     <div class="data-tables">
 {% if ankle_data and (ankle_data.dorsiflexion_left_percent|float > 0 or ankle_data.plantarflexion_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="range">
 <tr style="background-color: #D3D3D3;">
     <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Ankle
@@ -351,7 +392,7 @@
 {% if knee_data and (knee_data.flexion_left_percent|float > 0 or knee_data.extension_left_percent|float > 0) %}
 <div class="table-container">
 
-    <table>
+    <table class="range">
         <tr style="background-color: #D3D3D3;">
     <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Knee
@@ -404,7 +445,7 @@
 
 {% if hip_data and (hip_data.flexion_left_percent|float > 0 or hip_data.extension_left_percent|float > 0 or hip_data.abduction_left_percent|float > 0 or hip_data.adduction_left_percent|float > 0 or hip_data.ext_rotation_left_percent|float > 0 or hip_data.int_rotation_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="range">
         <tr style="background-color: #D3D3D3;">
     <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Hip
@@ -514,7 +555,7 @@
 {% endif %}
 {% if thoracic_data and (thoracic_data.ribcage_rotation_left_percent|float > 0 or thoracic_data.ribcage_flexion_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="range">
         <tr style="background-color: #D3D3D3;">
     <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Ribcage/Thoracic
@@ -586,7 +627,7 @@
     shoulder_data.int_rotation_right_percent|float > 0
 ) %}
 <div class="table-container">
-    <table>
+    <table class="range">
         <tr style="background-color: #D3D3D3;">
     <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Shoulder
@@ -683,16 +724,16 @@
         <div class="data-tables">
 {% if ankle_data and (ankle_data.dorsiflexion_force_left_percent|float > 0 or ankle_data.plantarflexion_force_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="force">
         <tr style="background-color: #D3D3D3;">
-    <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
+    <td colspan="6" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Ankle
     </td>
 </tr>
         <tr class="force-header">
             <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
+            <th>Left (N)</th>
+            <th>Right (N)</th>
             <th>Left Percentile</th>
             <th>Right Percentile</th>
             <th>Asymmetry %</th>
@@ -731,16 +772,16 @@
 
 {% if knee_data and (knee_data.flexion_force_left_percent|float > 0 or knee_data.extension_force_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="force">
         <tr style="background-color: #D3D3D3;">
-    <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
+    <td colspan="6" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Knee
     </td>
 </tr>
         <tr class="force-header">
             <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
+            <th>Left (N)</th>
+            <th>Right (N)</th>
             <th>Left Percentile</th>
             <th>Right Percentile</th>
             <th>Asymmetry %</th>
@@ -780,16 +821,16 @@
 
 {% if hip_data and (hip_data.flexion_force_left_percent|float > 0 or hip_data.extension_force_left_percent|float > 0 or hip_data.abduction_force_left_percent|float > 0 or hip_data.adduction_force_left_percent|float > 0 or hip_data.ext_rotation_force_left_percent|float > 0 or hip_data.int_rotation_force_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="force">
         <tr style="background-color: #D3D3D3;">
-    <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
+    <td colspan="6" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Hip
     </td>
 </tr>
         <tr class="force-header">
             <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
+            <th>Left (N)</th>
+            <th>Right (N)</th>
             <th>Left Percentile</th>
             <th>Right Percentile</th>
             <th>Asymmetry %</th>
@@ -884,16 +925,16 @@
 
 {% if shoulder_data and (shoulder_data.ext_rotation_force_left_percent|float > 0 or shoulder_data.int_rotation_force_left_percent|float > 0 or shoulder_data.flexion_force_left_percent|float > 0 or shoulder_data.i_iso_left_percent|float > 0 or shoulder_data.y_iso_left_percent|float > 0 or shoulder_data.t_iso_left_percent|float > 0) %}
 <div class="table-container">
-    <table>
+    <table class="force">
         <tr style="background-color: #D3D3D3;">
-    <td colspan="7" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
+    <td colspan="6" style="color: #2C3E50; font-weight: bold; font-size: 8px; padding: 4px; text-align: center; border: 1px solid #34495E;">
         Shoulder
     </td>
 </tr>
         <tr class="force-header">
             <th>Movement</th>
-            <th>Left</th>
-            <th>Right</th>
+            <th>Left (N)</th>
+            <th>Right (N)</th>
             <th>Left Percentile</th>
             <th>Right Percentile</th>
             <th>Asymmetry %</th>

@@ -298,10 +298,11 @@ class BiomechanicalReportGenerator:
         self.first_worksheet = first_worksheet
         self.third_worksheet = third_worksheet
         self.mass = 1
-        Name_Gender_info = first_worksheet.row_values(1)
+        Name__info = first_worksheet.row_values(1)
+        Gender_info = first_worksheet.row_values(2)
         try:
-            self.Name = Name_Gender_info[4]
-            self.Gender = Name_Gender_info[2]
+            self.Name = Name__info[2]
+            self.Gender = Gender_info[2]
         except IndexError:
             self.Name = ""
             self.Gender = ""
