@@ -8,9 +8,9 @@
         <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 10px;
-            line-height: 1.2;
-            font-size: 9px;
+            margin: 40px;
+            line-height: 1.6;
+            font-size: 11px;
         }
         
         h1, h2, h3 {
@@ -23,13 +23,13 @@
             text-align: center;
             border-bottom: 1px solid #2C3E50;
             padding-bottom: 2px;
-            font-size: 1.3em;
+            font-size: 1.0em;
         }
         
         h2 {
             font-size: 1.1em;
             page-break-after: avoid;
-            margin-top: 16px;
+            margin-top: 35px;
         }
         
         h3 {
@@ -44,7 +44,7 @@
         .data-tables {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             gap: 0;
             margin: 0;
         }
@@ -54,7 +54,7 @@
             max-width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             margin: 0;
         }
         
@@ -156,8 +156,8 @@
         }
         
         .graph-text img {
-            width: 150px;
-            height: 150px;
+            width: 250px;
+            height: 250px;
             object-fit: contain;
             border: 1px solid #ccc;
             padding: 3px;
@@ -172,7 +172,7 @@
             background: #e8f4f8;
             border-radius: 4px;
             border-left: 2px solid #2C3E50;
-            font-size: 8px;
+            font-size: 10px;
             line-height: 1.2;
             page-break-inside: avoid;
             margin: 0;
@@ -184,7 +184,7 @@
             border-radius: 4px;
             margin: 0;
             border-left: 2px solid #3498DB;
-            font-size: 8px;
+            font-size: 10px;
             line-height: 1.2;
             page-break-inside: avoid;
         }
@@ -195,7 +195,7 @@
             border-radius: 4px;
             margin: 0;
             border-left: 2px solid #3498DB;
-            font-size: 8px;
+            font-size: 10px;
             line-height: 1.2;
             page-break-inside: avoid;
         }
@@ -262,19 +262,21 @@
 </head>
 <body>
 
-<div style="background: #e8f4f8; padding: 18px 10px; border-radius: 7px; text-align: center; margin-bottom: 20px; display: flex; align-items: center; gap: 20px;">
-    <img src="Brickperf.png" alt="Brick Performance Logo" style="height: 80px; width: auto; object-fit: contain;">
-    <h1 style="margin: 0; font-size: 1.5em; color: #2C3E50; letter-spacing: 2px; font-weight: bold; flex: 1; text-align: center;">
+<div style="background: #e8f4f8; padding: 10px 8px; border-radius: 7px; text-align: center; margin-bottom: 10px; display: flex; align-items: center; gap: 15px;">
+    <img src="Brickperf.png" alt="Brick Performance Logo" style="height: 60px; width: auto; object-fit: contain;">
+    <h1 style="margin: 0; font-size: 1.1em; color: #2C3E50; letter-spacing: 2px; font-weight: bold; flex: 1; text-align: center;">
         BRICK PERFORMANCE<br>
-        <span style="font-size: 1.2em; font-weight: normal;">BIOMECHANICAL ASSESSMENT</span>
+        <span style="font-size: 0.75em; font-weight: normal;">BIOMECHANICAL ASSESSMENT</span>
     </h1>
 </div>
     {% if name %}
     <div style="
         display: flex;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
         margin-bottom: 0;
+        margin-left: auto;
+        margin-right: auto;
         padding: 6px 12px;
         background: linear-gradient(90deg, #34495E 0%, #e8f4f8 100%);
         border-radius: 6px;
@@ -1166,14 +1168,15 @@
 
 
 
-<div style="background: #f8f9fa; margin: 0 -10px; padding: 12px 10px; border-top: 2px solid #34495E; font-family: Arial, sans-serif; page-break-inside: avoid; display: flex; align-items: center; gap: 15px;">
-    <img src="Brickperf.png" alt="Brick Performance Logo" style="height: 100px; width: auto; object-fit: contain;">
+<!-- Footer -->
+<div style="background: #f8f9fa; margin: 0 -20px; padding: 8px; border-top: 2px solid #34495E; font-family: Arial, sans-serif; page-break-inside: avoid; display: flex; align-items: center; gap: 12px;">
+    <img src="Brickperf.png" alt="Brick Performance Logo" style="height: 70px; width: auto; object-fit: contain;">
     <div style="text-align: left; flex: 1; margin: 0; display: block;">
-        <p style="font-size: 11px; color: #2C3E50; margin: 0 0 8px 0; line-height: 1.3; font-weight: bold;">
+        <p style="font-size: 9px; color: #2C3E50; margin: 0 0 6px 0; line-height: 1.2; font-weight: bold;">
             Please book in a call so we can talk through your findings and get you back to pain free performance.
         </p>
-        <div style="font-size: 10px; color: #34495E; line-height: 1.5; text-align: left;">
-            <div style="margin-bottom: 4px;">
+        <div style="font-size: 8px; color: #34495E; line-height: 1.4; text-align: left;">
+            <div style="margin-bottom: 3px;">
                 <strong>Email:</strong> 
                 <a href="mailto:info@brickperformance.co.uk" style="color: #3498DB; text-decoration: none;">
                     info@brickperformance.co.uk
