@@ -234,8 +234,7 @@ def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
         tc_status = "below our gold standard range"
   
 
-    template1 = f"""From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement.
-Your forward head posture was measured at {FHP}cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was {tc_status}, you measured {TC} degrees, normal is considered 30-35. We saw {"a reduced curvature" if LC < 30 else "a neutral curvature" if 30 <= LC <= 35 else "an increased curvature"} in your lumbar spine, you measured {LC} degrees with normal being considered 30-35."""
+    template1 = f"""From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement. Your forward head posture was measured at {FHP}cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was {tc_status}, you measured {TC} degrees, normal is considered 30-35. We saw {"a reduced curvature" if LC < 30 else "a neutral curvature" if 30 <= LC <= 35 else "an increased curvature"} in your lumbar spine, you measured {LC} degrees with normal being considered 30-35."""
     # You were able to rotate your spine 46 degrees to the left and 50 degrees to the right, and could laterally flex (side bend) 38 degrees to the left and 37 degrees to the right. 
     if any(x == 0 for x in [Rotaion_Ribcage_Left, Rotaion_Ribcage_Right, Rotaion_Ribcage_Flexion_Left, Rotaion_Ribcage_Flexion_Right]):
         template2 = ""
