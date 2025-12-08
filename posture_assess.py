@@ -1902,12 +1902,12 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
             deficit_parts.append(f"Right → {', '.join(strength_deficits_right)}")
         input_lines.append(f"Strength deficits: {'; '.join(deficit_parts)}")
     
-    # Largest range variation
-    if largest_variation:
-        input_lines.append("")
-        input_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
-        input_lines.append("")
-        input_lines.append("Inverse relationship in ROM highlights femur positioning changes")
+    # # Largest range variation
+    # if largest_variation:
+    #     input_lines.append("")
+    #     input_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
+    #     input_lines.append("")
+    #     input_lines.append("Inverse relationship in ROM highlights femur positioning changes")
 
     # also make hip_conclusion_lines add everything in it after overall notes
     hip_conclusion_lines = []
@@ -1921,9 +1921,9 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
     hip_conclusion_lines.append(f"Left → {', '.join(strength_deficits_left)}")
     hip_conclusion_lines.append(f"Right → {', '.join(strength_deficits_right)}")
     hip_conclusion_lines.append("")
-    if largest_variation:
-        hip_conclusion_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
-        hip_conclusion_lines.append("Inverse relationship in ROM highlights femur positioning changes")
+    # if largest_variation:
+    #     hip_conclusion_lines.append(f"Largest range variation: {largest_variation[1]} → {largest_variation[0]:.1f}% difference")
+    #     hip_conclusion_lines.append("Inverse relationship in ROM highlights femur positioning changes")
 
 
 
@@ -3044,47 +3044,47 @@ def TextGen_Shoulder_Concise(sheet_id, data_overview_sheet):
     if (shoulder_t_iso_left_final != 'unavailable data' or shoulder_t_iso_right_final != 'unavailable data'):
         add_movement_section('Shoulder "T" ISO', shoulder_t_iso_left_final, shoulder_t_iso_right_final, 'Shoulder "T"', 'strength',shoulder_t_iso_left_final_original,shoulder_t_iso_right_final_original)
 
-    # Opposing Comparisons
-    lines.append("Opposing Comparisons:")
+    # # Opposing Comparisons
+    # lines.append("Opposing Comparisons:")
     
-    # Flexion vs Extension
-    if (shoulder_flexion_range_left_original != 'unavailable data' or shoulder_flexion_range_right_original != 'unavailable data'):
-        flex_ext_comparisons = calculate_opposing_asymmetry(
-            shoulder_flexion_range_left_original, shoulder_flexion_range_right_original,
-            shoulder_extension_range_left_original, shoulder_extension_range_right_original,
-            "Flexion", "Extension"
-        )
-        if flex_ext_comparisons:
-            lines.append("  Flexion vs Extension:")
-            for comp in flex_ext_comparisons:
-                lines.append(f"    {comp}")
-            lines.append("")
+    # # Flexion vs Extension
+    # if (shoulder_flexion_range_left_original != 'unavailable data' or shoulder_flexion_range_right_original != 'unavailable data'):
+    #     flex_ext_comparisons = calculate_opposing_asymmetry(
+    #         shoulder_flexion_range_left_original, shoulder_flexion_range_right_original,
+    #         shoulder_extension_range_left_original, shoulder_extension_range_right_original,
+    #         "Flexion", "Extension"
+    #     )
+    #     if flex_ext_comparisons:
+    #         lines.append("  Flexion vs Extension:")
+    #         for comp in flex_ext_comparisons:
+    #             lines.append(f"    {comp}")
+    #         lines.append("")
     
-    # Rotation comparisons
-    if (shoulder_ext_rotation_range_left_original != 'unavailable data' or shoulder_int_rotation_range_left_original != 'unavailable data'):
-        rotation_comparisons = calculate_opposing_asymmetry(
-        shoulder_ext_rotation_range_left_original, shoulder_ext_rotation_range_right_original,
-        shoulder_int_rotation_range_left_original, shoulder_int_rotation_range_right_original,
-        "External", "Internal"
-    )
-    if rotation_comparisons:
-        lines.append("  Rotation:")
-        for comp in rotation_comparisons:
-            lines.append(f"    {comp}")
-        lines.append("")
+    # # Rotation comparisons
+    # if (shoulder_ext_rotation_range_left_original != 'unavailable data' or shoulder_int_rotation_range_left_original != 'unavailable data'):
+    #     rotation_comparisons = calculate_opposing_asymmetry(
+    #     shoulder_ext_rotation_range_left_original, shoulder_ext_rotation_range_right_original,
+    #     shoulder_int_rotation_range_left_original, shoulder_int_rotation_range_right_original,
+    #     "External", "Internal"
+    # )
+    # if rotation_comparisons:
+    #     lines.append("  Rotation:")
+    #     for comp in rotation_comparisons:
+    #         lines.append(f"    {comp}")
+    #     lines.append("")
     
-    # Force rotation comparisons (if available)
-    if (shoulder_ext_rotation_force_left != 'unavailable data' or shoulder_int_rotation_force_left != 'unavailable data'):
-        force_rotation_comparisons = calculate_opposing_asymmetry(
-            shoulder_ext_rotation_force_left, shoulder_ext_rotation_force_right,
-            shoulder_int_rotation_force_left, shoulder_int_rotation_force_right,
-            "External", "Internal"
-        )
-        if force_rotation_comparisons:
-            lines.append("  Rotation Force:")
-            for comp in force_rotation_comparisons:
-                lines.append(f"    {comp}")
-            lines.append("")
+    # # Force rotation comparisons (if available)
+    # if (shoulder_ext_rotation_force_left != 'unavailable data' or shoulder_int_rotation_force_left != 'unavailable data'):
+    #     force_rotation_comparisons = calculate_opposing_asymmetry(
+    #         shoulder_ext_rotation_force_left, shoulder_ext_rotation_force_right,
+    #         shoulder_int_rotation_force_left, shoulder_int_rotation_force_right,
+    #         "External", "Internal"
+    #     )
+    #     if force_rotation_comparisons:
+    #         lines.append("  Rotation Force:")
+    #         for comp in force_rotation_comparisons:
+    #             lines.append(f"    {comp}")
+    #         lines.append("")
     # Deficits
     lines.append("Deficits:")
     if left_deficits:

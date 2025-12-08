@@ -340,7 +340,7 @@ CLASSIFICATION SYSTEM:
 - Deficit (75-85%)
 - Large deficit (<75%)
 
-KEY TERMS: hip joint integrity, pelvic alignment, propulsion, force production, movement patterns, bilateral comparison, range deficits, strength deficits, femur positioning, inverse relationship, closed & open-chain movements, flexor mechanism, extensor mechanism, energy transfer.
+KEY TERMS: hip joint integrity, pelvic alignment, propulsion, force production, movement patterns, bilateral comparison, range deficits, strength deficits, closed & open-chain movements, flexor mechanism, extensor mechanism, energy transfer.
 
 STRICT TEMPLATE EXAMPLE - FOLLOW THIS EXACT FORMAT:
 Input: Hip Flexion: Range above gold standard left/sufficient but below gold standard right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
@@ -349,8 +349,7 @@ Hip Abduction: Range above gold standard bilaterally, Strength sufficient but be
 Hip Adduction: Range above gold standard bilaterally, Strength large deficit left/deficit right, Asymmetry Right > Left 37.8%
 Hip External Rotation: Range above gold standard bilaterally, Strength sufficient but below gold standard bilaterally
 Hip Internal Rotation: Range sufficient but below gold standard left/above gold standard right, Strength sufficient but below gold standard bilaterally
-Overall: Strength deficits Left→Flexion/Extension/Adduction, Right→Flexion/Extension/Abduction/Adduction. Largest variation: Hip Internal/External Rotation 45.7% difference. Inverse relationship highlights femur positioning changes.
-
+Overall: Strength deficits Left→Flexion/Extension/Adduction, Right→Flexion/Extension/Abduction/Adduction. 
 MANDATORY OUTPUT FORMAT:
 The Left hip showed great range with only slight deficit in hip extension. Force production showed much greater deficits with flexion, adduction and extension in the lowest percentiles affecting movement patterns and hip joint integrity.
 
@@ -358,9 +357,12 @@ The Right hip showed similar range of motion to the left side. While stronger on
 
 Hip summary: The notable reduction in hip extension range of motion on the left affects pelvic alignment. Hip extension helps stabilise the pelvis and when range of motion and strength are poor this influences proper alignment of the lower limb. Hip extension strength is essential for propulsion and preventing excessive back extension, which leads to inefficient movement patterns.
 
-Large asymmetries and inverse relationship in rotation affect hip joint integrity. Internal rotation in closed & open-chain movements plays important roles in squatting and functional activities. Having range and strength here is vital for maintaining hip joint stability. The flexor mechanism also plays a role in force transmission from hip muscles to the lower limb and ground. Optimising rotation mechanics will allow for more efficient energy transfer during both closed and open-chain movements. It's necessary to reduce the current asymmetry present at the hip.
+Internal rotation in closed & open-chain movements plays important roles in squatting and functional activities. Having range and strength here is vital for maintaining hip joint stability. The flexor mechanism also plays a role in force transmission from hip muscles to the lower limb and ground. Optimising rotation mechanics will allow for more efficient energy transfer during both closed and open-chain movements. It's necessary to reduce the current asymmetry present at the hip.
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
+Try to avoid mentioning inverse relationships unless absolutely necessary or critical to the analysis.
+When discussing range or force use explicit language so the range is not confused with strength. Avoid using words like weaker or stronger to describe range. For range use terms like limited, reduced, good, full, excellent.
+
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
         # Generate response using OpenAI GPT-4o-mini
@@ -455,6 +457,7 @@ The Right knee had near identical range to the left. While the right knee flexio
 Knee summary: There is some good range available at the knee in extension but there needs to be a large focus on flexion. We would like to improve the flexion peak force in order to increase your hamstring to quadriceps ratio as well as building some tolerance in left knee extension.
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
+AVOID using numerical values for hamstring to quadriceps ratio in your response; instead, use qualitative descriptors based on the classification system provided.
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
         # Generate response using OpenAI GPT-4o-mini
@@ -521,12 +524,14 @@ OUTPUT RULES:
 - Use descriptive terms like "slightly higher", "notably stronger", "significantly weaker", "much greater"
 - Describe asymmetries qualitatively: "stronger", "weaker", "greater", "reduced"
 - Focus on functional descriptions rather than numerical values
+- When discussing range or force use explicit language so the range is not confused with strength. Do not use words like weaker or stronger to describe range. For range use terms like limited, reduced, good, full, excellent.
+- Compare internal and external rotation if necessary or the difference shoulder internal and external rotation and professionally discuss the reason and its implication. If not necessary, do not mention it.
 - Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Example:
 Input: External Rotation Range: Left: above gold standard (11.0% above gold standard), Right: above gold standard (18.0% above gold standard), External Rotation: Right 6.3% higher than left; Internal Rotation Range: Left: above gold standard (1.0% above gold standard), Right: below gold standard, Internal Rotation: Left 4.1% higher than right; External Rotation Force: Left: below gold standard, Right: below gold standard, External Rotation: Left 6.5% higher than right; Internal Rotation Force: Left: notable reduction with respect to gold standard, Right: notable reduction with respect to gold standard, Internal Rotation: Right 17.7% higher than left; Strength deficits: Left → Internal Rotation; Right → Internal Rotation
 
-Output: The Left Shoulder had great range with a slight bias towards external rotation. When we tested force, the left shoulder was much stronger in external rotation.
+Output:  When we tested force, the left shoulder was much stronger in external rotation.
 
 The Right Shoulder had greater external rotation but less internal rotation when compared to the left. The right shoulder was weaker in external rotation but stronger in internal rotation when compared to the left.
 
@@ -607,6 +612,7 @@ IMPORTANT INSTRUCTIONS:
 - Adapt the conclusion length based on available data
 - Maintain professional biomechanical terminology
 - Focus only on the assessments that are actually present
+- For posture analysis avoid mentioning anterior or posterior pelvic tilt
 - Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.
 
 KEY TERMINOLOGY:
@@ -635,7 +641,7 @@ REMEMBER: Only include paragraphs for assessment sections that are actually prov
         # Generate response using OpenAI GPT-4o-mini
         if input_string.strip():
             response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",
                 messages=[
                     {
                         "role": "system",
@@ -727,6 +733,7 @@ def test_biomech_priority_list(
             3rd) Increase your ability to pressurise correctly through the foot.
             4th) Increase right knee flexion force.
             5th) Increase lower core function.
+            6th) Address forward head posture.
 
             RULES:
             - Use short, direct sentences (like the example).
