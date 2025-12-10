@@ -186,15 +186,16 @@ Key assessment principles:
 - Poor range/strength requires specific training recommendations
 - Emphasize midfoot articulation and fascial control
 - Include subconscious movement recommendations for tissue lengthening
+- There should be no subheading for left and right foot .....Foot and Ankle summary subheading shouldbe there in the last paragraph
 
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 
 Example:
 Input: Left Foot Position: neutral position, between 1st and 2nd metatarsal, Pronation: foot can pronate, Left : {'pronation': 'can pronate', 'supination': 'can supinate'}, Left Foot: Dorsiflexion - range and strength are both good; Plantarflexion - good range but poor strength. Right Foot Position: neutral position, besides 2nd towards 1st, Pronation: foot can pronate, Right : {'pronation': 'can pronate', 'supination': 'can supinate'}, Right Foot: Dorsiflexion - range and strength are both good; Plantarflexion - good range but poor strength Symmetry is there.
 
-Output: The Left foot: Your left rear foot was in a slightly everted position with center of mass between the 1st and 2nd metatarsal. With your ankle in a state of dorsiflexion (knees over toes) you could evert and dorsiflex further than your resting position and as such could access a pronated leg shape. There was good articulation through your medial arch. Your left ankle had good range and strength in dorsiflexion but we need to prioritise strength in plantar flexion.
+Output: Your left rear foot was in a slightly everted position with center of mass between the 1st and 2nd metatarsal. With your ankle in a state of dorsiflexion (knees over toes) you could evert and dorsiflex further than your resting position and as such could access a pronated leg shape. There was good articulation through your medial arch. Your left ankle had good range and strength in dorsiflexion but we need to prioritise strength in plantar flexion.
 
-The Right foot: Your right foot was very similar to the left, also in a slightly everted position beside the 2nd metatarsal towards the 1st. The movement patterns and strength profiles were comparable between sides.
+Your right foot was very similar to the left, also in a slightly everted position beside the 2nd metatarsal towards the 1st. The movement patterns and strength profiles were comparable between sides.
 
 Foot and Ankle summary: Your symmetry is pleasing with both feet showing similar everted positioning. What was notable was your ability to effectively articulate the bones of the mid-foot in this position. There is good movement and control through the fascia on the sole of the foot. Subconscious movement (not controlled gym based movement but more dynamic gait cycle movements) should be introduced along with plantar flexion strengthening. We recommend loading the forefoot through "floating heel" movements to build mid foot control and address the plantar flexion weakness.
 
@@ -361,6 +362,7 @@ Internal rotation in closed & open-chain movements plays important roles in squa
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
 Try to avoid mentioning inverse relationships unless absolutely necessary or critical to the analysis.
+There should be no subheading for left and right hip .....Hip summary subheading should be there in the last paragraph
 When discussing range or force use explicit language so the range is not confused with strength. Avoid using words like weaker or stronger to describe range. For range use terms like limited, reduced, good, full, excellent.
 
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
@@ -457,6 +459,7 @@ The Right knee had near identical range to the left. While the right knee flexio
 Knee summary: There is some good range available at the knee in extension but there needs to be a large focus on flexion. We would like to improve the flexion peak force in order to increase your hamstring to quadriceps ratio as well as building some tolerance in left knee extension.
 
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
+There should be no subheading for left and right knee .....Knee summary subheading should be there in the last paragraph
 AVOID using numerical values for hamstring to quadriceps ratio in your response; instead, use qualitative descriptors based on the classification system provided.
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
@@ -527,7 +530,7 @@ OUTPUT RULES:
 - When discussing range or force use explicit language so the range is not confused with strength. Do not use words like weaker or stronger to describe range. For range use terms like limited, reduced, good, full, excellent.
 - Compare internal and external rotation if necessary or the difference shoulder internal and external rotation and professionally discuss the reason and its implication. If not necessary, do not mention it.
 - Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
-
+- There should be no subheading for left and right shoulder .....Shoulder summary subheading should be there in the last paragraph
 Example:
 Input: External Rotation Range: Left: above gold standard (11.0% above gold standard), Right: above gold standard (18.0% above gold standard), External Rotation: Right 6.3% higher than left; Internal Rotation Range: Left: above gold standard (1.0% above gold standard), Right: below gold standard, Internal Rotation: Left 4.1% higher than right; External Rotation Force: Left: below gold standard, Right: below gold standard, External Rotation: Left 6.5% higher than right; Internal Rotation Force: Left: notable reduction with respect to gold standard, Right: notable reduction with respect to gold standard, Internal Rotation: Right 17.7% higher than left; Strength deficits: Left → Internal Rotation; Right → Internal Rotation
 

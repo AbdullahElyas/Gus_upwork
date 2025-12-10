@@ -601,14 +601,14 @@
         {% endif %}
         {% if thoracic_data.ribcage_flexion_left_percent|float > 0 and thoracic_data.ribcage_flexion_right_percent|float > 0 %}
         <tr>
-            <td>Ribcage Flexion</td>
+            <td>Lateral Flexion</td>
             <td class="{% if thoracic_data.ribcage_flexion_left == 'unavailable data' %}unavailable{% endif %}">
                 {{ thoracic_data.ribcage_flexion_left }}°
             </td>
             <td class="{% if thoracic_data.ribcage_flexion_right == 'unavailable data' %}unavailable{% endif %}">
                 {{ thoracic_data.ribcage_flexion_right }}°
             </td>
-            <td class="gold-standard">30°</td>
+            <td class="gold-standard">55°</td>
             <td class="{% if thoracic_data.ribcage_flexion_left_percent|float >= 85 %}asymmetry-low{% elif thoracic_data.ribcage_flexion_left_percent|float >= 75 %}asymmetry-moderate{% else %}asymmetry-high{% endif %}">
                 {{ thoracic_data.ribcage_flexion_left_percent }}%
             </td>
