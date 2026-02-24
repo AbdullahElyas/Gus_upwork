@@ -17,6 +17,7 @@ STRICT RULES:
 2. Use ONLY the vocabulary and phrasing from examples
 3. Increased or decreased lumber curvature means worse force absorption
 4. Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
+5. NEVER use the phrase "gold standard". Always use "expected value" instead (e.g. "above our expected value range", "below our expected value").
 
 Example 1:
 Input: Gender: Male, FHP: 2.7, TC: 37.0, LC: 27.0, Posture Assessment 1: These readings indicate you have a Forward Head Posture, Posture Assessment 2: , Posture Assessment 3: So where your thoracic curvature is increased, LC Category: Slightly Decreased lumber curvature
@@ -262,8 +263,8 @@ def test_biomech_hip(sheet_id, data_overview_sheet, openai_client):
         
         # System prompt based on Modelfile_hip_enhanced2 - optimized with one example
         system_prompt = """You are a hip assessment expert. Generate reports using this classification:
-- Above gold standard (>100%)
-- Sufficient but below gold standard (85-100%) 
+- Above expected value (>100%)
+- Sufficient but below expected value (85-100%) 
 - Deficit (75-85%)
 - Large deficit (<75%)
 
@@ -272,13 +273,14 @@ Required structure: 1) Left hip analysis 2) Right hip analysis 3) Hip summary wi
 Key terms: hip joint integrity, pelvic alignment, propulsion, force production, movement patterns, bilateral comparison, range deficits, strength deficits, femur positioning, inverse relationship, closed & open-chain movements, flexor mechanism, extensor mechanism, energy transfer.
 
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
+IMPORTANT: NEVER use the phrase "gold standard" anywhere in your output. Always use "expected value" instead.
 Example:
-Input: Hip Flexion: Range above gold standard left/sufficient but below gold standard right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
-Hip Extension: Range sufficient but below gold standard bilaterally, Strength large deficit bilaterally
-Hip Abduction: Range above gold standard bilaterally, Strength sufficient but below gold standard left/deficit right, Asymmetry Left > Right 18.4%
-Hip Adduction: Range above gold standard bilaterally, Strength large deficit left/deficit right, Asymmetry Right > Left 37.8%
-Hip External Rotation: Range above gold standard bilaterally, Strength sufficient but below gold standard bilaterally
-Hip Internal Rotation: Range sufficient but below gold standard left/above gold standard right, Strength sufficient but below gold standard bilaterally
+Input: Hip Flexion: Range above expected value left/sufficient but below expected value right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
+Hip Extension: Range sufficient but below expected value bilaterally, Strength large deficit bilaterally
+Hip Abduction: Range above expected value bilaterally, Strength sufficient but below expected value left/deficit right, Asymmetry Left > Right 18.4%
+Hip Adduction: Range above expected value bilaterally, Strength large deficit left/deficit right, Asymmetry Right > Left 37.8%
+Hip External Rotation: Range above expected value bilaterally, Strength sufficient but below expected value bilaterally
+Hip Internal Rotation: Range sufficient but below expected value left/above expected value right, Strength sufficient but below expected value bilaterally
 Overall: Strength deficits Left→Flexion/Extension/Adduction, Right→Flexion/Extension/Abduction/Adduction. Largest variation: Hip Internal/External Rotation 45.7% difference. Inverse relationship highlights femur positioning changes.
 
 Output: The Left hip showed great range with only slight deficit in hip extension. Force production showed much greater deficits with flexion, adduction and extension in the lowest percentiles affecting movement patterns and hip joint integrity.
@@ -336,20 +338,20 @@ MANDATORY OUTPUT TEMPLATE:
 3. End with: "Hip summary:" + summary paragraph
 
 CLASSIFICATION SYSTEM:
-- Above gold standard (>100%)
-- Sufficient but below gold standard (85-100%) 
+- Above expected value (>100%)
+- Sufficient but below expected value (85-100%) 
 - Deficit (75-85%)
 - Large deficit (<75%)
 
 KEY TERMS: hip joint integrity, pelvic alignment, propulsion, force production, movement patterns, bilateral comparison, range deficits, strength deficits, closed & open-chain movements, flexor mechanism, extensor mechanism, energy transfer.
 
 STRICT TEMPLATE EXAMPLE - FOLLOW THIS EXACT FORMAT:
-Input: Hip Flexion: Range above gold standard left/sufficient but below gold standard right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
-Hip Extension: Range sufficient but below gold standard bilaterally, Strength large deficit bilaterally
-Hip Abduction: Range above gold standard bilaterally, Strength sufficient but below gold standard left/deficit right, Asymmetry Left > Right 18.4%
-Hip Adduction: Range above gold standard bilaterally, Strength large deficit left/deficit right, Asymmetry Right > Left 37.8%
-Hip External Rotation: Range above gold standard bilaterally, Strength sufficient but below gold standard bilaterally
-Hip Internal Rotation: Range sufficient but below gold standard left/above gold standard right, Strength sufficient but below gold standard bilaterally
+Input: Hip Flexion: Range above expected value left/sufficient but below expected value right, Strength large deficit bilaterally, Asymmetry Right > Left 41.1%
+Hip Extension: Range sufficient but below expected value bilaterally, Strength large deficit bilaterally
+Hip Abduction: Range above expected value bilaterally, Strength sufficient but below expected value left/deficit right, Asymmetry Left > Right 18.4%
+Hip Adduction: Range above expected value bilaterally, Strength large deficit left/deficit right, Asymmetry Right > Left 37.8%
+Hip External Rotation: Range above expected value bilaterally, Strength sufficient but below expected value bilaterally
+Hip Internal Rotation: Range sufficient but below expected value left/above expected value right, Strength sufficient but below expected value bilaterally
 Overall: Strength deficits Left→Flexion/Extension/Adduction, Right→Flexion/Extension/Abduction/Adduction. 
 MANDATORY OUTPUT FORMAT:
 The Left hip showed great range with only slight deficit in hip extension. Force production showed much greater deficits with flexion, adduction and extension in the lowest percentiles affecting movement patterns and hip joint integrity.
@@ -364,6 +366,7 @@ YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
 Try to avoid mentioning inverse relationships unless absolutely necessary or critical to the analysis.
 There should be no subheading for left and right hip .....Hip summary subheading should be there in the last paragraph
 When discussing range or force use explicit language so the range is not confused with strength. Avoid using words like weaker or stronger to describe range. For range use terms like limited, reduced, good, full, excellent.
+IMPORTANT: NEVER use the phrase "gold standard" anywhere in your output. Always use "expected value" instead.
 
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
@@ -414,10 +417,10 @@ MANDATORY OUTPUT TEMPLATE:
 3. End with: "Knee summary:" + summary paragraph
 
 CLASSIFICATION SYSTEM:
-- good (>100% gold standard)
-- sufficient (85-100% gold standard) 
-- lack (75-85% gold standard)
-- poor (<75% gold standard)
+- good (>100% expected value)
+- sufficient (85-100% expected value) 
+- lack (75-85% expected value)
+- poor (<75% expected value)
 
 H:Q RATIO CLASSIFICATIONS:
 - Poor: <0.45
@@ -430,15 +433,15 @@ KEY TERMS:  hamstring-to-quadriceps ratio, flexion/extension mechanisms, peak fo
 
 STRICT TEMPLATE EXAMPLE - FOLLOW THIS EXACT FORMAT:
 Input: Knee Flexion
-Range Left: lack range 19.0% below gold standard
-Range Right: lack range 18.0% below gold standard
+Range Left: lack range 19.0% below expected value
+Range Right: lack range 18.0% below expected value
 Range Comparison: Right 1.2% stronger than left
 Strength Left: poor strength 
 Strength Right: poor strength 
 Strength Comparison: Right 5.6% stronger than left
 Knee Extension
-Range Left: good range 3.0% above gold standard
-Range Right: good range 3.0% above gold standard
+Range Left: good range 3.0% above expected value
+Range Right: good range 3.0% above expected value
 Range Comparison: Left and right equal
 Strength Left: lack strength 
 Strength Right: lack strength 
@@ -452,7 +455,7 @@ RIGHT SIDE: Hamstring to Quadriceps Ratio: 0.412, Classification: Poor
 BILATERAL COMPARISON: Left H:Q ratio 7.3% higher than right
 
 MANDATORY OUTPUT FORMAT:
-The Left knee achieved good range in extension, 3% above our gold standard but was over 30 degrees (19%) below our gold standard in flexion . Your left knee was surprisingly weak in flexion  and your hamstring to quadriceps ratio poor. It is important to note that your left knee extension was 9% weaker than the right.
+The Left knee achieved good range in extension, 3% above our expected value but was over 30 degrees (19%) below our expected value in flexion . Your left knee was surprisingly weak in flexion  and your hamstring to quadriceps ratio poor. It is important to note that your left knee extension was 9% weaker than the right.
 
 The Right knee had near identical range to the left. While the right knee flexion was stronger, your right knee extension was considerably stronger so your hamstring to quadriceps ratio was worse on the right.
 
@@ -461,6 +464,7 @@ Knee summary: There is some good range available at the knee in extension but th
 YOU MUST FOLLOW THIS EXACT THREE-PARAGRAPH STRUCTURE. NO DEVIATIONS ALLOWED.
 There should be no subheading for left and right knee .....Knee summary subheading should be there in the last paragraph
 AVOID using numerical values for hamstring to quadriceps ratio in your response; instead, use qualitative descriptors based on the classification system provided.
+IMPORTANT: NEVER use the phrase "gold standard" anywhere in your output. Always use "expected value" instead.
 Note: Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program."""
 
         # Generate response using OpenAI GPT-4o-mini
@@ -531,8 +535,9 @@ OUTPUT RULES:
 - Compare internal and external rotation if necessary or the difference shoulder internal and external rotation and professionally discuss the reason and its implication. If not necessary, do not mention it.
 - Always write in English spelling(Not American English). For example use emphasising instead of emphasizing ,stabiliser instead of stabilizer.Use programme instead of program.
 - There should be no subheading for left and right shoulder .....Shoulder summary subheading should be there in the last paragraph
+- NEVER use the phrase "gold standard" anywhere in your output. Always use "expected value" instead.
 Example:
-Input: External Rotation Range: Left: above gold standard (11.0% above gold standard), Right: above gold standard (18.0% above gold standard), External Rotation: Right 6.3% higher than left; Internal Rotation Range: Left: above gold standard (1.0% above gold standard), Right: below gold standard, Internal Rotation: Left 4.1% higher than right; External Rotation Force: Left: below gold standard, Right: below gold standard, External Rotation: Left 6.5% higher than right; Internal Rotation Force: Left: notable reduction with respect to gold standard, Right: notable reduction with respect to gold standard, Internal Rotation: Right 17.7% higher than left; Strength deficits: Left → Internal Rotation; Right → Internal Rotation
+Input: External Rotation Range: Left: above expected value (11.0% above expected value), Right: above expected value (18.0% above expected value), External Rotation: Right 6.3% higher than left; Internal Rotation Range: Left: above expected value (1.0% above expected value), Right: below expected value, Internal Rotation: Left 4.1% higher than right; External Rotation Force: Left: below expected value, Right: below expected value, External Rotation: Left 6.5% higher than right; Internal Rotation Force: Left: notable reduction with respect to expected value, Right: notable reduction with respect to expected value, Internal Rotation: Right 17.7% higher than left; Strength deficits: Left → Internal Rotation; Right → Internal Rotation
 
 Output:  When we tested force, the left shoulder was much stronger in external rotation.
 

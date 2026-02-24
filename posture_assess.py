@@ -218,7 +218,7 @@ def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, workshee
 def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
     # Extract metrics from the Google Sheet
     Gender,FHP, TC, LC, Pelvis_Left, Pelvis_Right, Mean_pelvis, Posture1, Posture2, Posture3,LC_Category,Rotaion_Ribcage_Left,Rotaion_Ribcage_Right, Rotaion_Ribcage_Flexion_Left,  Rotaion_Ribcage_Flexion_Right, Input_string = extract_sheet_metrics_posture(sheet_id,worksheet,first_worksheet,third_worksheet)
-    # Template for TextGen Posture From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement. Your forward head posture was measured at 1.1cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was above our gold standard range, you measured 45 degrees, normal is considered 30-35. We saw a reduced curvature in your lumbar spine, you measured 14 degrees with normal being considered 30-35.
+    # Template for TextGen Posture From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement. Your forward head posture was measured at 1.1cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was above our expected value range, you measured 45 degrees, normal is considered 30-35. We saw a reduced curvature in your lumbar spine, you measured 14 degrees with normal being considered 30-35.
     if Gender == 'Male' and Mean_pelvis < 4:
         text_pelvis = ', showing your posterior tilt and matches the findings of a reduced lumbar curvature as the lumbar spine directly articulates with the sacrum and its joints with the pelvis.'
     elif Gender == 'Female' and Mean_pelvis < 7:
@@ -227,11 +227,11 @@ def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
         text_pelvis = '.'
 
     if 30 <= TC <= 35:
-        tc_status = "within gold standard range"
+        tc_status = "within expected value range"
     elif TC > 35:
-        tc_status = "above our gold standard range"
+        tc_status = "above our expected value range"
     else:
-        tc_status = "below our gold standard range"
+        tc_status = "below our expected value range"
   
 
     template1 = f"""From the postural assessment we found some positive results as well as some areas we could concentrate on for improvement. Your forward head posture was measured at {FHP}cm (normal is deemed 0-3cm). Your thoracic (upper back) curvature was {tc_status}, you measured {TC} degrees, normal is considered 30-35. We saw {"a reduced curvature" if LC < 30 else "a neutral curvature" if 30 <= LC <= 35 else "an increased curvature"} in your lumbar spine, you measured {LC} degrees with normal being considered 30-35."""
@@ -1220,15 +1220,15 @@ def categorize_percentage_knee(value_str, measurement_type):
         difference = percentage - 100
 
         if measurement_type == 'range':
-            # Range is compared to gold standard (100%)
+            # Range is compared to expected value (100%)
             if percentage > 100:
-                return f"good range {abs(difference):.1f}% above gold standard"
+                return f"good range {abs(difference):.1f}% above expected value"
             elif 85 < percentage <= 100:
-                return f"sufficient range {abs(difference):.1f}% below gold standard"
+                return f"sufficient range {abs(difference):.1f}% below expected value"
             elif 75 <= percentage <= 85:
-                return f"lack range {abs(difference):.1f}% below gold standard"
+                return f"lack range {abs(difference):.1f}% below expected value"
             else:  # percentage < 75
-                return f"poor range {abs(difference):.1f}% below gold standard"
+                return f"poor range {abs(difference):.1f}% below expected value"
         else:  # strength/force
             # Strength is compared to population percentile (updated thresholds)
             try:
@@ -1654,7 +1654,7 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
         """
         Categorise values similar to categorize_percentage_knee.
         measurement_type: 'range' or 'strength'.
-        For strength, do not reference gold standard.
+        For strength, do not reference expected value.
         """
         try:
             if value_str is None or value_str == '':
@@ -1663,7 +1663,7 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
             percentage = float(value_str)
 
             if measurement_type == 'range':
-                # Compare to gold standard (100%)
+                # Compare to expected value (100%)
                 if percentage > 100:
                     return "good range"
                 elif 85 < percentage <= 100:
@@ -1673,7 +1673,7 @@ def TextGen_Hip_Concise(sheet_id,data_overview_sheet):
                 else:  # < 75
                     return "poor range"
             else:
-                # Strength uses population percentiles (no 'gold standard' wording)
+                # Strength uses population percentiles (no 'expected value' wording)
                 pct = percentage
                 if pct > 65:
                     return "good strength"
@@ -1982,9 +1982,9 @@ def TextGen_Hip(sheet_id,data_overview_sheet):
             elif 75 <= percentage <= 85:
                 return "lack of"
             elif 85 < percentage <= 100:
-                return "sufficient but below gold standard"
+                return "sufficient but below expected value"
             else:  # percentage > 100
-                return "above our gold standard"
+                return "above our expected value"
                 
         except (ValueError, TypeError):
             return "Unknown"

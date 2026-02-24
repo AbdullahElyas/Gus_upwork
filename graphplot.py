@@ -133,7 +133,7 @@ def create_radar_chart(gold_standard, left, right, movement_names, title="Radar 
     
     # Plot curves with fill and shadow
     for data, color, lw, label, fill_color in [
-        (Gold_Standard,'#34a853',3,'Gold Standard','#34a85333'),
+        (Gold_Standard,'#34a853',3,'Expected Value','#34a85333'),
         (Left,'#4285f4',2,'Left','#4285f433'),
         (Right,'#ea4335',2,'Right','#ea433533')
     ]:
