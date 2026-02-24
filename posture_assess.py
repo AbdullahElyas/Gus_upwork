@@ -51,11 +51,11 @@ def extract_sheet_metrics_posture(sheet_id, worksheet, worksheet_first, workshee
         print(f"No Pelvis value found in row 9, column 8 for sheet ID {sheet_id}. Using default value 0.")
         Pelvis_Right = 0
 
-    values_first = worksheet_first.row_values(1)
+    values_first = worksheet_first.row_values(2)
     if len(values_first) > 2 and values_first[2]:
         Gender = values_first[2]
     else:
-        print(f"No Gender value found in row 1, column 3 for sheet ID {sheet_id}. Using default value 'Unknown'.")
+        print(f"No Gender value found in row 2, column 3 for sheet ID {sheet_id}. Using default value 'Unknown'.")
         Gender = 'Male'
 
     # Mean_pelvis as whole number
