@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Biomechanical Report Tool – Setup Guide</title>
+<style>
+  @page { size: A4; margin: 20mm; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #222;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+  h1 {
+    text-align: center;
+    color: #2C3E50;
+    font-size: 22pt;
+    border-bottom: 3px solid #2C3E50;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 10pt;
+    margin-bottom: 30px;
+  }
+  h2 {
+    color: #2C3E50;
+    font-size: 15pt;
+    margin-top: 30px;
+    border-left: 5px solid #3498DB;
+    padding-left: 12px;
+  }
+  h3 {
+    color: #34495E;
+    font-size: 12pt;
+    margin-top: 20px;
+  }
+  .step {
+    background: #f7f9fc;
+    border: 1px solid #dce3ec;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+  .step-number {
+    display: inline-block;
+    background: #3498DB;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: bold;
+    font-size: 13pt;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .step-title {
+    font-weight: bold;
+    font-size: 11pt;
+    vertical-align: middle;
+  }
+  .step p, .step ul {
+    margin: 8px 0 0 36px;
+  }
+  .warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  .warning::before {
+    content: "⚠️ ";
+  }
+  .tip {
+    background: #d4edda;
+    border: 1px solid #28a745;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  .tip::before {
+    content: "✅ ";
+  }
+  code, .code-block {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10pt;
+  }
+  .code-block {
+    display: block;
+    padding: 12px 16px;
+    margin: 10px 0;
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  .important {
+    color: #c0392b;
+    font-weight: bold;
+  }
+  .nav-url {
+    color: #2980B9;
+    word-break: break-all;
+  }
+  .toc {
+    background: #f0f4f8;
+    border-radius: 8px;
+    padding: 16px 24px;
+    margin: 20px 0;
+  }
+  .toc ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .toc li {
+    padding: 4px 0;
+    font-size: 11pt;
+  }
+  .toc li::before {
+    content: "► ";
+    color: #3498DB;
+  }
+  .section-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #3498DB, transparent);
+    margin: 30px 0;
+  }
+  img.screenshot {
+    max-width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 8px 0;
+  }
+  @media print {
+    body { padding: 0; }
+    .step { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Biomechanical Report Tool<br>Setup Guide</h1>
+<p class="subtitle">Step-by-step instructions for setting up Google Sheets API and OpenAI access</p>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ul>
+    <li><a href="#part1">Part 1 – Set Up Google Cloud &amp; Sheets API (credentials.json)</a></li>
+    <li><a href="#part2">Part 2 – Set Up OpenAI Account &amp; API Key (.env file)</a></li>
+    <li><a href="#part3">Part 3 – Add Your Credentials to the Tool</a></li>
+    <li><a href="#part4">Part 4 – Share Your Google Sheet with the Service Account</a></li>
+    <li><a href="#part5">Part 5 – Test Everything</a></li>
+  </ul>
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="part1">Part 1 – Set Up Google Cloud &amp; Sheets API</h2>
+<p>This gives the tool permission to read data from your Google Sheets. At the end of this part you will have a file called <code>credentials.json</code>.</p>
+
+<h3>A. Create a Google Cloud Project</h3>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <span class="step-title">Go to the Google Cloud Console</span>
+  <p>Open your web browser and go to:<br>
+  <span class="nav-url">https://console.cloud.google.com/</span></p>
+  <p>Sign in with your Google account (the same one you use for Google Sheets).</p>
+</div>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <span class="step-title">Create a new Project</span>
+  <p>At the top of the page, click the project dropdown (it may say "Select a project" or show an existing project name).</p>
+  <p>Click <strong>"New Project"</strong> in the top-right of the popup.</p>
+  <ul>
+    <li><strong>Project name:</strong> Enter something like <code>BiomechReports</code></li>
+    <li><strong>Organisation:</strong> Leave as default (or "No organisation")</li>
+  </ul>
+  <p>Click <strong>"Create"</strong>. Wait a few seconds, then select your new project from the dropdown.</p>
+</div>
+
+<h3>B. Enable the Required APIs</h3>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <span class="step-title">Enable Google Sheets API</span>
+  <p>Go to:<br>
+  <span class="nav-url">https://console.cloud.google.com/apis/library/sheets.googleapis.com</span></p>
+  <p>Make sure your new project is selected at the top, then click the blue <strong>"Enable"</strong> button.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">4</span>
+  <span class="step-title">Enable Google Drive API</span>
+  <p>Go to:<br>
+  <span class="nav-url">https://console.cloud.google.com/apis/library/drive.googleapis.com</span></p>
+  <p>Click <strong>"Enable"</strong>.</p>
+</div>
+
+<h3>C. Create a Service Account &amp; Download credentials.json</h3>
+
+<div class="step">
+  <span class="step-number">5</span>
+  <span class="step-title">Open the Service Accounts page</span>
+  <p>Go to:<br>
+  <span class="nav-url">https://console.cloud.google.com/iam-admin/serviceaccounts</span></p>
+  <p>Make sure your project is selected at the top.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">6</span>
+  <span class="step-title">Create a Service Account</span>
+  <p>Click <strong>"+ Create Service Account"</strong> at the top.</p>
+  <ul>
+    <li><strong>Service account name:</strong> <code>biomech-api</code> (or any name you like)</li>
+    <li><strong>Service account ID:</strong> This fills in automatically</li>
+  </ul>
+  <p>Click <strong>"Create and Continue"</strong>.</p>
+  <p>On the next screen ("Grant this service account access"), you can click <strong>"Continue"</strong> without selecting a role (it is not needed).</p>
+  <p>On the final screen, click <strong>"Done"</strong>.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">7</span>
+  <span class="step-title">Create and download the JSON key file</span>
+  <p>You should now see your service account in the list. Click on its <strong>email address</strong> (e.g. <code>biomech-api@biomechreports.iam.gserviceaccount.com</code>).</p>
+  <p>Go to the <strong>"Keys"</strong> tab at the top.</p>
+  <p>Click <strong>"Add Key"</strong> → <strong>"Create new key"</strong>.</p>
+  <p>Select <strong>"JSON"</strong> and click <strong>"Create"</strong>.</p>
+  <p>A file will download to your computer — it will be named something like <code>biomechreports-abc123.json</code>.</p>
+</div>
+
+<div class="tip">
+  <strong>Save this file!</strong> This is your <code>credentials.json</code>. You will copy it into the tool's folder in Part 3.
+</div>
+
+<div class="warning">
+  <strong>Keep this file private!</strong> Anyone with this file can access the Google Sheets shared with this service account. Do not share it publicly or post it online.
+</div>
+
+<div class="step">
+  <span class="step-number">8</span>
+  <span class="step-title">Note the service account email address</span>
+  <p>Write down (or copy) the service account's email address. It looks like:<br>
+  <code>biomech-api@biomechreports.iam.gserviceaccount.com</code></p>
+  <p>You will need this in <strong>Part 4</strong> to share your Google Sheets.</p>
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="part2">Part 2 – Set Up OpenAI Account &amp; API Key</h2>
+<p>The tool uses OpenAI's GPT models to generate the written assessment text. You need an OpenAI account with a small amount of credit loaded.</p>
+
+<h3>A. Create an OpenAI Account</h3>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <span class="step-title">Go to the OpenAI Platform</span>
+  <p>Open your browser and go to:<br>
+  <span class="nav-url">https://platform.openai.com/signup</span></p>
+  <p>Sign up with your email address (or use Google / Microsoft sign-in).</p>
+  <p>Follow the prompts to verify your email and complete registration.</p>
+</div>
+
+<h3>B. Add a Payment Method &amp; Set a Budget</h3>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <span class="step-title">Go to Billing Settings</span>
+  <p>Once logged in, go to:<br>
+  <span class="nav-url">https://platform.openai.com/settings/organization/billing/overview</span></p>
+  <p>Or click your profile icon (top-right) → <strong>"Settings"</strong> → <strong>"Billing"</strong> in the left sidebar.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <span class="step-title">Add a payment method</span>
+  <p>Click <strong>"Add payment details"</strong>.</p>
+  <p>Choose <strong>"Individual"</strong> (unless you are a company).</p>
+  <p>Enter your credit/debit card details and billing address.</p>
+  <p>Click <strong>"Continue"</strong>.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">4</span>
+  <span class="step-title">Add credit to your account</span>
+  <p>You will be asked how much credit to add. Enter <strong>$10</strong> (US dollars).</p>
+  <p>This is enough to generate hundreds of reports. A single report costs roughly $0.01 – $0.03.</p>
+  <p>Click <strong>"Continue"</strong> and confirm the payment.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">5</span>
+  <span class="step-title">Set a monthly spending limit (recommended)</span>
+  <p>On the Billing page, look for <strong>"Limits"</strong> or <strong>"Usage limits"</strong>.</p>
+  <p>Set the <strong>monthly budget</strong> to <strong>$10</strong>. This prevents unexpected charges.</p>
+  <p>You can also set a notification email alert at e.g. $5 so you know when you are halfway through.</p>
+</div>
+
+<div class="tip">
+  With a $10 budget, you can generate approximately 300–500 full reports before needing to top up.
+</div>
+
+<h3>C. Create an API Key</h3>
+
+<div class="step">
+  <span class="step-number">6</span>
+  <span class="step-title">Go to API Keys page</span>
+  <p>Go to:<br>
+  <span class="nav-url">https://platform.openai.com/api-keys</span></p>
+  <p>Or from the left sidebar: <strong>"API Keys"</strong>.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">7</span>
+  <span class="step-title">Create a new API key</span>
+  <p>Click <strong>"+ Create new secret key"</strong>.</p>
+  <ul>
+    <li><strong>Name:</strong> <code>biomech-tool</code> (or anything you like)</li>
+    <li><strong>Permissions:</strong> Leave as default ("All")</li>
+  </ul>
+  <p>Click <strong>"Create secret key"</strong>.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">8</span>
+  <span class="step-title">Copy and save your API key</span>
+  <p>A key will appear that starts with <code>sk-</code> followed by a long string of characters.</p>
+  <p class="important">IMPORTANT: Copy this key immediately and paste it somewhere safe (e.g. a text file on your desktop). You will NOT be able to see it again after closing this window.</p>
+  <p>Example format: <code>sk-proj-AbCdEf123456789...</code></p>
+</div>
+
+<div class="warning">
+  <strong>Keep your API key secret!</strong> Anyone with this key can use your OpenAI credit. Never share it publicly.
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="part3">Part 3 – Add Your Credentials to the Tool</h2>
+<p>Now you will place your Google and OpenAI credentials into the tool's folder so it can use them.</p>
+
+<h3>A. Replace credentials.json</h3>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <span class="step-title">Find the tool's folder on your computer</span>
+  <p>Open File Explorer and navigate to the folder where the tool is installed (the folder containing files like <code>report_generator.py</code>, <code>textllm.py</code>, etc.).</p>
+</div>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <span class="step-title">Replace credentials.json</span>
+  <p>In the tool's folder, you will see a file called <code>credentials.json</code>.</p>
+  <ul>
+    <li><strong>Delete</strong> (or rename) the existing <code>credentials.json</code>.</li>
+    <li><strong>Copy</strong> the JSON key file you downloaded in Part 1 (Step 7) into this folder.</li>
+    <li><strong>Rename</strong> it to exactly: <code>credentials.json</code></li>
+  </ul>
+</div>
+
+<div class="warning">
+  The file <strong>must</strong> be named exactly <code>credentials.json</code> (all lowercase). If it has a different name, the tool will not find it.
+</div>
+
+<h3>B. Update the .env File with Your OpenAI Key</h3>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <span class="step-title">Find the .env file</span>
+  <p>In the same tool folder, look for a file called <code>.env</code></p>
+  <p><strong>Note:</strong> This file starts with a dot, so it may be hidden. In File Explorer, click <strong>View</strong> → tick <strong>"Hidden items"</strong> to make it visible.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">4</span>
+  <span class="step-title">Edit the .env file</span>
+  <p><strong>Right-click</strong> the <code>.env</code> file → <strong>"Open with"</strong> → <strong>"Notepad"</strong>.</p>
+  <p>You will see a line that looks like:</p>
+  <div class="code-block">OPENAI_API_KEY=sk-old-key-here...</div>
+  <p>Delete everything after the <code>=</code> sign and paste <strong>your new API key</strong> from Part 2 (Step 8).</p>
+  <p>The line should now look like:</p>
+  <div class="code-block">OPENAI_API_KEY=sk-proj-YourNewKeyHere...</div>
+  <p><strong>Save</strong> the file (Ctrl+S) and close Notepad.</p>
+</div>
+
+<div class="warning">
+  Make sure there are <strong>no spaces</strong> before or after the <code>=</code> sign, and <strong>no quotation marks</strong> around the key. The format must be exactly: <code>OPENAI_API_KEY=sk-...</code>
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="part4">Part 4 – Share Your Google Sheets</h2>
+<p>The tool accesses your Google Sheets through the service account you created. You must share each sheet with the service account email.</p>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <span class="step-title">Open your Google Sheet in your browser</span>
+  <p>Go to <span class="nav-url">https://sheets.google.com</span> and open the spreadsheet you want to generate a report from.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <span class="step-title">Click "Share"</span>
+  <p>Click the green <strong>"Share"</strong> button in the top-right corner of the sheet.</p>
+</div>
+
+<div class="step">
+  <span class="step-number">3</span>
+  <span class="step-title">Add the service account email</span>
+  <p>In the "Add people" field, paste your <strong>service account email address</strong> from Part 1, Step 8.</p>
+  <p>It will look something like: <code>biomech-api@biomechreports.iam.gserviceaccount.com</code></p>
+  <p>Set the permission to <strong>"Editor"</strong> (so the tool can read and write data).</p>
+  <p>Uncheck "Notify people" (the service account cannot receive emails).</p>
+  <p>Click <strong>"Share"</strong>.</p>
+</div>
+
+<div class="tip">
+  You need to do this for <strong>every</strong> Google Sheet you want to generate reports from. If you have a shared Google Drive folder, you can share the entire folder with the service account email instead — all sheets inside will then be accessible.
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="part5">Part 5 – Test Everything</h2>
+
+<div class="step">
+  <span class="step-number">1</span>
+  <span class="step-title">Verify your setup</span>
+  <p>Make sure you have:</p>
+  <ul>
+    <li>☐ Your <code>credentials.json</code> in the tool folder (from Part 1)</li>
+    <li>☐ Your <code>.env</code> file updated with your OpenAI API key (from Part 2)</li>
+    <li>☐ Your Google Sheet shared with the service account email (from Part 4)</li>
+  </ul>
+</div>
+
+<div class="step">
+  <span class="step-number">2</span>
+  <span class="step-title">Run the tool</span>
+  <p>Run the report generation tool as normal. If everything is set up correctly, it will:</p>
+  <ul>
+    <li>Connect to your Google Sheet and read the assessment data</li>
+    <li>Generate the written assessments using OpenAI</li>
+    <li>Produce the final HTML/PDF report</li>
+  </ul>
+</div>
+
+<hr class="section-divider">
+
+<h2>Troubleshooting</h2>
+
+<table style="width:100%; border-collapse: collapse; font-size: 10pt;">
+  <tr style="background: #2C3E50; color: white;">
+    <th style="padding: 8px; text-align: left; width: 40%;">Problem</th>
+    <th style="padding: 8px; text-align: left;">Solution</th>
+  </tr>
+  <tr style="background: #f9f9f9;">
+    <td style="padding: 8px; border: 1px solid #ddd;">"credentials.json not found"</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Make sure the file is named exactly <code>credentials.json</code> and is in the same folder as <code>report_generator.py</code>.</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">"Permission denied" or "Sheet not found"</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Share the Google Sheet with the service account email (Part 4). Check you copied the email correctly.</td>
+  </tr>
+  <tr style="background: #f9f9f9;">
+    <td style="padding: 8px; border: 1px solid #ddd;">"Invalid API key" or "Authentication error" from OpenAI</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Open the <code>.env</code> file and check the API key is correct with no extra spaces. Make sure it starts with <code>sk-</code>.</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">"Insufficient quota" or "Rate limit"</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Your OpenAI credit may have run out. Go to <span class="nav-url">https://platform.openai.com/settings/organization/billing/overview</span> and add more credit.</td>
+  </tr>
+  <tr style="background: #f9f9f9;">
+    <td style="padding: 8px; border: 1px solid #ddd;">"Google Sheets API has not been enabled"</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Go back to Part 1, Steps 3–4 and make sure both APIs are enabled for your project.</td>
+  </tr>
+</table>
+
+<br>
+<div style="text-align: center; color: #999; font-size: 9pt; margin-top: 30px;">
+  <p>— End of Setup Guide —</p>
+</div>
+
+</body>
+</html>
