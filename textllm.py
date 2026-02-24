@@ -668,91 +668,336 @@ REMEMBER: Only include paragraphs for assessment sections that are actually prov
     
 # ...existing imports and functions...
 
+import re as _re
+
+def _extract_deficits_from_section(section_name: str, text: str):
+    """
+    Parse a conclusion/summary text and return a list of concrete deficit
+    strings.  Returns an empty list when no meaningful deficits are found,
+    which means the section should be excluded from the priority list.
+
+    Handles every conclusion format used in the pipeline:
+      - Hip / Knee  → "Range Deficits:" / "Strength Deficits:" with "Left →" / "Right →"
+      - Shoulder    → "Deficits:" with "Left:" / "Right:" or the sentinel
+                       "No significant deficits …"
+      - Posture     → "Posture Assessment: <type>" (empty type = no deficit)
+      - Ankle       → Free-form LLM prose; scan for deficit keywords
+    """
+    if not text or not text.strip():
+        return []
+
+    deficits: list[str] = []
+    text_lower = text.lower()
+
+    # ── Shoulder ──────────────────────────────────────────────────────
+    if section_name == "shoulder":
+        if "no significant deficits" in text_lower or "no  significant deficits" in text_lower:
+            return []
+        # Parse structured "Deficits:" block
+        for line in text.splitlines():
+            stripped = line.strip()
+            if stripped.lower().startswith("left:") or stripped.lower().startswith("right:"):
+                items = stripped.split(":", 1)[1].strip()
+                if items:
+                    deficits.append(stripped)
+        return deficits
+
+    # ── Hip / Knee (identical structured format) ──────────────────────
+    if section_name in ("hip", "knee"):
+        for line in text.splitlines():
+            stripped = line.strip()
+            # Lines like "Left → Flexion, Extension, Internal Rotation"
+            if "→" in stripped:
+                after_arrow = stripped.split("→", 1)[1].strip()
+                if after_arrow:  # has actual items
+                    deficits.append(stripped)
+        return deficits
+
+    # ── Posture ───────────────────────────────────────────────────────
+    if section_name == "posture":
+        # metrics[7] = posture_assessment_1  (e.g. "These readings indicate …")
+        posture_keywords = [
+            "sway back", "forward head", "flat back", "kyphotic",
+            "kyphosis", "lordosis",
+        ]
+        for kw in posture_keywords:
+            if kw in text_lower:
+                deficits.append(kw)
+        return deficits
+
+    # ── Ankle / Foot (free-form prose) ────────────────────────────────
+    if section_name == "foot":
+        deficit_keywords = [
+            "poor", "lacking", "lack", "deficit", "limited",
+            "restricted", "weak", "reduced", "insufficient",
+            "asymmetry",
+        ]
+        for kw in deficit_keywords:
+            if kw in text_lower:
+                deficits.append(kw)
+        return deficits
+
+    return deficits
+
+
+def _summarise_deficits(section_name: str, text: str, deficit_items: list[str]) -> str:
+    """
+    Return a short, structured summary of what the deficits actually are so
+    the LLM prompt receives concrete data rather than raw prose.
+    """
+    if section_name in ("hip", "knee"):
+        # Already has nice "Left → …" / "Right → …" lines
+        range_defs = []
+        strength_defs = []
+        current_group = None
+        for line in text.splitlines():
+            low = line.strip().lower()
+            if "range deficit" in low:
+                current_group = "range"
+            elif "strength deficit" in low:
+                current_group = "strength"
+            elif "→" in line.strip():
+                if current_group == "range":
+                    range_defs.append(line.strip())
+                elif current_group == "strength":
+                    strength_defs.append(line.strip())
+        parts = []
+        if range_defs:
+            parts.append("Range deficits: " + "; ".join(range_defs))
+        if strength_defs:
+            parts.append("Strength deficits: " + "; ".join(strength_defs))
+        return " | ".join(parts) if parts else "; ".join(deficit_items)
+
+    if section_name == "shoulder":
+        return "; ".join(deficit_items)
+
+    if section_name == "posture":
+        return ", ".join(deficit_items)
+
+    if section_name == "foot":
+        # just flag that deficits exist; the LLM will interpret the prose
+        return "Deficits identified in foot/ankle complex"
+
+    return "; ".join(deficit_items)
+
+
+# ── Tie-break order (lower index = higher clinical priority) ──────
+_TIE_BREAK_ORDER = {"hip": 0, "knee": 1, "foot": 2, "shoulder": 3, "posture": 4}
+
+
+def _score_section_deficits(section_name: str, text: str, deficit_items: list[str]) -> float:
+    """
+    Calculate a weighted deficit score for a body-part section.
+
+    Higher score = more / more severe deficits = higher priority.
+
+    Weighting rules:
+      • Each distinct deficit movement or keyword counts as a base point.
+      • Strength deficits are weighted 1.5× (more impactful than range).
+      • "poor" / "large deficit" severity keywords get an extra 0.5 per occurrence.
+      • Bilateral deficits (same movement listed on both Left and Right) get a
+        1.25× multiplier for that movement.
+
+    Section-specific parsing:
+      hip / knee  – structured "Range Deficits:" / "Strength Deficits:" blocks
+      shoulder    – each "Left:" / "Right:" deficit item = 1 point
+      posture     – each keyword match = 1 point
+      foot        – severity-weighted keyword count from prose
+    """
+    if not deficit_items:
+        return 0.0
+
+    score = 0.0
+
+    # ── Hip / Knee ────────────────────────────────────────────────────
+    if section_name in ("hip", "knee"):
+        range_left = []
+        range_right = []
+        strength_left = []
+        strength_right = []
+        current_group = None
+
+        for line in text.splitlines():
+            low = line.strip().lower()
+            if "range deficit" in low:
+                current_group = "range"
+                continue
+            elif "strength deficit" in low:
+                current_group = "strength"
+                continue
+
+            if "→" not in line:
+                continue
+            side_part, items_part = line.strip().split("→", 1)
+            side = side_part.strip().lower()
+            movements = [m.strip() for m in items_part.split(",") if m.strip()]
+
+            if current_group == "range":
+                if "left" in side:
+                    range_left = movements
+                elif "right" in side:
+                    range_right = movements
+            elif current_group == "strength":
+                if "left" in side:
+                    strength_left = movements
+                elif "right" in side:
+                    strength_right = movements
+
+        # Score range deficits (1.0 each, +0.25 if bilateral)
+        all_range = set(m.lower() for m in range_left + range_right)
+        for m in all_range:
+            bilateral = (m in [x.lower() for x in range_left]) and (m in [x.lower() for x in range_right])
+            score += 1.25 if bilateral else 1.0
+
+        # Score strength deficits (1.5 each, +0.25 if bilateral)
+        all_strength = set(m.lower() for m in strength_left + strength_right)
+        for m in all_strength:
+            bilateral = (m in [x.lower() for x in strength_left]) and (m in [x.lower() for x in strength_right])
+            score += 1.75 if bilateral else 1.5
+
+        return score
+
+    # ── Shoulder ──────────────────────────────────────────────────────
+    if section_name == "shoulder":
+        left_items = []
+        right_items = []
+        for item in deficit_items:
+            low = item.lower()
+            if low.startswith("left:"):
+                left_items = [x.strip() for x in item.split(":", 1)[1].split(",") if x.strip()]
+            elif low.startswith("right:"):
+                right_items = [x.strip() for x in item.split(":", 1)[1].split(",") if x.strip()]
+
+        all_items = set(x.lower() for x in left_items + right_items)
+        for it in all_items:
+            bilateral = (it in [x.lower() for x in left_items]) and (it in [x.lower() for x in right_items])
+            score += 1.25 if bilateral else 1.0
+        return score
+
+    # ── Posture ───────────────────────────────────────────────────────
+    if section_name == "posture":
+        # Posture usually yields only 1 keyword, so weight each at 2.0
+        # to keep it competitive with multi-deficit sections.
+        return float(len(deficit_items)) * 3.0
+
+    # ── Foot / Ankle (keyword severity) ───────────────────────────────
+    if section_name == "foot":
+        severity_weights = {
+            "poor": 1.5, "weak": 1.5, "insufficient": 1.5,
+            "lacking": 1.0, "lack": 1.0, "deficit": 1.0,
+            "limited": 0.75, "restricted": 0.75, "reduced": 0.75,
+            "asymmetry": 1.0,
+        }
+        for kw in deficit_items:
+            score += severity_weights.get(kw, 1.0)
+        return score
+
+    return float(len(deficit_items))
+
+
 def test_biomech_priority_list(
     posture_text: str,
-    ankle_text: str,
-    knee_text: str,
     hip_text: str,
+    knee_text: str,
+    ankle_text: str,
     shoulder_text: str,
     openai_client
 ) -> str:
     """
     Generate a compact Priority List based on the same inputs used for the conclusion.
-    Includes only assessments that are present, uses British English, and short, numbered lines.
+    Sections with NO meaningful deficits are excluded entirely.
+    Uses British English and short, numbered lines.
     """
     try:
-        # Build available sections and input parts (only if present)
+        # ── 1. Parse each section and keep only those with real deficits ──
+        section_configs = [
+            ("hip",      hip_text),
+            ("shoulder", shoulder_text),
+            ("foot",     ankle_text),
+            ("knee",     knee_text),
+            ("posture",  posture_text),
+        ]
+
+        scored_sections = []  # list of (name, summary, score)
+
+        for name, txt in section_configs:
+            if not txt or not txt.strip():
+                continue
+            deficits = _extract_deficits_from_section(name, txt)
+            if not deficits:
+                print(f"[Priority List] Skipping '{name}' – no meaningful deficits found.")
+                continue
+            summary = _summarise_deficits(name, txt, deficits)
+            score = _score_section_deficits(name, txt, deficits)
+            scored_sections.append((name, summary, score))
+            print(f"[Priority List] '{name}' → score {score:.2f} | {summary}")
+
+        # ── 2. Sort by score descending, tie-break by clinical order ──────
+        scored_sections.sort(
+            key=lambda x: (-x[2], _TIE_BREAK_ORDER.get(x[0], 99))
+        )
+
+        # If nothing to generate from
+        if not scored_sections:
+            return "Priority List:\nNo significant deficits identified across all assessments."
+
+        # Build ordered input for the LLM
+        label_map = {
+            "hip": "Hip",
+            "shoulder": "Shoulder",
+            "foot": "Foot/Ankle",
+            "knee": "Knee",
+            "posture": "Posture",
+        }
         input_parts = []
         available_sections = []
-
-        if hip_text and hip_text.strip():
-            input_parts.append(f"Hip Assessment Summary:\n{hip_text}")
-            available_sections.append("hip")
-
-        if shoulder_text and shoulder_text.strip():
-            input_parts.append(f"Shoulder Assessment Summary:\n{shoulder_text}")
-            available_sections.append("shoulder")
-
-        if ankle_text and ankle_text.strip():
-            input_parts.append(f"Foot/Ankle Assessment Summary:\n{ankle_text}")
-            available_sections.append("foot")
-
-        if knee_text and knee_text.strip():
-            input_parts.append(f"Knee Assessment Summary:\n{knee_text}")
-            available_sections.append("knee")
-
-
-        if posture_text and posture_text.strip():
-            input_parts.append(f"Posture Assessment Summary:\n{posture_text}")
-            available_sections.append("posture")
+        for rank, (name, summary, score) in enumerate(scored_sections, 1):
+            input_parts.append(f"{rank}. {label_map[name]} (priority score: {score:.1f}):\n{summary}")
+            available_sections.append(name)
 
         input_string = "\n\n".join(input_parts)
 
-        # If nothing to generate from
-        if not input_string.strip():
-            return f"Priority List:\n"
-
-        # System prompt to enforce exact structure and British English
+        # ── 3. Build data-driven prompt (order is pre-determined) ─────────
         system_prompt = f"""You are a biomechanical assessment expert.
-            Create a compact priority list using ONLY the sections provided.
-            ALWAYS use British English.
-            Adhere strictly to this output template and rules:
+Create a compact priority list using ONLY the deficit data provided below.
+ALWAYS use British English.
 
-            TEMPLATE:
-            Priority List:
-            1st) <Short priority for the highest-impact available section>
-            2nd) <Short priority for the next available section>
-            3rd) <Short priority for the next available section>
-            4th) <Short priority for the next available section>
-            5th) <Short priority for the next available section>
-            6th) <Short priority for the next available section>
+The sections below are ALREADY SORTED by priority (highest impact first).
+You MUST output them in the EXACT ORDER given — do NOT re-order.
 
-            EXAMPLE (follow format, wording, length and tone closely):
-            Input sections: {', '.join(available_sections)}
-            Example Output:
-            Priority List:
-            1st) Address limitations at the hip in range of motion, then force.
-            2nd) Increase shoulder internal rotation range and increase your rotator cuff and rhomboid strength.
-            3rd) Increase your ability to pressurise correctly through the foot.
-            4th) Increase right knee flexion force.
-            5th) Increase lower core function.
-            6th) Address forward head posture.
+Adhere strictly to this output template and rules:
 
-            RULES:
-            - Use short, direct sentences (like the example).
-            - Start each line with an ordinal: 1st), 2nd), 3rd), 4th), 5th), 6th).
-            - Include only the sections that are actually provided: {', '.join(available_sections)}.
-            - Each line must map to one section (hip, shoulder, foot, knee, core function, posture).
-            - Do NOT create a line for any missing section.
-            - If fewer than 6 sections are available, output fewer lines (no placeholders).
-            - Use verbs like Address, Increase, Improve, Build, Enhance.
-            - Avoid numbers/percentages from assessments.
-            - Keep to British English spelling (pressurise, emphasising, stabiliser, programme, etc.).
-            - Keep priorities relevant to each section's likely needs (hip: range then force; shoulder: internal rotation then rotator cuff and rhomboids; foot: pressurise through mid-foot; knee: flexion force/H:Q; core function: lower core bracing/coordination; posture: forward head/thoracic).
-            - Match the example's tone, brevity and approximate word-count per line.
-            - No extra commentary, headings, or paragraphs — only the numbered lines shown.
+TEMPLATE:
+Priority List:
+1st) <Short priority for the first section listed>
+2nd) <Short priority for the second section listed>
+...one line per section, in the order provided.
 
-            REMEMBER: Follow the example format, wording, number of words and tone closely."""      
+RULES:
+- Output lines in the SAME ORDER as the numbered input sections below.
+- Each priority line MUST directly reference the SPECIFIC deficits provided in the input data.
+- Do NOT invent or assume deficits that are not mentioned in the input.
+- For example, if the shoulder input only mentions Shoulder "T", say "Improve shoulder scapular stability (Shoulder T)" — do NOT mention internal rotation or rotator cuff unless the input data says so.
+- If a section has only 1-2 deficits, name them specifically (e.g. "Address hip flexion and extension range").
+- If a section has 3 or more deficits, keep it general instead of listing every deficit (e.g. "Address hip range and strength deficits" or "Improve overall hip range and force production").
+- NEVER list more than 2 specific movements in a single line — summarise broadly instead.
+- Use short, direct sentences (max 15 words per line).
+- Start each line with an ordinal: 1st), 2nd), 3rd), etc.
+- Use action verbs: Address, Increase, Improve, Build, Enhance.
+- Avoid raw numbers/percentages and priority scores.
+- British English spelling (pressurise, emphasising, stabiliser, programme, etc.).
+- No extra commentary, headings, or paragraphs — only the numbered lines.
+
+EXAMPLE (for reference only — adapt to actual deficit data):
+Priority List:
+1st) Address hip range deficits in flexion and extension, then force.
+2nd) Increase knee flexion range and hamstring strength.
+3rd) Increase ability to pressurise correctly through the foot.
+4th) Improve scapular stability and shoulder T isometric strength.
+5th) Address flat back posture and thoracic curvature.
+
+REMEMBER: Keep the order as given. Each line must reflect the SPECIFIC deficits from the input."""
+
         response = openai_client.chat.completions.create(
             model="gpt-4.1",
             messages=[

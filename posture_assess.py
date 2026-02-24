@@ -242,7 +242,7 @@ def TextGen_Posture(sheet_id, worksheet,first_worksheet,third_worksheet):
         template2 = f"""You were able to rotate your spine {Rotaion_Ribcage_Left} degrees to the left and {Rotaion_Ribcage_Right} degrees to the right, and could laterally flex (side bend) {Rotaion_Ribcage_Flexion_Left} degrees to the left and {Rotaion_Ribcage_Flexion_Right} degrees to the right."""
 
     # The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were 6 (left) and 6 (right), normal is 7-10 degrees for females. The lumbar spine directly articulates with the sacrum and its joints with the pelvis. 
-    template3 = f"""The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were {Pelvis_Left} (left) and {Pelvis_Right} (right), normal is {'4-7 degrees for males' if Gender == 'Male' else '7-10 degrees for females'}{text_pelvis} """
+    template3 = f"""The angle of pelvic tilt in quiet standing describes the orientation of the pelvis in the sagittal plane. It is determined by the muscular and ligamentous forces that act between the pelvis and adjacent segments. You were {Pelvis_Left} (left) and {Pelvis_Right} (right), normal is {'3-7 degrees for males' if Gender == 'Male' else '7-10 degrees for females'}{text_pelvis} """
 
     return template1, template2, template3,Input_string
 def extract_sheet_metrics_corefunction(sheet_id, worksheet,worksheet_first,worksheet_third):
